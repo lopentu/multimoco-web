@@ -9,6 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@babel/core": ">=7.0.0 <8.0.0",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.3",
+    "@mui/material": "^5.10.5",
     "@nextui-org/react": "1.0.0-beta.10",
     "mongodb": "^4.9.1",
     "next": "12.3.0",
