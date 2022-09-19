@@ -1,6 +1,13 @@
 import * as React from 'react';
-// import { Table } from '@nextui-org/react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
+import Highlighter from "react-highlight-words";
 export interface AlignedUtt {
     _id: string;
     name: string;
@@ -12,36 +19,47 @@ export interface AlignedUtt {
 interface CorpusResultProps {
     searchResults: string
 }
+
 export default function CorpusResult({ searchResults }: CorpusResultProps) {
+    const rows = JSON.parse(searchResults);
+
     return (
         <>
-            <div className="fs-2 text-muted">Search Result</div>
-            {/* <Table
-                id="results-table"
-                aria-label="Search results table"
-                css={{
-                    height: "auto",
-                    minWidth: "100%",
-                }}
-            >
-                <Table.Header id="table-header">
-                    <Table.Column>Name</Table.Column>
-                    <Table.Column>Offset</Table.Column>
-                    <Table.Column>Span</Table.Column>
-                    <Table.Column align="start">Text</Table.Column>
-                </Table.Header>
-                <Table.Body id="table-body">
-                    {JSON.parse(searchResults).map((res: AlignedUtt) => (
-                        <Table.Row key={res._id} id={res._id}>
-                            <Table.Cell>{res.name}</Table.Cell>
-                            <Table.Cell>{res.offset}</Table.Cell>
-                            <Table.Cell>{res.span}</Table.Cell>
-                            <Table.Cell>{res.payload.text.trim()}</Table.Cell>
-                        </Table.Row>
-                    )
-                    )}
-                </Table.Body>
-            </Table> */}
+            <div className="fs-2 text-muted">Search Results</div>
+            <TableContainer>
+                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell align="right">Offset</TableCell>
+                            <TableCell align="right">Span</TableCell>
+                            <TableCell align="left">Text</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row: AlignedUtt) => (
+                            <TableRow
+                                key={row._id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {row.name}
+                                </TableCell>
+                                <TableCell align="right">{row.offset}</TableCell>
+                                <TableCell align="right">{row.span}</TableCell>
+                                <TableCell align="left" className="context">
+                                    <Highlighter
+                                    highlightClassName="highlighted"
+                                    searchWords={["美國"]}
+                                    autoEscape={true}
+                                    textToHighlight={row.payload.text}
+                                    />
+                                    </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     )
 }

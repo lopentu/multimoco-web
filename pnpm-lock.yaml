@@ -6,6 +6,8 @@ specifiers:
   '@emotion/styled': ^11.10.4
   '@mui/icons-material': ^5.10.3
   '@mui/material': ^5.10.5
+  '@mui/system': ^5.4.1
+  '@mui/x-data-grid': ^5.17.3
   '@nextui-org/react': 1.0.0-beta.10
   '@types/node': 18.7.18
   '@types/react': 18.0.20
@@ -16,6 +18,7 @@ specifiers:
   next: 12.3.0
   react: 18.2.0
   react-dom: 18.2.0
+  react-highlight-words: ^0.18.0
   typescript: 4.8.3
 
 dependencies:
@@ -24,11 +27,14 @@ dependencies:
   '@emotion/styled': 11.10.4_sn4wuyy54zwps25tv4w7lbiz6i
   '@mui/icons-material': 5.10.3_5evnxlqsqnxmrwqqtdxt2buelq
   '@mui/material': 5.10.5_af5ln35zuaotaffazii6n6bke4
+  '@mui/system': 5.10.5_4mv32nu4vciambuqqzuu4gtvj4
+  '@mui/x-data-grid': 5.17.3_w2wnl2oz2yhwwpp65h2bpve364
   '@nextui-org/react': 1.0.0-beta.10_biqbaboplfbrettd7655fr4n2y
   mongodb: 4.9.1
   next: 12.3.0_ir3quccc6i62x6qn6jjhyjjiey
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-highlight-words: 0.18.0_react@18.2.0
 
 devDependencies:
   '@types/node': 18.7.18
@@ -709,6 +715,26 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       react-is: 18.2.0
+    dev: false
+
+  /@mui/x-data-grid/5.17.3_w2wnl2oz2yhwwpp65h2bpve364:
+    resolution: {integrity: sha512-EBTD7nfV3b6Zz7X8IS0BR4x3ihzHqGAemP6Ah22N/oHTIz+HWsCMtsYWRs5SjQewVjY8JXJ3fcJJEgldOcaqqg==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@mui/material': ^5.4.1
+      '@mui/system': ^5.4.1
+      react: ^17.0.2 || ^18.0.0
+      react-dom: ^17.0.2 || ^18.0.0
+    dependencies:
+      '@babel/runtime': 7.19.0
+      '@mui/material': 5.10.5_af5ln35zuaotaffazii6n6bke4
+      '@mui/system': 5.10.5_4mv32nu4vciambuqqzuu4gtvj4
+      '@mui/utils': 5.10.3_react@18.2.0
+      clsx: 1.2.1
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      reselect: 4.1.6
     dev: false
 
   /@next/env/12.3.0:
@@ -2610,6 +2636,10 @@ packages:
     dependencies:
       function-bind: 1.1.1
 
+  /highlight-words-core/1.2.2:
+    resolution: {integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==}
+    dev: false
+
   /hoist-non-react-statics/3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
     dependencies:
@@ -2870,6 +2900,10 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /memoize-one/4.0.3:
+    resolution: {integrity: sha512-QmpUu4KqDmX0plH4u+tf0riMc1KHE1+lw95cMrLlXQAFOx/xnBtwhZ52XJxd9X2O6kwKBqX32kmhbhlobD0cuw==}
+    dev: false
 
   /memory-pager/1.5.0:
     resolution: {integrity: sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==}
@@ -3163,6 +3197,17 @@ packages:
       scheduler: 0.23.0
     dev: false
 
+  /react-highlight-words/0.18.0_react@18.2.0:
+    resolution: {integrity: sha512-5z+46eLPjB4JWgOhuQ0E+6iUPTD1U3amiy5KKjzZmeJ5zyvHr91hnzBT3UHya/KlySm5KRTKpYpba9vs67oO2A==}
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
+    dependencies:
+      highlight-words-core: 1.2.2
+      memoize-one: 4.0.3
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -3207,6 +3252,10 @@ packages:
     resolution: {integrity: sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==}
     engines: {node: '>=8'}
     dev: true
+
+  /reselect/4.1.6:
+    resolution: {integrity: sha512-ZovIuXqto7elwnxyXbBtCPo9YFEr3uJqj2rRbcOOog1bmu2Ag85M4hixSwFWyaBMKXNgvPaJ9OSu9SkBPIeJHQ==}
+    dev: false
 
   /resolve-from/4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}

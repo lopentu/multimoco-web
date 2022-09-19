@@ -14,7 +14,8 @@ export async function getServerSideProps(context: any) {
 
     const { query } = context
     console.log(query.query);
-    const searchResults = await db.collection("aligned_utt").find({ "payload.text": { "$regex": `${query}` } }).limit(5).toArray();
+    // const searchResults = await db.collection("aligned_utt").find({ "payload.text": { $regex: `${query}`, $options: "i"} }).limit(2).toArray();
+    const searchResults = await db.collection("aligned_utt").find({"payload.text": new RegExp(query.query, "i")}).limit(2).toArray();
     console.log(searchResults);
 
     // `await clientPromise` will use the default database passed in the MONGODB_URI
@@ -28,6 +29,7 @@ export async function getServerSideProps(context: any) {
 
     return {
       props: { searchResults: JSON.stringify(searchResults) },
+      // props: { searchResults: searchResults },
     }
   } catch (e) {
     console.error(e)
@@ -88,24 +90,29 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
             <div className="row justify-content-center align-items-center">
               <div className="col-8">
                 <div className="d-flex justify-content-center mb-3">
-                  <form>
+                  <form
+                    action="search" method="GET"
+                  >
                     <Grid
                       container
-                      spacing={2}
+                      spacing={1}
                       justifyContent="center"
                       alignItems="center"
                     >
-                      <Grid xs={8}>
+                      <Grid item xs={8}>
                         <TextField
                           fullWidth
                           label="搜尋文字、聲音、手勢"
                           id="search"
+                          type="text"
+                          name="query"
                           value={queryText}
                           onChange={handleChange}
                           InputLabelProps={{ shrink: true }}
+                          required
                         />
                       </Grid>
-                      <Grid xs={4}>
+                      <Grid item xs={4}>
                         <Button size="large" variant="contained">搜尋</Button>
                       </Grid>
                       {/* <Spacer x={2} /> */}
@@ -126,7 +133,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    <Grid xs={5}>
+                    <Grid item xs={5}>
                       <FormControl fullWidth>
                         <InputLabel id="hand-select-label">手勢</InputLabel>
                         <Select
@@ -141,7 +148,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid xs={5}>
+                    <Grid item xs={5}>
 
                       <FormControl fullWidth>
                         <InputLabel id="sound-select-label">語音</InputLabel>
