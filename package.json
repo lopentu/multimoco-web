@@ -17,6 +17,7 @@
     "@mui/system": "^5.4.1",
     "@mui/x-data-grid": "^5.17.3",
     "@nextui-org/react": "1.0.0-beta.10",
+    "mdb-react-ui-kit": "^4.2.0",
     "mongodb": "^4.9.1",
     "next": "12.3.0",
     "react": "18.2.0",

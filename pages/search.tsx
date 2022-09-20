@@ -3,9 +3,12 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Input, Dropdown, Spacer } from "@nextui-org/react";
-import { TextField, Button, Grid, Select, InputLabel, FormControl, MenuItem } from '@mui/material';
+import { TextField, Button, Select, InputLabel, FormControl, MenuItem, Container } from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import CorpusResult, { AlignedUtt } from '../components/corpus_results';
 import clientPromise from '../lib/mongodb'
+import SearchIcon from '@mui/icons-material/Search';
+import Searchbar from '../components/navbar';
 
 export async function getServerSideProps(context: any) {
   try {
@@ -15,7 +18,7 @@ export async function getServerSideProps(context: any) {
     const { query } = context
     console.log(query.query);
     // const searchResults = await db.collection("aligned_utt").find({ "payload.text": { $regex: `${query}`, $options: "i"} }).limit(2).toArray();
-    const searchResults = await db.collection("aligned_utt").find({"payload.text": new RegExp(query.query, "i")}).limit(50).toArray();
+    const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(50).toArray();
     console.log(searchResults);
 
     // `await clientPromise` will use the default database passed in the MONGODB_URI
@@ -79,98 +82,89 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
       </Head>
 
 
+      <Searchbar />
       <section className="features-1"
         // style={{ overflow: "visible", minHeight: "100vh", overflowY: "scroll" }}>
-        style={{  minHeight: "100vh", }}>
+        style={{ minHeight: "100vh", }}>
+        <Container className="mt-5" maxWidth="xl">
+          {/* <div className="container"> */}
+          {/* <div className="row mb-2 align-items-center justify-content-center">
+            <div className="col-lg-6"> */}
 
-        <div className="container">
-          <div className="row mb-2 align-items-center justify-content-center">
-            <div className="col-lg-6">
-              <h2 className="font-weight-bold text-primary heading">
-                MultiMoco
-              </h2>
-            </div>
-          </div>
+          {/* </div>
+          </div> */}
 
-          <div className="container">
-            <div className="row justify-content-center align-items-center">
-              <div className="col-8">
-                <div className="d-flex justify-content-center mb-3">
-                  <form
-                    action="search" method="GET"
-                  >
-                    <Grid
-                      container
-                      spacing={1}
-                      justifyContent="center"
-                      alignItems="center"
-                    >
-                      <Grid item xs={8}>
-                        <TextField
-                          fullWidth
-                          label="搜尋文字、聲音、手勢"
-                          id="search"
-                          type="text"
-                          name="query"
-                          value={queryText}
-                          onChange={handleChange}
-                          InputLabelProps={{ shrink: true }}
-                          required
-                        />
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Button size="large" variant="contained">搜尋</Button>
-                      </Grid>
-                      {/* <Spacer x={2} /> */}
-                      {/* <Button id="searchButton"
-                      css={{
-                        fontSize: "1rem",
-                        minWidth: "100px"
-                      }}>搜尋</Button> */}
-                    </Grid>
-                  </form>
-                </div>
-              </div>
-              <div className="row justify-content-center">
-                <div className="col-lg-8 d-flex justify-content-center" style={{ gap: "2rem" }}>
-                  <Grid
-                    container
-                    spacing={1}
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <Grid item xs={5}>
-                      <FormControl fullWidth>
-                        <InputLabel id="hand-select-label">手勢</InputLabel>
-                        <Select
-                          labelId="hand-select-label"
-                          id="hand-select"
-                          value={handSelect}
-                          label="手勢"
-                          onChange={(e) => setHandSelect(e.target.value)}
-                          // autoWidth
-                        >
-                          <MenuItem value="hand-moving">手揮動</MenuItem>
-                          <MenuItem value="hand-palm-visible">手掌可見</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={5}>
+          {/* <div className="container"> */}
+          {/* <div className="row justify-content-center align-items-center"> */}
+          {/* <div className="col-8">
+                <div className="d-flex justify-content-center mb-3"> */}
+          <form
+            action="search" method="GET"
+          >
+            <Grid2
+              container
+              spacing={1}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid2 xs={12}>
+                <TextField
+                  fullWidth
+                  label="搜尋文字、聲音、手勢"
+                  id="search"
+                  type="text"
+                  name="query"
+                  value={queryText}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{endAdornment: <Button variant="contained" disableElevation><SearchIcon/></Button>}}
+                  required
+                />
+              </Grid2>
+              {/* <Grid2 xs={4}>
+                <Button size="large" variant="outlined">搜尋</Button>
+              </Grid2> */}
+            </Grid2>
+          </form>
+          <Grid2
+            container
+            spacing={0.5}
+            justifyContent="left"
+            alignItems="center"
+          >
+            <Grid2 lg={1}>
+              <FormControl sx={{ minWidth: 120 }} size="small">
+                <InputLabel id="hand-select-label">手勢</InputLabel>
+                <Select
+                  labelId="hand-select-label"
+                  id="hand-select"
+                  value={handSelect}
+                  label="手勢"
+                  onChange={(e) => setHandSelect(e.target.value)}
+                  autoWidth
+                >
+                  <MenuItem value="hand-moving">手揮動</MenuItem>
+                  <MenuItem value="hand-palm-visible">手掌可見</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid2>
+            <Grid2 lg={1}>
 
-                      <FormControl fullWidth>
-                        <InputLabel id="sound-select-label">語音</InputLabel>
-                        <Select
-                          labelId="sound-select-label"
-                          id="sound-select"
-                          value={soundSelect}
-                          label="語音"
-                          onChange={(e) => setSoundSelect(e.target.value)}
-                        >
-                          <MenuItem value="sound-overlapping">語音重疊</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    {/* <Dropdown aria-label='hand-dropdown'>
+              <FormControl sx={{m: 1, minWidth: 120 }} size="small">
+                <InputLabel id="sound-select-label">語音</InputLabel>
+                <Select
+                  labelId="sound-select-label"
+                  id="sound-select"
+                  value={soundSelect}
+                  label="語音"
+                  onChange={(e) => setSoundSelect(e.target.value)}
+                  autoWidth
+                >
+                  <MenuItem value="sound-overlapping">語音重疊</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid2>
+            {/* <Dropdown aria-label='hand-dropdown'>
                       <Dropdown.Button id='hand-label' flat>手勢</Dropdown.Button>
                       <Dropdown.Menu aria-label="Static Actions">
                         <Dropdown.Item aria-label='hands-moving' key="hands-moving">手揮動</Dropdown.Item>
@@ -183,19 +177,22 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                         <Dropdown.Item key="sound-overlapping">語音重疊</Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown> */}
-                  </Grid>
-                </div>
-              </div>
-            </div>
+          </Grid2>
+          {/* </div>
+              </div> */}
+          {/* </div> */}
 
-            <div className="row mt-4 justify-content-center">
-              <div className="col-lg-8 justify-content-center">
-                <CorpusResult highlightText={highlightText} searchResults={searchResults} />
-              </div>
+          <div className="row mt-4 justify-content-center">
+            <div className="col-lg-8 justify-content-center">
+              <CorpusResult highlightText={highlightText} searchResults={searchResults} />
             </div>
           </div>
+          {/* </div> */}
 
-        </div>
+          {/* </div> */}
+
+        </Container>
+
       </section>
     </>
   )
