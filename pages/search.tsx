@@ -15,7 +15,7 @@ export async function getServerSideProps(context: any) {
     const { query } = context
     console.log(query.query);
     // const searchResults = await db.collection("aligned_utt").find({ "payload.text": { $regex: `${query}`, $options: "i"} }).limit(2).toArray();
-    const searchResults = await db.collection("aligned_utt").find({"payload.text": new RegExp(query.query, "i")}).limit(2).toArray();
+    const searchResults = await db.collection("aligned_utt").find({"payload.text": new RegExp(query.query, "i")}).limit(50).toArray();
     console.log(searchResults);
 
     // `await clientPromise` will use the default database passed in the MONGODB_URI
@@ -48,6 +48,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
   const [queryText, setQueryText] = useState("");
   const [handSelect, setHandSelect] = useState("");
   const [soundSelect, setSoundSelect] = useState("");
+  let highlightText
   const router = useRouter();
   const getParams = router.query;
 
@@ -57,9 +58,13 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
 
   useEffect(() => {
     if (Array.isArray(getParams.query)) {
-      setQueryText(getParams.query.at(0) || "")
+      let q = getParams.query.at(0) || ""
+      highlightText = q
+      setQueryText(q)
     } else {
-      setQueryText(getParams.query || "")
+      let q = getParams.query || ""
+      highlightText = q
+      setQueryText(q)
     }
   }, [])
 
@@ -75,7 +80,8 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
 
 
       <section className="features-1"
-        style={{ overflow: "visible", minHeight: "100vh" }}>
+        // style={{ overflow: "visible", minHeight: "100vh", overflowY: "scroll" }}>
+        style={{  minHeight: "100vh", }}>
 
         <div className="container">
           <div className="row mb-2 align-items-center justify-content-center">
@@ -142,6 +148,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                           value={handSelect}
                           label="手勢"
                           onChange={(e) => setHandSelect(e.target.value)}
+                          // autoWidth
                         >
                           <MenuItem value="hand-moving">手揮動</MenuItem>
                           <MenuItem value="hand-palm-visible">手掌可見</MenuItem>
@@ -183,7 +190,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
 
             <div className="row mt-4 justify-content-center">
               <div className="col-lg-8 justify-content-center">
-                <CorpusResult searchResults={searchResults} />
+                <CorpusResult highlightText={highlightText} searchResults={searchResults} />
               </div>
             </div>
           </div>

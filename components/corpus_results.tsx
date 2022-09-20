@@ -17,11 +17,13 @@ export interface AlignedUtt {
 
 }
 interface CorpusResultProps {
+    highlightText: string
     searchResults: string
 }
 
-export default function CorpusResult({ searchResults }: CorpusResultProps) {
+export default function CorpusResult({ highlightText, searchResults }: CorpusResultProps) {
     const rows = JSON.parse(searchResults);
+    console.log(`Hightlight: ${highlightText}`);
 
     return (
         <>
@@ -50,7 +52,7 @@ export default function CorpusResult({ searchResults }: CorpusResultProps) {
                                 <TableCell align="left" className="context">
                                     <Highlighter
                                     highlightClassName="highlighted"
-                                    searchWords={["美國"]}
+                                    searchWords={[highlightText]}
                                     autoEscape={true}
                                     textToHighlight={row.payload.text}
                                     />
