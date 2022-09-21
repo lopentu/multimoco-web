@@ -43,6 +43,7 @@ class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
           />
+          <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet" />
         </Head>
         <body>
           <Main />
