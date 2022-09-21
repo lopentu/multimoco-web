@@ -1,10 +1,10 @@
 import * as React from 'react';
-import videojs from 'video.js';
+import videojs, { VideoJsPlayer } from 'video.js';
 import 'video.js/dist/video-js.css'
 
 function VideoJS(props) {
   const videoRef = React.useRef(null);
-  const playerRef = React.useRef(null);
+  const playerRef: React.MutableRefObject<VideoJsPlayer | null> = React.useRef(null);
   const { options, onReady } = props;
 
   React.useEffect(() => {

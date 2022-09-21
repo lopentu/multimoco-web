@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 import Highlighter from "react-highlight-words";
+import { VideoJsPlayer } from 'video.js';
 export interface AlignedUtt {
     _id: string;
     name: string;
@@ -19,9 +20,10 @@ export interface AlignedUtt {
 interface CorpusResultProps {
     highlightText: string
     searchResults: string
+    player: React.MutableRefObject<VideoJsPlayer>
 }
 
-export default function CorpusResult({ highlightText, searchResults }: CorpusResultProps) {
+export default function CorpusResult({ highlightText, searchResults, player }: CorpusResultProps) {
     const rows = JSON.parse(searchResults);
     console.log(`Hightlight: ${highlightText}`);
 
@@ -43,6 +45,14 @@ export default function CorpusResult({ highlightText, searchResults }: CorpusRes
                             <TableRow
                                 key={row._id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                onClick={() => {
+                                    let url = `https://storage.googleapis.com/multimoco/selected/h264/${row.name}.mp4`
+                                    console.log(url)
+                                    if (url !== player.current.src()) {
+                                        player.current.src({ type: 'video/mp4', src: url })
+                                    }
+                                    player.current.currentTime(row.offset / 1000)
+                                }}
                             >
                                 <TableCell component="th" scope="row">
                                     {row.name}
@@ -50,13 +60,14 @@ export default function CorpusResult({ highlightText, searchResults }: CorpusRes
                                 <TableCell align="right">{row.offset}</TableCell>
                                 <TableCell align="right">{row.span}</TableCell>
                                 <TableCell align="left" className="context">
-                                    <Highlighter
-                                    highlightClassName="highlighted"
-                                    searchWords={[highlightText]}
-                                    autoEscape={true}
-                                    textToHighlight={row.payload.text}
-                                    />
-                                    </TableCell>
+                                    {row.payload.text}
+                                    {/* <Highlighter
+                                        highlightClassName="highlighted"
+                                        searchWords={[highlightText]}
+                                        autoEscape={true}
+                                        textToHighlight={row.payload.text}
+                                    /> */}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

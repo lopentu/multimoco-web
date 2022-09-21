@@ -12,7 +12,7 @@ import Searchbar from '../components/navbar';
 import VideoJS from '../components/videojs';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import videojs from 'video.js';
+import videojs, { VideoJsPlayer } from 'video.js';
 
 export async function getServerSideProps(context: any) {
   try {
@@ -22,7 +22,8 @@ export async function getServerSideProps(context: any) {
     const { query } = context
     console.log(query.query);
     // const searchResults = await db.collection("aligned_utt").find({ "payload.text": { $regex: `${query}`, $options: "i"} }).limit(2).toArray();
-    const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(50).toArray();
+    const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(100).toArray();
+    // const searchResults = await db.collection("aligned_utt").distinct("name");
     console.log(searchResults);
 
     // `await clientPromise` will use the default database passed in the MONGODB_URI
@@ -55,21 +56,22 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
   const [queryText, setQueryText] = useState("");
   const [handSelect, setHandSelect] = useState("");
   const [soundSelect, setSoundSelect] = useState("");
+  // const [selectedVideo, setSelectedVideo] = useState("https://storage.googleapis.com/multimoco/selected/h264/c5000-2109071858.mp4");
 
-  const playerRef = React.useRef(null);
+  const playerRef: React.MutableRefObject<VideoJsPlayer | null> = React.useRef(null);
   const videoJsOptions = {
     autoplay: true,
     controls: true,
     responsive: true,
     preload: 'metadata',
     fluid: true,
-    sources: [{
-      src: 'https://storage.googleapis.com/multimoco/selected/h264/c5000-2109071858.mp4',
-      type: 'video/mp4'
-    }]
+    // sources: [{
+    //   src: '',
+    //   type: 'video/mp4'
+    // }]
   };
 
-  const handlePlayerReady = (player) => {
+  const handlePlayerReady = (player: VideoJsPlayer) => {
     playerRef.current = player;
 
     // You can handle player events here, for example:
@@ -113,7 +115,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
       </Head>
 
 
-      <Stack spacing={3}>
+      <Stack spacing={5}>
         <Searchbar />
         <section className="features-1"
           // style={{ overflow: "visible", minHeight: "100vh", overflowY: "scroll" }}>
@@ -143,9 +145,6 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                     required
                   />
                 </Grid2>
-                {/* <Grid2 xs={4}>
-                <Button size="large" variant="outlined">搜尋</Button>
-              </Grid2> */}
               </Grid2>
             </form>
             <Grid2
@@ -195,12 +194,10 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
               <Grid2 mdOffset={2} xs={12} md={8} display="flex" justifyContent="center" alignContent="center">
                 <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
               </Grid2>
+              <Grid2 xs={12}>
+                <CorpusResult highlightText={highlightText} searchResults={searchResults} player={playerRef} />
+              </Grid2>
             </Grid2>
-            <div className="row justify-content-center">
-              <div className="col-lg-12 justify-content-center">
-                <CorpusResult highlightText={highlightText} searchResults={searchResults} />
-              </div>
-            </div>
           </Container>
         </section>
       </Stack>
