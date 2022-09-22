@@ -13,6 +13,9 @@ import VideoJS from '../components/videojs';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import videojs, { VideoJsPlayer } from 'video.js';
+import { SearchResults } from '../components/corpus_results';
+
+
 
 export async function getServerSideProps(context: any) {
   try {
@@ -21,10 +24,53 @@ export async function getServerSideProps(context: any) {
 
     const { query } = context
     console.log(query.query);
-    // const searchResults = await db.collection("aligned_utt").find({ "payload.text": { $regex: `${query}`, $options: "i"} }).limit(2).toArray();
-    const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(100).toArray();
-    // const searchResults = await db.collection("aligned_utt").distinct("name");
-    console.log(searchResults);
+    // const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(100).toArray();
+    const searchResults: SearchResults = {}
+    const alignedUtt = await db.collection("aligned_utt").aggregate([
+      { "$match": { "payload.text": new RegExp(query.query, "i") } },
+      {
+        "$group": {
+          "_id": "$name",
+          "aligned_utt": {
+            "$push": "$$ROOT",
+          },
+        }
+      },
+      {
+        "$sort": {
+          "aligned_utt.offset": 1
+        }
+      },
+    ]).toArray()
+    const ocrBlocks = await db.collection("ocr_blocks").aggregate([
+      { "$match": { "payload.text": new RegExp(query.query, "i") } },
+      {
+        "$group": {
+          "_id": "$name",
+          "ocr_blocks": {
+            "$push": "$$ROOT",
+          },
+        }
+      },
+      {
+        "$sort": {
+          "ocr_blocks.offset": 1
+        }
+      },
+    ]).toArray()
+
+    alignedUtt.forEach((elem) => {
+      searchResults[elem._id] = { aligned_utt: elem['aligned_utt'] }
+    })
+    ocrBlocks.forEach((elem) => {
+      if (!(elem._id in searchResults)) {
+        searchResults[elem._id] = { ocr_blocks: elem["ocr_blocks"] }
+      } else {
+        searchResults[elem._id]["ocr_blocks"] = elem["ocr_blocks"]
+      }
+    })
+
+    console.log(JSON.stringify(searchResults))
 
     // `await clientPromise` will use the default database passed in the MONGODB_URI
     // However you can use another database (e.g. myDatabase) by replacing the `await clientPromise` with the following code:
@@ -64,6 +110,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
     controls: true,
     responsive: true,
     preload: 'metadata',
+    playbackRates: [0.5, 1, 1.5, 2],
     fluid: true,
     // sources: [{
     //   src: '',
