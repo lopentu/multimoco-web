@@ -1,6 +1,8 @@
 import React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
-// import { CssBaseline } from "@nextui-org/react";
+import { Stack } from '@mui/material';
+import Searchbar from '../components/navbar';
+import Footer from '../components/footer';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -46,8 +48,12 @@ class MyDocument extends Document {
           <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet" />
         </Head>
         <body>
-          <Main />
-          <NextScript />
+          <Stack spacing={5}>
+            <Searchbar />
+            <Main />
+            <NextScript />
+          </Stack>
+          <Footer />
         </body>
       </Html>
     )

@@ -162,8 +162,6 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
       </Head>
 
 
-      <Stack spacing={5}>
-        <Searchbar />
         <section className="features-1"
           // style={{ overflow: "visible", minHeight: "100vh", overflowY: "scroll" }}>
           style={{ minHeight: "100vh", }}>
@@ -247,7 +245,6 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
             </Grid2>
           </Container>
         </section>
-      </Stack>
     </>
   )
 }
