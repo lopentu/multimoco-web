@@ -7,7 +7,7 @@ import ntulogo from '../public/images/ntulogo.png';
 export default function Footer() {
   return (
     <MDBFooter bgColor='light' className='text-center text-lg-start text-muted' style={{ marginTop: "5em", paddingTop: "1em" }}>
-      {/* <section className='d-flex justify-content-center justify-content-lg-between p-4 border-bottom'> */}
+      <section className='d-flex justify-content-center justify-content-lg-between p-4 border-bottom'>
 
       {/* <Container maxWidth="xl"> */}
       {/* <div>
@@ -31,7 +31,7 @@ export default function Footer() {
             </a> */}
       {/* </div> */}
       {/* </Container> */}
-      {/* </section> */}
+      </section>
 
       <section className=''>
         <MDBContainer className='text-center text-md-start mt-5'>

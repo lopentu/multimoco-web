@@ -85,7 +85,8 @@ function Row(props: { row: { aligned_utt?: AlignedUtt[], ocr_blocks?: OcrBlock[]
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
+        {/* <TableCell></TableCell> */}
+        <TableCell component="th" scope="row" align="center">
           {name}
         </TableCell>
       </TableRow>
@@ -140,8 +141,8 @@ function Row(props: { row: { aligned_utt?: AlignedUtt[], ocr_blocks?: OcrBlock[]
                   <TableHead>
                     <TableRow>
                       <TableCell align="right" sx={{ width: 1 / 10 }}>Start Time</TableCell>
-                      <TableCell align="right" sx={{ width: 1 / 10 }}>Duration</TableCell>
-                      <TableCell align="left" sx={{ width: 8 / 10 }}>Text</TableCell>
+                      <TableCell align="right" sx={{ width: 2 / 10 }}>Duration</TableCell>
+                      <TableCell align="left" sx={{ width: 7 / 10 }}>Text</TableCell>
                       <TableCell />
                     </TableRow>
                   </TableHead>
@@ -187,8 +188,9 @@ export default function CorpusResult({ highlightText, searchResults, player }: C
         <Table size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell colSpan={4}>Name</TableCell>
+              <TableCell sx={{width: 1/10}}>#</TableCell>
+              <TableCell sx={{width: 2/10}}></TableCell>
+              <TableCell sx={{width: 7/10}} align="center" >Name</TableCell>
               {/* <TableCell align="right">Offset</TableCell>
               <TableCell align="right">Span</TableCell>
               <TableCell align="left">Text</TableCell> */}
