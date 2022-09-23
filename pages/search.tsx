@@ -29,6 +29,11 @@ export async function getServerSideProps(context: any) {
     const alignedUtt = await db.collection("aligned_utt").aggregate([
       { "$match": { "payload.text": new RegExp(query.query, "i") } },
       {
+        "$sort": {
+          "offset": 1
+        }
+      },
+      {
         "$group": {
           "_id": "$name",
           "aligned_utt": {
@@ -36,25 +41,20 @@ export async function getServerSideProps(context: any) {
           },
         }
       },
-      {
-        "$sort": {
-          "aligned_utt.offset": 1
-        }
-      },
     ]).toArray()
     const ocrBlocks = await db.collection("ocr_blocks").aggregate([
       { "$match": { "payload.text": new RegExp(query.query, "i") } },
+      {
+        "$sort": {
+          "offset": 1
+        }
+      },
       {
         "$group": {
           "_id": "$name",
           "ocr_blocks": {
             "$push": "$$ROOT",
           },
-        }
-      },
-      {
-        "$sort": {
-          "ocr_blocks.offset": 1
         }
       },
     ]).toArray()
