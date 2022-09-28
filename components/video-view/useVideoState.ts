@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
-interface IVideoState {
+export interface IVideoState {
   isPlaying: boolean
   isMuted: boolean  
   currentTime: number
@@ -8,20 +8,26 @@ interface IVideoState {
   volume: number
 }
 
-export default function useVideoState(video: HTMLVideoElement): 
-  [IVideoState, (video: HTMLVideoElement)=>IVideoState]{
-      
-  let videoState: IVideoState = stateSetter(video);
+export default function useVideoState(video: HTMLVideoElement|null): 
+  [IVideoState, (video: HTMLVideoElement)=>void]{
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(100);
 
-  function stateSetter(video: HTMLVideoElement) {
+  let videoState: IVideoState = {
+    isPlaying, isMuted,
+    currentTime, duration,
+    volume
+  };
 
-    return {
-      isPlaying: !video.paused,
-      isMuted: video.muted,
-      currentTime: video.currentTime,
-      duration: video.duration,
-      volume: video.volume
-    }
+  function stateSetter(video: HTMLVideoElement) {        
+      setIsPlaying(!video.paused);
+      setIsMuted(video.muted);
+      setCurrentTime(video.currentTime);
+      setDuration(video.duration);
+      setVolume(video.volume);
   }
 
   return [videoState, stateSetter]

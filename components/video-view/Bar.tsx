@@ -5,38 +5,26 @@ import TimeCounter from './TimeCounter'
 import ProgressBar from './ProgressBar'
 import MuteUnMuteBtn from './MuteUnMuteBtn'
 import VolumeBar from './VolumeBar'
-import useVideoState from './useVideoState'
+import {IVideoState} from './useVideoState'
+import VideoControl from './videoControl'
 
 interface BarProps {
   styles: { [name: string]: any },
-  video: HTMLVideoElement
+  videoState: IVideoState
+  videoCtrl: VideoControl
 }
 
-function Bar(props: BarProps) {
-  const [videoState, setVideoState] = useVideoState(props.video);  
-
-  function playPauseListener() {
-    props.video && setVideoState(props.video);
-  }
-
-  function seekListener(offset: number) {
-
-  }
-
-  function toggleMuteListener() {
-
-  }
-
-  function volumeChangeListener(volume: number) {
-
-  }
+function Bar(props: BarProps) {  
+  
+  const videoState = props.videoState;
+  const ctrl = props.videoCtrl;
 
   return (
     <div style={props.styles.barContainer}>
       <PlayPauseBtn
         isPlaying={videoState.isPlaying}
         styles={props.styles}
-        onPlayPause={playPauseListener}
+        onPlayPause={()=>ctrl.playPause()}
       />
       <TimeCounter
         currentTime={videoState.currentTime}
@@ -46,17 +34,17 @@ function Bar(props: BarProps) {
       <ProgressBar
         currentTime={videoState.currentTime}
         duration={videoState.duration}
-        onSeek={seekListener}
+        onSeek={(offset)=>ctrl.seek(offset)}
         styles={props.styles}
       />
       <MuteUnMuteBtn
         isMuted={videoState.isMuted}
         styles={props.styles}
-        onToggleMute={toggleMuteListener}
+        onToggleMute={()=>ctrl.toggleMute()}
       />
       <VolumeBar
         volume={videoState.volume}
-        onVolumeChange={volumeChangeListener}
+        onVolumeChange={(vol)=>ctrl.changeVolume(vol)}
         styles={props.styles}
       />
     </div>
