@@ -7,11 +7,6 @@ interface ProgressBarProps{
   styles: {[name: string]: any}
 }
 
-// this.props.video.addEventListener('timeupdate', this.timeUpdateListener, false)
-// video.currentTime = percent * video.duration;
-// if (video.paused || video.ended) {
-//   video.play().then(() => video.pause())
-// }
 export default function ProgressBar(props: ProgressBarProps) {
 
   function seek(e: React.MouseEvent<HTMLProgressElement>) {

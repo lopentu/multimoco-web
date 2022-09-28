@@ -6,7 +6,6 @@ interface VolumeBarProps {
   styles: {[name: string]: any}  
 }
 
-// video.volume = percent
 export default function VolumeBar(props: VolumeBarProps) {
 
 
