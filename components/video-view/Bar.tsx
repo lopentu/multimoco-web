@@ -37,6 +37,7 @@ function Bar(props: BarProps) {
         onSeek={(offset)=>ctrl.seek(offset)}
         styles={props.styles}
       />
+      <div style={{flexGrow: 1}}/>
       <MuteUnMuteBtn
         isMuted={videoState.isMuted}
         styles={props.styles}

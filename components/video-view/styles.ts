@@ -13,6 +13,7 @@ export const style: {[name: string]: CSSProperties} = {
   barContainer: {
       display: 'flex',
       backgroundColor: '#d0d0d0',
+      justifyContent: "space-between",
       position: 'relative',
       top: '-4px',
       width: '100%',

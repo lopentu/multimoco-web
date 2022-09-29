@@ -1,7 +1,10 @@
 // Basing on: https://github.com/chomamateusz/react-canvas-video/blob/master/src
 
+import { Grid } from "@mui/material";
 import { CSSProperties, useEffect, useRef } from "react"
 import Bar from './Bar'
+import OverlayDataProvider from "./overlay-data-provider";
+import OverlayPainter from "./overlay-painter";
 import styles from './styles';
 import useVideoState from "./useVideoState";
 import VideoControl from "./videoControl";
@@ -14,13 +17,20 @@ export default function VideoView(props: VideoViewProp) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const onPlayRef = useRef<(() => void) | null>(null);
-  const [videoState, setVideoState] = useVideoState(videoRef.current);  
+  const [videoState, setVideoState] = useVideoState(videoRef.current);
   const videoControl = new VideoControl(videoRef.current, setVideoState);
+  const dataProvider = new OverlayDataProvider();
+  const overlayPainter = new OverlayPainter();
 
   useEffect(() => {
     startPlayingInCanvas({ ratio: 640 / 360, autoplay: false });
     videoControl.setVideo(videoRef.current);
-
+    const pathTokens = new URL(props.video_url).pathname.split("/")
+    if (pathTokens.length > 1) {
+      const videoName = pathTokens.at(pathTokens.length - 1);
+      dataProvider.setVideoName(videoName as string);
+      dataProvider.loadData();
+    }
   }, [props.video_url]);
 
   function startPlayingInCanvas(
@@ -34,12 +44,13 @@ export default function VideoView(props: VideoViewProp) {
     if (!context) return;
     cvs.width = cvs.clientWidth;
     cvs.height = cvs.clientWidth / ratio;
+    overlayPainter.setContext(context, cvs.width, cvs.height);
     onPlayRef.current = () => {
       draw(video, context, cvs.width, cvs.height);
     }
 
-    const onTimeUpdate = ()=>{
-      if (videoRef.current){
+    const onTimeUpdate = () => {
+      if (videoRef.current) {
         setVideoState(videoRef.current);
       }
     }
@@ -52,10 +63,10 @@ export default function VideoView(props: VideoViewProp) {
   function draw(video: HTMLVideoElement,
     context: CanvasRenderingContext2D,
     canvasWidth: number, canvasHeight: number) {
-    context.drawImage(video, 0, 0, canvasWidth, canvasHeight)
-    drawText(context, video, canvasWidth, canvasHeight)
+    context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
+    overlayPainter.paint();
     if (!video.paused && !video.ended)
-      setTimeout(draw, 1000 / 24, video, context, canvasWidth, canvasHeight);
+      requestAnimationFrame(() => draw(video, context, canvasWidth, canvasHeight));
   }
 
   function drawText(context: CanvasRenderingContext2D,
@@ -79,23 +90,27 @@ export default function VideoView(props: VideoViewProp) {
     combinedStyles[key] = { ...styles[key] }
   })
   return (
-    <div>
-      <video
-        ref={videoRef}
-        src={props.video_url}
-        style={{ display: 'none' }}></video>
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: '50%',
-          ...combinedStyles.canvas
-        }}
-        onClick={onPlayPauseHandler}
-      ></canvas>
-      <Bar
-        styles={combinedStyles}
-        videoState={videoState}
-        videoCtrl={videoControl}
-      />      
-    </div>)
+    <Grid container>
+      <Grid item xs={2}></Grid>
+      <Grid item xs={8}>
+        <video
+          ref={videoRef}
+          src={props.video_url}
+          style={{ display: 'none' }}></video>
+        <canvas
+          ref={canvasRef}
+          style={{
+            width: '100%',
+            ...combinedStyles.canvas
+          }}
+          onClick={onPlayPauseHandler}
+        ></canvas>
+        <Bar
+          styles={combinedStyles}
+          videoState={videoState}
+          videoCtrl={videoControl}
+        />
+      </Grid>
+
+    </Grid>)
 }
