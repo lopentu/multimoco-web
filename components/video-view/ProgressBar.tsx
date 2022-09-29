@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component, CSSProperties } from 'react'
 
 interface ProgressBarProps{
   currentTime: number
   duration: number
   onSeek: (offset: number)=>void
-  styles: {[name: string]: any}
+  styles: {[name: string]: CSSProperties}
 }
 
 export default function ProgressBar(props: ProgressBarProps) {
@@ -21,7 +21,8 @@ export default function ProgressBar(props: ProgressBarProps) {
       onClick={seek}      
       max='100'
       value={props.currentTime ? (props.currentTime / props.duration) * 100 : 0}
-      style={props.styles}
+      style={{
+        marginLeft: "20px", alignSelf: 'center'}}
     ></progress>
   )
 
