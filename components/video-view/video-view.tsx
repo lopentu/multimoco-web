@@ -13,14 +13,16 @@ interface VideoViewProp {
   video_url: string
 }
 
+const dataProvider = new OverlayDataProvider();
+const overlayPainter = new OverlayPainter();
+
 export default function VideoView(props: VideoViewProp) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const onPlayRef = useRef<(() => void) | null>(null);
+  const lastRenderEpoch = useRef(0);    // for fps
   const [videoState, setVideoState] = useVideoState(videoRef.current);
   const videoControl = new VideoControl(videoRef.current, setVideoState);
-  const dataProvider = new OverlayDataProvider();
-  const overlayPainter = new OverlayPainter();
 
   useEffect(() => {
     startPlayingInCanvas({ ratio: 640 / 360, autoplay: false });
@@ -63,8 +65,17 @@ export default function VideoView(props: VideoViewProp) {
   function draw(video: HTMLVideoElement,
     context: CanvasRenderingContext2D,
     canvasWidth: number, canvasHeight: number) {
+
+    const overlayData = dataProvider.getData(video.currentTime);
+
+    const currentEpoch = Date.now();
+    const delta = currentEpoch - lastRenderEpoch.current;
+    const delta_s = Math.max(delta / 1000, .001)
+    const fps = ~~(1 / delta_s * 100) / 100;
+    lastRenderEpoch.current = currentEpoch;
     context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
-    overlayPainter.paint();
+    overlayPainter.paint(overlayData, fps);
+
     if (!video.paused && !video.ended)
       requestAnimationFrame(() => draw(video, context, canvasWidth, canvasHeight));
   }
@@ -89,28 +100,26 @@ export default function VideoView(props: VideoViewProp) {
   Object.keys(styles).forEach(key => {
     combinedStyles[key] = { ...styles[key] }
   })
-  return (
-    <Grid container>
-      <Grid item xs={2}></Grid>
-      <Grid item xs={8}>
-        <video
-          ref={videoRef}
-          src={props.video_url}
-          style={{ display: 'none' }}></video>
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: '100%',
-            ...combinedStyles.canvas
-          }}
-          onClick={onPlayPauseHandler}
-        ></canvas>
-        <Bar
-          styles={combinedStyles}
-          videoState={videoState}
-          videoCtrl={videoControl}
-        />
-      </Grid>
 
-    </Grid>)
+  return (
+    <>
+      <video
+        ref={videoRef}
+        src={props.video_url}
+        style={{ display: 'none' }}></video>
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: '100%',
+          ...combinedStyles.canvas
+        }}
+        onClick={onPlayPauseHandler}
+      ></canvas>
+      <Bar
+        styles={combinedStyles}
+        videoState={videoState}
+        videoCtrl={videoControl}
+      />
+    </>
+  )
 }
