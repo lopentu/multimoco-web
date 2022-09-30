@@ -22,16 +22,17 @@ export default function parseVTT(vtt: string): VTTData {
     }
 
   }
+  
   return vtt_list;
 }
 
 function to_seconds(time_str: string) {
   const parts = time_str.split(".")
   const ms = parseInt(parts[1]) * .001;
-  const hms = parts[0].split(":");
+  const hms = parts[0].split(":").reverse();
   let seconds = 0;
-  for (let i = hms.length - 1; i >= 0; i--) {
-    seconds += parseInt(hms[i]) * (i * 60);
+  for (let i = 0; i < hms.length; i++) {
+    seconds += parseInt(hms[i]) * (60**i);
   }
   return seconds + ms;
 }
