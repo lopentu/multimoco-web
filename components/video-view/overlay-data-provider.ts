@@ -42,8 +42,10 @@ export default class OverlayDataProvider {
   loadData() {
     this._reset_data();
     const load_promises: Promise<any>[] = [
-      this.getOCR(), this.getPhones(), this.getVTT(), this.getWave(), this.getSpeechEvents()
+      this.getOCR(), this.getPhones(), this.getVTT(), 
+      this.getWave(), this.getSpeechEvents()
     ];
+
     Promise.allSettled(load_promises).then((results: PromiseSettledResult<any>[]) => {
       const ocr_result = results[0];
       if (ocr_result.status == "fulfilled") {
@@ -104,6 +106,10 @@ export default class OverlayDataProvider {
       const wav = this.wave.slice(start_sec * WAV_FR, end_sec * WAV_FR);
       overlayData.wave = wav;
       overlayData.wave_span = [start_sec, end_sec];
+      overlayData.wave_fr = WAV_FR;
+    } else {
+      overlayData.wave = new Int8Array(0);
+      overlayData.wave_span = [0, 0];
       overlayData.wave_fr = WAV_FR;
     }
 
