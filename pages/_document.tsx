@@ -26,7 +26,7 @@ class MyDocument extends Document {
 
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-          <link href="css/fontawesome.min.css" rel="stylesheet" />
+          {/* <link href="css/fontawesome.min.css" rel="stylesheet" /> */}
           {/* <link href="css/regular.min.css" rel="stylesheet" />
           <link href="css/solid.min.css" rel="stylesheet" /> */}
           <link

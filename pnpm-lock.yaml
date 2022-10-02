@@ -7,6 +7,7 @@ specifiers:
   '@mui/icons-material': ^5.10.3
   '@mui/material': ^5.10.5
   '@mui/system': ^5.4.1
+  '@mui/utils': ^5.10.6
   '@mui/x-data-grid': ^5.17.3
   '@nextui-org/react': 1.0.0-beta.10
   '@types/node': 18.7.18
@@ -31,6 +32,7 @@ dependencies:
   '@mui/icons-material': 5.10.3_5evnxlqsqnxmrwqqtdxt2buelq
   '@mui/material': 5.10.5_af5ln35zuaotaffazii6n6bke4
   '@mui/system': 5.10.5_4mv32nu4vciambuqqzuu4gtvj4
+  '@mui/utils': 5.10.6_react@18.2.0
   '@mui/x-data-grid': 5.17.3_w2wnl2oz2yhwwpp65h2bpve364
   '@nextui-org/react': 1.0.0-beta.10_biqbaboplfbrettd7655fr4n2y
   mdb-react-ui-kit: 4.2.0_6hrpdt74nuubt2lijsfizev3cu
@@ -562,7 +564,7 @@ packages:
       '@babel/runtime': 7.19.0
       '@emotion/is-prop-valid': 1.2.0
       '@mui/types': 7.2.0_@types+react@18.0.20
-      '@mui/utils': 5.10.3_react@18.2.0
+      '@mui/utils': 5.10.6_react@18.2.0
       '@popperjs/core': 2.11.6
       '@types/react': 18.0.20
       clsx: 1.2.1
@@ -617,7 +619,7 @@ packages:
       '@mui/core-downloads-tracker': 5.10.5
       '@mui/system': 5.10.5_4mv32nu4vciambuqqzuu4gtvj4
       '@mui/types': 7.2.0_@types+react@18.0.20
-      '@mui/utils': 5.10.3_react@18.2.0
+      '@mui/utils': 5.10.6_react@18.2.0
       '@types/react': 18.0.20
       '@types/react-transition-group': 4.4.5
       clsx: 1.2.1
@@ -640,7 +642,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.19.0
-      '@mui/utils': 5.10.3_react@18.2.0
+      '@mui/utils': 5.10.6_react@18.2.0
       '@types/react': 18.0.20
       prop-types: 15.8.1
       react: 18.2.0
@@ -690,7 +692,7 @@ packages:
       '@mui/private-theming': 5.10.3_w5j4k42lgipnm43s3brx6h3c34
       '@mui/styled-engine': 5.10.5_hfzxdiydbrbhhfpkwuv3jhvwmq
       '@mui/types': 7.2.0_@types+react@18.0.20
-      '@mui/utils': 5.10.3_react@18.2.0
+      '@mui/utils': 5.10.6_react@18.2.0
       '@types/react': 18.0.20
       clsx: 1.2.1
       csstype: 3.1.1
@@ -709,8 +711,8 @@ packages:
       '@types/react': 18.0.20
     dev: false
 
-  /@mui/utils/5.10.3_react@18.2.0:
-    resolution: {integrity: sha512-4jXMDPfx6bpMVuheLaOpKTjpzw39ogAZLeaLj5+RJec3E37/hAZMYjURfblLfTWMMoGoqkY03mNsZaEwNobBow==}
+  /@mui/utils/5.10.6_react@18.2.0:
+    resolution: {integrity: sha512-g0Qs8xN/MW2M3fLL8197h5J2VB9U+49fLlnKKqC6zy/yus5cZwdT+Gwec+wUMxgwQoxMDn+J8oDWAn28kEOR/Q==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0
@@ -735,7 +737,7 @@ packages:
       '@babel/runtime': 7.19.0
       '@mui/material': 5.10.5_af5ln35zuaotaffazii6n6bke4
       '@mui/system': 5.10.5_4mv32nu4vciambuqqzuu4gtvj4
-      '@mui/utils': 5.10.3_react@18.2.0
+      '@mui/utils': 5.10.6_react@18.2.0
       clsx: 1.2.1
       prop-types: 15.8.1
       react: 18.2.0

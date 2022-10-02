@@ -15,6 +15,7 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.5",
     "@mui/system": "^5.4.1",
+    "@mui/utils": "^5.10.6",
     "@mui/x-data-grid": "^5.17.3",
     "@nextui-org/react": "1.0.0-beta.10",
     "mdb-react-ui-kit": "^4.2.0",

@@ -1,22 +1,30 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
+  /* padding: 0;
+  margin: 0; */
   font-family: Roboto, Helvetica, Arial, sans-serif;
   /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
 }
+.MuiTablePagination-toolbar * {
+  /* padding-top: 5px !important; */
+  margin-bottom: 0;
+  /* display: flex !important;
+  align-content: center !important;
+  justify-content: center !important; */
+  /* flex-direction: column; */
+}
 
-a {
+/* a {
   color: inherit;
   text-decoration: none;
-}
+} */
 
-* {
+/* * {
   box-sizing: border-box;
-}
+} */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
@@ -24,4 +32,4 @@ a {
     color: white;
     background: black;
   }
-}
+} */

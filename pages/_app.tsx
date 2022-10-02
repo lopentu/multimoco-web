@@ -1,3 +1,4 @@
+import '../styles/globals.css';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'
 // import '../styles/globals.css';
 // import { createTheme, NextUIProvider } from '@nextui-org/react';
