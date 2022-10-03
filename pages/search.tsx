@@ -138,6 +138,8 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
   const [queryText, setQueryText] = useState("");
   const [handSelect, setHandSelect] = useState("");
   const [soundSelect, setSoundSelect] = useState("");
+  const [results, setResults] = useState(JSON.parse(searchResults));
+  // console.log(results)
   // console.log(JSON.parse(searchResults))
   // const [selectedVideo, setSelectedVideo] = useState("https://storage.googleapis.com/multimoco/selected/h264/c5000-2109071858.mp4");
 
@@ -292,7 +294,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
               <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
             </Grid2>
             <Grid2 xs={12}>
-              <CorpusResult highlightText={highlightText} searchResults={searchResults} player={playerRef} />
+              <CorpusResult highlightText={highlightText} results={results} setResults={setResults} player={playerRef} queryText={queryText} />
             </Grid2>
           </Grid2>
         </Container>
