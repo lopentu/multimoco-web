@@ -49,29 +49,31 @@ export default function CorpusTable({ searchResults, searchType, player }) {
   const [pageSize, setPageSize] = React.useState<number>(25);
   return (
     <Box sx={{ width: '100%' }}>
-      <DataGrid
-        getRowId={(row) => row['_id']}
-        rows={searchResults}
-        columns={columns}
-        pageSize={pageSize}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        rowsPerPageOptions={[5, 10, 25]}
-        // checkboxSelection
-        disableSelectionOnClick
-        autoHeight
-        density='compact'
-        pagination
-        // getRowHeight={() => "auto"}
-        onRowClick={(params: GridRowParams) => {
-          let url = `https://storage.googleapis.com/multimoco/selected/h264/${params.row.name}.mp4`
-          console.log(url)
-          if (url !== player.current.src()) {
-            player.current.src({ type: 'video/mp4', src: url })
-          }
-          player.current.currentTime(params.row.offset / 1000)
-        }}
-      // experimentalFeatures={{ newEditingApi: true }}
-      />
+      {searchResults &&
+        <DataGrid
+          getRowId={(row) => row['_id']}
+          rows={searchResults}
+          columns={columns}
+          pageSize={pageSize}
+          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+          rowsPerPageOptions={[5, 10, 25]}
+          // checkboxSelection
+          disableSelectionOnClick
+          autoHeight
+          density='compact'
+          pagination
+          // getRowHeight={() => "auto"}
+          onRowClick={(params: GridRowParams) => {
+            let url = `https://storage.googleapis.com/multimoco/selected/h264/${params.row.name}.mp4`
+            console.log(url)
+            if (url !== player.current.src()) {
+              player.current.src({ type: 'video/mp4', src: url })
+            }
+            player.current.currentTime(params.row.offset / 1000)
+          }}
+        // experimentalFeatures={{ newEditingApi: true }}
+        />
+      }
     </Box>
   );
 }

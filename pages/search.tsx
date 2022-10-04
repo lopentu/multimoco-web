@@ -25,8 +25,8 @@ export async function getServerSideProps(context: any) {
     const db = client.db("multimoco")
 
     const { query } = context
-    // const searchType = query.searchType
-    const searchType = "asr"
+    const searchType = query.searchType
+    // const searchType = "asr"
     let results
     console.log(query.query);
     console.log(query.query);
@@ -136,6 +136,7 @@ type SearchPageProps = {
 
 const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
   const [queryText, setQueryText] = useState("");
+  const [searchType, setSearchType] = useState("");
   const [handSelect, setHandSelect] = useState("");
   const [soundSelect, setSoundSelect] = useState("");
   const [results, setResults] = useState(JSON.parse(searchResults));
@@ -188,6 +189,10 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
       highlightText = q
       setQueryText(q)
     }
+    console.log(getParams)
+    if (getParams.searchType) {
+      setSearchType(getParams.searchType)
+    }
   }, [])
 
 
@@ -225,67 +230,68 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                   value={queryText}
                   onChange={handleChange}
                   InputLabelProps={{ shrink: true }}
-                  InputProps={{ endAdornment: <Button variant="contained" disableElevation><SearchIcon /></Button> }}
+                  InputProps={{ endAdornment: <Button type="submit" variant="contained" disableElevation><SearchIcon /></Button> }}
                   required
                 />
               </Grid2>
             </Grid2>
+            <Grid2
+              container
+              spacing={2}
+              justifyContent="left"
+              alignItems="center"
+            >
+              <Grid2 xs={12} md={3}>
+                <FormControl>
+                  <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    value={searchType}
+                    onChange={(e) => setSearchType(e.target.value)}
+                    name="searchType"
+                  >
+                    <FormControlLabel value="asr" control={<Radio />} label="ASR" />
+                    <FormControlLabel value="ocr" control={<Radio />} label="OCR" />
+                    <FormControlLabel value="blank" control={<Radio />} label="Blank" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid2>
+              <Grid2 xs={6} lg={1}>
+                <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
+                  <InputLabel id="hand-select-label">手勢</InputLabel>
+                  <Select
+                    labelId="hand-select-label"
+                    id="hand-select"
+                    value={handSelect}
+                    label="手勢"
+                    onChange={(e) => setHandSelect(e.target.value)}
+                    autoWidth
+                  >
+                    <MenuItem value="hand-moving">手揮動</MenuItem>
+                    <MenuItem value="hand-palm-visible">手掌可見</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid2>
+
+              <Grid2 xs={6} lg={1}>
+                <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
+                  <InputLabel id="sound-select-label">語音</InputLabel>
+                  <Select
+                    labelId="sound-select-label"
+                    id="sound-select"
+                    value={soundSelect}
+                    label="語音"
+                    onChange={(e) => setSoundSelect(e.target.value)}
+                    autoWidth
+                  >
+                    <MenuItem value="sound-overlapping">語音重疊</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid2>
+            </Grid2>
           </form>
-          <Grid2
-            container
-            spacing={2}
-            justifyContent="left"
-            alignItems="center"
-          >
-            <Grid2 sm={12} lg={3}>
-              <FormControl>
-                <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="female"
-                  name="searchType"
-                >
-                  <FormControlLabel value="asr" control={<Radio />} label="ASR" />
-                  <FormControlLabel value="utt" control={<Radio />} label="OCR" />
-                  <FormControlLabel value="blank" control={<Radio />} label="Blank" />
-                </RadioGroup>
-              </FormControl>
-            </Grid2>
-            <Grid2 sm={6} lg={1}>
-              <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-                <InputLabel id="hand-select-label">手勢</InputLabel>
-                <Select
-                  labelId="hand-select-label"
-                  id="hand-select"
-                  value={handSelect}
-                  label="手勢"
-                  onChange={(e) => setHandSelect(e.target.value)}
-                  autoWidth
-                >
-                  <MenuItem value="hand-moving">手揮動</MenuItem>
-                  <MenuItem value="hand-palm-visible">手掌可見</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid2>
 
-
-            <Grid2 sm={6} lg={1}>
-              <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-                <InputLabel id="sound-select-label">語音</InputLabel>
-                <Select
-                  labelId="sound-select-label"
-                  id="sound-select"
-                  value={soundSelect}
-                  label="語音"
-                  onChange={(e) => setSoundSelect(e.target.value)}
-                  autoWidth
-                >
-                  <MenuItem value="sound-overlapping">語音重疊</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid2>
-          </Grid2>
           <Grid2
             container
             spacing={5}
