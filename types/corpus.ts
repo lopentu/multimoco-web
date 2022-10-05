@@ -51,3 +51,12 @@ export interface CorpusResultProps {
   searchResults: string
   player: React.MutableRefObject<VideoJsPlayer>
 }
+
+export interface AnnotationSpan {
+  offset: number,
+  span: number,
+  text: string,
+  annotation: string
+}
+
+export type AnnotationSpans = AnnotationSpan[];
