@@ -4,18 +4,14 @@ type VideoStateSetterType = (video: HTMLVideoElement) => void;
 
 export default class VideoControl {
   private video: HTMLVideoElement | null = null;
-  videoStateSetter: VideoStateSetterType;
+  videoStateSetter: VideoStateSetterType = (_)=>{};
 
-  constructor(
-    video: HTMLVideoElement | null,
-    videoStateSetter: VideoStateSetterType) {
-    this.video = video;
-    this.videoStateSetter = videoStateSetter;
-  }
+  constructor() {    
+  }  
 
-  setVideo(elem: HTMLVideoElement|null) {
+  setVideo(elem: HTMLVideoElement|null, stateSetter: VideoStateSetterType) {
     this.video = elem;
-    console.log(elem);
+    this.videoStateSetter = stateSetter;    
   }
 
   playPause() {

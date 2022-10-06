@@ -1,6 +1,6 @@
-import { OcrBlock } from "../corpus_results";
 import { OverlayData } from "./overlay-data-provider";
 import { OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
+import VideoAnnotator from "./video-annotator";
 
 const SPEAKER_EV_COLOR: { [name: string]: string } = {
   "SPEAKER_00": "#AAFFFF",
@@ -10,14 +10,15 @@ const SPEAKER_EV_COLOR: { [name: string]: string } = {
 }
 export default class OverlayPainter {
   ctx: CanvasRenderingContext2D | null = null;
+  annot: VideoAnnotator = {} as VideoAnnotator;
   cvsWidth: number = 640;
   cvsHeight: number = 360;
   wave_vh: number = 50;
   toShowWave: boolean = true;
-  toShowOcr: boolean = true;
+  toShowOcr: boolean = true;  
 
-  constructor() {
-
+  constructor(annot: VideoAnnotator) {
+    this.annot = annot;
   }
 
   setContext(ctx: CanvasRenderingContext2D,
