@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties, useLayoutEffect, useRef } from 'react'
+import React, { CSSProperties, useRef } from 'react'
 
 interface ProgressBarProps {
   currentTime: number

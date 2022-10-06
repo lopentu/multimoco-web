@@ -2,12 +2,17 @@ import { OverlayData } from "./overlay-data-provider";
 import { OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
 import VideoAnnotator from "./video-annotator";
 
+export type Point = {x: number, y: number}
+export type RectBox = {x: number, y: number, width: number, height: number};
+
+
 const SPEAKER_EV_COLOR: { [name: string]: string } = {
   "SPEAKER_00": "#AAFFFF",
   "SPEAKER_01": "#AAAAFF",
   "SPEAKER_02": "#AACCCC",
   "OVERLAP": "#FFAAAA"
 }
+
 export default class OverlayPainter {
   ctx: CanvasRenderingContext2D | null = null;
   annot: VideoAnnotator = {} as VideoAnnotator;
@@ -32,6 +37,10 @@ export default class OverlayPainter {
   setOptions(options: { [key: string]: any }) {        
     this.toShowWave = options.toShowWave===undefined? true: options.toShowWave;
     this.toShowOcr = options.toShowOcr===undefined? true: options.toShowOcr;
+  }
+
+  notifyWaveArea(waveBox: RectBox){
+    this.annot.updateWaveArea(waveBox);
   }
 
   paint(overlayData: OverlayData, fps: number) {
@@ -99,8 +108,9 @@ export default class OverlayPainter {
       bl_y = this.cvsHeight - this.wave_vh - 5;
     } else {
       bl_y = this.cvsHeight - 5;
+      this.notifyWaveArea({x: 0, y: 0, width: vw, height: 0});
     }
-    
+        
     // const extent = this.ctx.measureText(text);
     this.ctx.fillStyle = "#333333AA";
     this.ctx.fillRect(0, bl_y - 20, vw, 25);
@@ -167,6 +177,9 @@ export default class OverlayPainter {
     const ctx = this.ctx;
 
     ctx.fillStyle = "#333333AA";
+    this.notifyWaveArea({
+      x: 0, y: this.cvsHeight-vh, 
+      width: vw, height: vh});
     ctx.fillRect(0, this.cvsHeight - vh, vw, vh);
 
     for (let phone_idx = 0; phone_idx < phones.length; phone_idx++) {

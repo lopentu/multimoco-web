@@ -55,6 +55,7 @@ export default function VideoView(props: VideoViewProp) {
     video.addEventListener('play', callbacks.onPlayHandler, false);
     video.addEventListener('canplay', callbacks.onPlayHandler, false);
     video.addEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
+    window.addEventListener('resize', callbacks.onResizeHandler, false);
     videoAnnot.setRedrawCallback(()=>requestAnimationFrame(render_frame));
     
     if (TO_AUTOPLAY){
@@ -64,6 +65,7 @@ export default function VideoView(props: VideoViewProp) {
       video.removeEventListener('play', callbacks.onPlayHandler, false);
       video.removeEventListener('canplay', callbacks.onPlayHandler, false);
       video.removeEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
+      window.removeEventListener('resize', callbacks.onResizeHandler, false);
     }
 
   }, [props.video_url]);
