@@ -15,7 +15,7 @@ export const style: {[name: string]: CSSProperties} = {
       backgroundColor: '#d0d0d0',
       justifyContent: "space-between",
       position: 'relative',
-      top: '-4px',
+      top: '0px',
       width: '100%',
       height: '40px'
   },

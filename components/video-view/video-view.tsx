@@ -53,12 +53,16 @@ export default function VideoView(props: VideoViewProp) {
     if (!callbacks || !video) return;
     
     video.addEventListener('play', callbacks.onPlayHandler, false);
+    video.addEventListener('canplay', callbacks.onPlayHandler, false);
     video.addEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
     videoAnnot.setRedrawCallback(()=>requestAnimationFrame(render_frame));
-
-    if (TO_AUTOPLAY) video.play();
+    
+    if (TO_AUTOPLAY){
+      video.play();
+    }
     return () => {
       video.removeEventListener('play', callbacks.onPlayHandler, false);
+      video.removeEventListener('canplay', callbacks.onPlayHandler, false);
       video.removeEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
     }
 
@@ -129,6 +133,7 @@ export default function VideoView(props: VideoViewProp) {
       const height = cvs.clientWidth / ASPECT_RATIO;
       // console.log(width, height);
       overlayPainter.setContext(context, width, height);
+      requestAnimationFrame(render_frame);
     }
 
     return { onPlayHandler, onTimeUpdateHandler, onResizeHandler };
@@ -140,7 +145,7 @@ export default function VideoView(props: VideoViewProp) {
 
     const overlayData = dataProvider.getData(video.currentTime);
     const cvs = canvasRef.current;
-    if (!cvs) return null;
+    if (!cvs) return null;    
     const canvasWidth = cvs.clientWidth;
     const canvasHeight = cvs.clientWidth / ASPECT_RATIO;        
     const toShowWave = overlayOptions.current.toShowWave;
@@ -156,8 +161,7 @@ export default function VideoView(props: VideoViewProp) {
       cvs.width = canvasWidth;
       cvs.height = canvasHeight;
       const context = cvs.getContext('2d');
-      if (!context) return null;
-      
+      if (!context) return null;      
       context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
       overlayPainter.setContext(context, canvasWidth, canvasHeight);
       overlayPainter.setOptions({ toShowOcr, toShowWave });
@@ -174,7 +178,10 @@ export default function VideoView(props: VideoViewProp) {
   })
 
   return (
-    <>
+    <div style={{
+      display: "flex",
+      flexDirection: "column"
+    }}>
       <video
         ref={videoRef}
         src={props.video_url}
@@ -194,6 +201,6 @@ export default function VideoView(props: VideoViewProp) {
         videoState={videoState}
         videoCtrl={videoControl}
       />
-    </>
+    </div>
   )
 }
