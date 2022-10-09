@@ -53,9 +53,12 @@ export interface CorpusResultProps {
   queryText: string
   searchType: string
   player: React.MutableRefObject<VideoJsPlayer>
+  setVideoUrl: React.Dispatch<React.SetStateAction<string>>
+  setSeekToSec: React.Dispatch<React.SetStateAction<number>>
 }
 
 export interface AnnotationSpan {
+  _id: string,
   name: string,
   offset: number,
   span: number,

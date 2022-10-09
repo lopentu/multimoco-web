@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider';
 import { useState } from 'react';
 
-export default function CorpusResult({ annotationSpans, setAnnotationSpans, player, queryText, searchType }: CorpusResultProps) {
+export default function CorpusResult({ annotationSpans, setAnnotationSpans, player, queryText, searchType, setVideoUrl, setSeekToSec }: CorpusResultProps) {
 
   function buildCsv(data) {
     // console.log(data);
@@ -75,8 +75,8 @@ export default function CorpusResult({ annotationSpans, setAnnotationSpans, play
               reader.onload = function (e) {
                 const text = e.target?.result;
                 const data = csvToArray(text)
-                console.log("Uploaded!")
-                console.log(data)
+                // console.log("Uploaded!")
+                // console.log(data)
                 setAnnotationSpans(annotationSpans);
                 // console.log(data)
               }
@@ -95,6 +95,8 @@ export default function CorpusResult({ annotationSpans, setAnnotationSpans, play
         annotationSpans={annotationSpans}
         searchType={searchType}
         player={player}
+        setVideoUrl={setVideoUrl}
+        setSeekToSec={setSeekToSec}
       />
     </>
 
