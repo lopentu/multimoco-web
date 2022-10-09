@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Input, Dropdown, Spacer } from "@nextui-org/react";
-import { TextField, Button, Select, InputLabel, FormControl, MenuItem, Container } from '@mui/material';
+import { TextField, Button, Select, InputLabel, FormControl, MenuItem, Container, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import CorpusResult from '../components/corpus_results';
 import clientPromise from '../lib/mongodb'
@@ -30,6 +30,10 @@ export async function getServerSideProps(context: any) {
     // console.log(query)
     if (searchType === undefined) {
       searchType = "asr"
+    }
+
+    if ((query.query === "") || (query.query === undefined)) {
+      return { props: { searchResults: JSON.stringify(null), searchT: "" } }
     }
     // const searchType = "asr"
     let results
@@ -107,11 +111,6 @@ export async function getServerSideProps(context: any) {
     })
 
     console.log(results?.slice(-5));
-
-    const searchResults = {
-      searchType: searchType[0],
-      results: results
-    }
 
     // alignedUtt.forEach((elem) => {
     //   // console.log(elem['video_meta'])
@@ -322,17 +321,23 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
               }
               {/* <VideoJS options={videoJsOptions} onReady={handlePlayerReady} /> */}
             </Grid2>
-            <Grid2 xs={12}>
-              <CorpusResult
-                annotationSpans={annotationSpans}
-                setAnnotationSpans={setAnnotationSpans}
-                player={playerRef}
-                queryText={queryText}
-                searchType={searchType}
-                setVideoUrl={setVideoUrl}
-                setSeekToSec={setSeekToSec}
-              />
-            </Grid2>
+            {annotationSpans ?
+              <Grid2 xs={12}>
+                <CorpusResult
+                  annotationSpans={annotationSpans}
+                  setAnnotationSpans={setAnnotationSpans}
+                  player={playerRef}
+                  queryText={queryText}
+                  searchType={searchType}
+                  setVideoUrl={setVideoUrl}
+                  setSeekToSec={setSeekToSec}
+                />
+              </Grid2>
+              :
+              <Grid2 xs={12} display="flex" justifyContent="center">
+                <Typography variant="h5">Please make a search!</Typography>
+              </Grid2>
+            }
           </Grid2>
         </Container>
       </section>
