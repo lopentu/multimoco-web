@@ -31,72 +31,92 @@
     <link rel="stylesheet" href="css/tiny-slider.css" />
     <link rel="stylesheet" href="css/aos.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
     <title>
       MultiMoco NTU&nbsp;|&nbsp;台大多媒體語料庫
     </title>
   </head>
+
   <body>
-    <div class="site-mobile-menu site-navbar-target">
-      <div class="site-mobile-menu-header">
-        <div class="site-mobile-menu-close">
-          <span class="icofont-close js-menu-toggle"></span>
-        </div>
-      </div>
-      <div class="site-mobile-menu-body"></div>
-    </div>
-
-    <nav class="site-nav">
-      <div class="container">
-        <div class="menu-bg-wrap">
-          <div class="site-navigation">
-            <a href="/public/guide.html" class="lg mt-lg-3 float-start">MultiMoco NTU</a>
-
-            <ul
-              class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">              
-              <li ><a href="/public/index.html#mainpage-navbar" class="text-dark">Back to Main Page</a></li>      
+      <!-- Navigation -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light shadow fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="#">MultiMoco NTU</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="/public/index.html#mainpage-navbar">Home</a>
+              </li>
             </ul>
-
-            <a
-              href="#"
-              class="burger light me-auto float-end mt-1 site-menu-toggle js-menu-toggle d-inline-block d-lg-none"
-              data-toggle="collapse"
-              data-target="#main-navbar"
-            >
-              <span></span>
-            </a>
           </div>
         </div>
-      </div>
-    </nav>
-
-    <a id="corpus-stat"></a>
-    <div class="section section-3 bg-light">
-      <div class="container">
-        <div class="row mb-5 align-items-center justify-content-center">
-          <div class="col-lg-6">
-            <h2 class="font-weight-bold text-primary heading">
-                MultiMoco 簡介
-
-            </h2>
-                <span class="meta d-block mb-1">
-                    <p class="">此為臺大語言所謝舒凱老師主持之知識本體、語言處理與人文計算實驗室（LOPE）
-                    借助美國加州大學洛杉磯分校（UCLA）Red Hen實驗室團隊之多模態語料分析技術，
-                    建置之多模態語料庫。
-                    透過錄製數位電視公共頻道、擷取臺灣立法院議事轉播，
-                    收錄數種臺灣國家語言（華語、閩南語、客家語、原住民族語等），
-                    並在跨文化交流的模態分析中，更廣泛且深入地探究各種語言構式。
-                    語言的形式和語意將不再受限於文字字元，而是開闢了多模態表達的可能性——例如手勢、
-                    肢體動作和臉部表情，以實現人們之間相互溝通、理解之目標。</p>
-                </span>
-          </div>
+      </nav>
+    
+    <!-- Page Content -->
+      <section class="py-5">
+        <div class="container">
+            <div class="row mb-5 m-auto p-lg-5">
+                <h2 class="font-monospace text-decoration-underline" style=" text-align: center">About</h2>
+                <p class="m-md-2 p-1">此為臺大語言所謝舒凱老師主持之知識本體、語言處理與人文計算實驗室（LOPE）
+                 借助美國加州大學洛杉磯分校（UCLA）Red Hen實驗室團隊之多模態語料分析技術，
+                 建置之多模態語料庫。透過錄製數位電視公共頻道、擷取臺灣立法院議事轉播，
+                 收錄數種臺灣國家語言（華語、閩南語、客家語、原住民族語等），
+                 並在跨文化交流的模態分析中，更廣泛且深入地探究各種語言構式。
+                 語言的形式和語意將不再受限於文字字元，而是開闢了多模態表達的可能性——例如手勢、
+                 肢體動作和臉部表情，以實現人們之間相互溝通、理解之目標。
+                </p>
+            </div>
         </div>
-        
-        <div class="row section-counter text-center mt-5">
-         
-        </div>
-      </div>
-    </div>
+      </section>
 
-    </body>
+      <section class="py-0">
+        <div class="container">
+            <div class="row mb-5 m-auto p-lg-5">
+                <h2 class="font-weight-bold text-primary heading">Searching Steps</h2>
+                <div class="row mb-auto">
+                    <ol>
+                        <li><p class="m-xl-4 p-4" style="font-size: large;">blablabla</p>
+                            <img src="images/code-work.jpg" width="15%"></li>
+                        <li><p class="m-xl-4 p-4" style="font-size: large;">blablabla</p>
+                            <img src="images/code-work.jpg" width="15%"></li>
+                        <li><p class="m-xl-4 p-4" style="font-size: large;">blablabla</p>
+                            <img src="images/code-work.jpg" width="15%"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <section class="py-0">
+        <div class="container">
+            <div class="row mb-5 m-auto p-lg-5">
+                <h2 class="font-weight-bold text-primary heading">Annnotation</h2>
+                <div class="row mb-auto">
+                    <ol>
+                        <li><p class="m-xl-4 p-4" style="font-size: large;">blablabla</p></li>
+                        <li><p class="m-xl-4 p-4" style="font-size: large;">blablabla</p></li>
+                        <li><p class="m-xl-4 p-4" style="font-size: large;">blablabla</p></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+      </section>
+    
+      <section class="py-0">
+        <div class="container">
+            <div class="row mb-5 m-auto p-lg-5">
+                <h2 class="font-weight-bold text-primary heading">Export</h2>
+                <p class="m-md-2 p-1">blablabla
+                </p>
+            </div>
+        </div>
+      </section>
+
+</body>
 </html>
