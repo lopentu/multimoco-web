@@ -8,11 +8,7 @@ import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider';
 import { useState } from 'react';
 
-export default function CorpusResult({ highlightText, results, setResults, player, queryText }: CorpusResultProps) {
-  // setResults(JSON.parse(searchResults));
-  console.log("Inside corpus result")
-  // console.log(results)
-  // console.log(`Hightlight: ${highlightText}`);
+export default function CorpusResult({ annotationSpans, setAnnotationSpans, player, queryText, searchType }: CorpusResultProps) {
 
   function buildCsv(data) {
     // console.log(data);
@@ -46,7 +42,7 @@ export default function CorpusResult({ highlightText, results, setResults, playe
     const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(v => v.trim());
     const rows = str.slice(str.indexOf("\n") + 1).split(/\r?\n|\r|\n/);
 
-    const arr =  rows.map((row) => {
+    const arr = rows.map((row) => {
       const values = row.split(delimiter);
       const el = headers.reduce((object, header, index) => {
         object[header] = values[index];
@@ -66,15 +62,14 @@ export default function CorpusResult({ highlightText, results, setResults, playe
       // divider={<Divider orientation="vertical" flexItem />}
       >
         <Button
-          onClick={() => downloadBlob(buildCsv(results.results), `multimoco-${queryText}-${results.searchType}.csv`, 'text/csv;charset=utf8-8;')}
+          onClick={() => downloadBlob(buildCsv(annotationSpans), `multimoco-${queryText}-${searchType}.csv`, 'text/csv;charset=utf8-8;')}
           startIcon={<FileDownloadRoundedIcon
             color="primary"
             fontSize='large'
           ></FileDownloadRoundedIcon>}>Download</Button>
         <Button startIcon={<FileUploadRoundedIcon color="primary" fontSize='large' />} component="label">
           Upload
-          {/* <form id="csvUpload"> */}
-            <input 
+          <input
             onChange={(e) => {
               const reader = new FileReader();
               reader.onload = function (e) {
@@ -82,26 +77,23 @@ export default function CorpusResult({ highlightText, results, setResults, playe
                 const data = csvToArray(text)
                 console.log("Uploaded!")
                 console.log(data)
-                setResults({
-                  ...results,
-                  results: data
-                });
+                setAnnotationSpans(annotationSpans);
                 // console.log(data)
               }
               // console.log(e.target.files[0])
               reader.readAsText(e.target.files![0])
               e.target.value = "";
-            }} 
-            hidden 
-            type="file" 
-            id="csvFile" 
+            }}
+            hidden
+            type="file"
+            id="csvFile"
             accept=".csv" />
           {/* </form> */}
         </Button>
       </Stack>
       <CorpusTable
-        searchResults={results.results}
-        searchType={results.searchType}
+        annotationSpans={annotationSpans}
+        searchType={searchType}
         player={player}
       />
     </>

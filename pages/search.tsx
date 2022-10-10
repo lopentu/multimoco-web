@@ -13,7 +13,7 @@ import VideoJS from '../components/videojs';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import videojs, { VideoJsPlayer } from 'video.js';
-import { SearchResults } from '../types/corpus';
+import { AnnotationSpans } from '../types/corpus';
 import { FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 
 
@@ -25,10 +25,13 @@ export async function getServerSideProps(context: any) {
     const db = client.db("multimoco")
 
     const { query } = context
-    const searchType = query.searchType
+    let searchType = query.searchType
+    console.log(query)
+    if (searchType === undefined) {
+      searchType = "asr"
+    }
     // const searchType = "asr"
     let results
-    console.log(query.query);
     console.log(query.query);
     // const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(100).toArray();
     // const searchResults: SearchResults = {}
@@ -37,6 +40,7 @@ export async function getServerSideProps(context: any) {
         { "$match": { "payload.text": new RegExp(query.query, "i") } },
         {
           "$sort": {
+            "name": 1,
             "offset": 1
           }
         },
@@ -85,9 +89,18 @@ export async function getServerSideProps(context: any) {
       ]).toArray()
     }
     results?.forEach(function (part, index, theArray) {
-      theArray[index] = { ...theArray[index], ...theArray[index].payload };
+      // theArray[index] = { ...theArray[index], ...{ text:theArray[index].payload.text, annotation: "" } };
+      theArray[index].text = theArray[index].payload.text;
+      if (theArray[index].payload.hasOwnProperty('box')) {
+        theArray[index]['ocrBBox'] = theArray[index].payload.box.coordinates[0];
+      }
+      theArray[index].annotation = "";
+      delete theArray[index].phones;
       delete theArray[index].payload;
+      delete theArray[index]._id;
     })
+
+    console.log(results?.slice(0));
 
     const searchResults = {
       searchType: searchType,
@@ -119,7 +132,8 @@ export async function getServerSideProps(context: any) {
     // db.find({}) or any of the MongoDB Node Driver commands
 
     return {
-      props: { searchResults: JSON.stringify(searchResults) },
+      // props: { searchResults: JSON.stringify(searchResults) },
+      props: { searchResults: JSON.stringify(results), searchT: searchType },
     }
   } catch (e) {
     console.error(e)
@@ -131,20 +145,18 @@ export async function getServerSideProps(context: any) {
 
 type SearchPageProps = {
   searchResults: string,
+  searchT: string,
   isConnected?: boolean
 }
 
-const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
+const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
   const [queryText, setQueryText] = useState("");
-  const [searchType, setSearchType] = useState("");
+  const [searchType, setSearchType] = useState(searchT);
   const [handSelect, setHandSelect] = useState("");
   const [soundSelect, setSoundSelect] = useState("");
-  const [results, setResults] = useState(JSON.parse(searchResults));
-  // console.log(results)
-  // console.log(JSON.parse(searchResults))
-  // const [selectedVideo, setSelectedVideo] = useState("https://storage.googleapis.com/multimoco/selected/h264/c5000-2109071858.mp4");
+  const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(searchResults));
 
-  const playerRef: React.MutableRefObject<VideoJsPlayer | null> = React.useRef(null);
+  const playerRef: React.MutableRefObject<VideoJsPlayer> = React.useRef(null);
   const videoJsOptions = {
     autoplay: true,
     controls: true,
@@ -237,13 +249,13 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
             </Grid2>
             <Grid2
               container
-              spacing={2}
+              spacing={1}
               justifyContent="left"
               alignItems="center"
             >
               <Grid2 xs={12} md={3}>
                 <FormControl>
-                  <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
+                  <FormLabel id="demo-radio-buttons-group-label">Search Type</FormLabel>
                   <RadioGroup
                     row
                     aria-labelledby="demo-radio-buttons-group-label"
@@ -257,7 +269,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                   </RadioGroup>
                 </FormControl>
               </Grid2>
-              <Grid2 xs={6} lg={1}>
+              <Grid2 xs={6} sm={2} >
                 <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
                   <InputLabel id="hand-select-label">手勢</InputLabel>
                   <Select
@@ -274,7 +286,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
                 </FormControl>
               </Grid2>
 
-              <Grid2 xs={6} lg={1}>
+              <Grid2 xs={6} sm={2} >
                 <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
                   <InputLabel id="sound-select-label">語音</InputLabel>
                   <Select
@@ -300,7 +312,13 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults }) => {
               <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
             </Grid2>
             <Grid2 xs={12}>
-              <CorpusResult highlightText={highlightText} results={results} setResults={setResults} player={playerRef} queryText={queryText} />
+              <CorpusResult
+                annotationSpans={annotationSpans}
+                setAnnotationSpans={setAnnotationSpans}
+                player={playerRef}
+                queryText={queryText}
+                searchType={searchType}
+              />
             </Grid2>
           </Grid2>
         </Container>

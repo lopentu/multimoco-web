@@ -1,3 +1,4 @@
+import React from "react"
 import { VideoJsPlayer } from "video.js"
 
 export interface AlignedUtt {
@@ -47,16 +48,21 @@ export interface SearchResults extends Results {
   // }[]
 }
 export interface CorpusResultProps {
-  highlightText: string
-  searchResults: string
+  annotationSpans: AnnotationSpans
+  setAnnotationSpans: React.Dispatch<React.SetStateAction<AnnotationSpans>>
+  queryText: string
+  searchType: string
   player: React.MutableRefObject<VideoJsPlayer>
 }
 
 export interface AnnotationSpan {
+  name: string,
   offset: number,
   span: number,
   text: string,
-  annotation: string
+  annotation: string,
+  ocrBBox?: Point[]
 }
 
 export type AnnotationSpans = AnnotationSpan[];
+export type Point = number[];
