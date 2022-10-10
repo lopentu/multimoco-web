@@ -2,8 +2,8 @@ import { OverlayData } from "./overlay-data-provider";
 import { OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
 import VideoAnnotator from "./video-annotator";
 
-export type Point = {x: number, y: number}
-export type RectBox = {x: number, y: number, width: number, height: number};
+export type Point = { x: number, y: number }
+export type RectBox = { x: number, y: number, width: number, height: number };
 
 
 const SPEAKER_EV_COLOR: { [name: string]: string } = {
@@ -20,7 +20,7 @@ export default class OverlayPainter {
   cvsHeight: number = 360;
   wave_vh: number = 50;
   toShowWave: boolean = true;
-  toShowOcr: boolean = true;  
+  toShowOcr: boolean = true;
 
   constructor(annot: VideoAnnotator) {
     this.annot = annot;
@@ -34,29 +34,29 @@ export default class OverlayPainter {
     this.wave_vh = 50;
   }
 
-  setOptions(options: { [key: string]: any }) {        
-    this.toShowWave = options.toShowWave===undefined? true: options.toShowWave;
-    this.toShowOcr = options.toShowOcr===undefined? true: options.toShowOcr;
+  setOptions(options: { [key: string]: any }) {
+    this.toShowWave = options.toShowWave === undefined ? true : options.toShowWave;
+    this.toShowOcr = options.toShowOcr === undefined ? true : options.toShowOcr;
   }
 
-  notifyWaveArea(waveBox: RectBox){
+  notifyWaveArea(waveBox: RectBox) {
     this.annot.updateWaveArea(waveBox);
   }
 
   paint(overlayData: OverlayData, fps: number) {
     // this.overlay_text(`fps: ${fps}`);    
-    
-    this.toShowOcr = this.toShowOcr && 
-                      overlayData.ocr_blocks.length > 0;
+
+    this.toShowOcr = this.toShowOcr &&
+      overlayData.ocr_blocks.length > 0;
     this.toShowWave = this.toShowWave &&
-                      overlayData.wave.length > 0;
-    
+      overlayData.wave.length > 0;
+
     if (this.toShowOcr) {
       this.overlay_ocr(overlayData.ocr_blocks);
     }
 
-    if (this.toShowWave && 
-        overlayData.phones.length > 0) {
+    if (this.toShowWave &&
+      overlayData.phones.length > 0) {
       this.overlay_phones(overlayData.phones,
         overlayData.wave_fr,
         overlayData.wave.length,
@@ -108,9 +108,9 @@ export default class OverlayPainter {
       bl_y = this.cvsHeight - this.wave_vh - 5;
     } else {
       bl_y = this.cvsHeight - 5;
-      this.notifyWaveArea({x: 0, y: 0, width: vw, height: 0});
+      this.notifyWaveArea({ x: 0, y: 0, width: vw, height: 0 });
     }
-        
+
     // const extent = this.ctx.measureText(text);
     this.ctx.fillStyle = "#333333AA";
     this.ctx.fillRect(0, bl_y - 20, vw, 25);
@@ -178,10 +178,11 @@ export default class OverlayPainter {
 
     ctx.fillStyle = "#333333AA";
     this.notifyWaveArea({
-      x: 0, y: this.cvsHeight-vh, 
-      width: vw, height: vh});
+      x: 0, y: this.cvsHeight - vh,
+      width: vw, height: vh
+    });
     ctx.fillRect(0, this.cvsHeight - vh, vw, vh);
-
+    let last_start_x = 0;
     for (let phone_idx = 0; phone_idx < phones.length; phone_idx++) {
       let phone = phones[phone_idx];
       const [phone_serial, start, end, label] = phone;
@@ -190,11 +191,25 @@ export default class OverlayPainter {
       const start_x = to_x(start_d);
       const end_x = to_x(end_d);
       if (phone_idx > 0) {
+
+        const phone_box = {
+          x: last_start_x,
+          y: to_y(128),
+          width: start_x - last_start_x,
+          height: vh
+        }
+
         ctx.beginPath();
         ctx.strokeStyle = "#AAA";
         ctx.moveTo(start_x, to_y(128));
         ctx.lineTo(start_x, to_y(-128));
         ctx.stroke()
+
+        if (this.annot.cursorInBox(phone_box)) {
+          ctx.fillStyle = this.annot.isPressed? "#FD9A": "#DD9A";
+          ctx.fillRect(phone_box.x, phone_box.y,
+            phone_box.width, phone_box.height);
+        }
       }
 
       if (~~phone_serial % 2 == 0) {
@@ -207,6 +222,8 @@ export default class OverlayPainter {
         }
         ctx.fillText(render_label, (start_x + end_x) / 2, to_y(80));
       }
+
+      last_start_x = start_x;
     }
   }
 

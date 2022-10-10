@@ -16,7 +16,7 @@ interface OcrPayload {
   box: PolygonBox
 }
 
-type PhoneToken = [idx: number, start: number, end: number, token: string];
+export type PhoneToken = [idx: number, start: number, end: number, token: string];
 
 type SpeechEvent = [start: number, end: number, event: string];
 

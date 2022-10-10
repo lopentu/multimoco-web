@@ -145,6 +145,7 @@ export default function VideoView(props: VideoViewProp) {
     const video = videoRef.current;
     if (!video) return;
 
+    // console.log("redraw");
     const overlayData = dataProvider.getData(video.currentTime);
     const cvs = canvasRef.current;
     if (!cvs) return null;    
@@ -197,6 +198,7 @@ export default function VideoView(props: VideoViewProp) {
         onMouseMove={videoAnnot.onMouseMove.bind(videoAnnot)}
         onMouseUp={videoAnnot.onMouseUp.bind(videoAnnot)}
         onMouseDown={videoAnnot.onMouseDown.bind(videoAnnot)}
+        onMouseLeave={videoAnnot.onMouseLeave.bind(videoAnnot)}
       ></canvas>
       <Bar
         styles={combinedStyles}

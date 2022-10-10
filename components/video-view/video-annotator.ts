@@ -1,4 +1,5 @@
 import { KeyboardEvent, MouseEvent } from "react";
+import { PhoneToken } from "./overlay-data-types";
 import { Point, RectBox } from "./overlay-painter";
 import VideoControl from "./videoControl";
 
@@ -18,13 +19,28 @@ export default class VideoAnnotator {
   private _redrawCallback: ()=>void = ()=>{};
   private _annotCallbacks: AnnotCallbacks|null = null;
   private _waveArea: RectBox = {width: 0, height: 0, x:0, y:0};
+  private _selected_phones: PhoneToken[] = [];
 
   constructor(videoCtrl: VideoControl){    
     this.videoControl = videoCtrl;
   }
 
+  get isPressed() {
+    return this.cursor.isPressed;
+  }
+
+  get selectedPhones() {
+    return this._selected_phones;
+  }
+  
   updateWaveArea(waveArea: RectBox){    
     this._waveArea = waveArea;
+  }
+
+  onPhoneDetected(phone: PhoneToken) {
+    if (this.isPressed) {
+      this._selected_phones.push(phone);
+    }
   }
 
   setAnnotCallbacks(callbacks: AnnotCallbacks) {
@@ -43,6 +59,11 @@ export default class VideoAnnotator {
     return false;
   }
 
+  cursorInBox(box: RectBox) {
+    const pnt = {x: this.cursor.x, y: this.cursor.y};
+    return this._pointInBox(pnt, box);
+  }
+
   onMouseMove(ev: MouseEvent){
     this.cursor = {
         x: ev.nativeEvent.offsetX, 
@@ -58,11 +79,19 @@ export default class VideoAnnotator {
     
     if (!this._pointInBox(pnt, this._waveArea)){
       this.videoControl.playPause();
+    } else {
+      this._redrawCallback();
     }    
   }
 
   onMouseDown(ev: MouseEvent) {
     this.cursor.isPressed = true;
+    this._redrawCallback();
+  }
+
+  onMouseLeave(ev:MouseEvent) {
+    this.cursor = {x: 0, y: 0, isPressed: false};
+    this._redrawCallback();
   }
 
   onKeyUp(ev: KeyboardEvent) {
