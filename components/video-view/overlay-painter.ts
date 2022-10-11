@@ -13,6 +13,9 @@ const SPEAKER_EV_COLOR: { [name: string]: string } = {
   "OVERLAP": "#FFAAAA"
 }
 
+const FILL_SELECTED_PHONE = "#FD9A";
+const FILL_HOVER_PHONE = "#DD9A";
+
 export default class OverlayPainter {
   ctx: CanvasRenderingContext2D | null = null;
   annot: VideoAnnotator = {} as VideoAnnotator;
@@ -205,8 +208,17 @@ export default class OverlayPainter {
         ctx.lineTo(start_x, to_y(-128));
         ctx.stroke()
 
+        // determine if phone is under the cursor
         if (this.annot.cursorInBox(phone_box)) {
-          ctx.fillStyle = this.annot.isPressed? "#FD9A": "#DD9A";
+          this.annot.onPhoneDetected(phone);
+          ctx.fillStyle = this.annot.isPressed? FILL_SELECTED_PHONE: FILL_HOVER_PHONE;
+          ctx.fillRect(phone_box.x, phone_box.y,
+            phone_box.width, phone_box.height);
+        }
+        
+        // determine if phone is already selected
+        if (this.annot.isPhoneSelected(phone)){
+          ctx.fillStyle = FILL_SELECTED_PHONE;
           ctx.fillRect(phone_box.x, phone_box.y,
             phone_box.width, phone_box.height);
         }

@@ -9,6 +9,7 @@ export interface Cursor{
   isPressed: boolean
 }
 
+type PhoneRange = {start: PhoneToken, end: PhoneToken};
 export interface AnnotCallbacks {
   
 }
@@ -19,7 +20,7 @@ export default class VideoAnnotator {
   private _redrawCallback: ()=>void = ()=>{};
   private _annotCallbacks: AnnotCallbacks|null = null;
   private _waveArea: RectBox = {width: 0, height: 0, x:0, y:0};
-  private _selected_phones: PhoneToken[] = [];
+  private _selected_phone_range: PhoneRange = {} as PhoneRange;
 
   constructor(videoCtrl: VideoControl){    
     this.videoControl = videoCtrl;
@@ -29,17 +30,29 @@ export default class VideoAnnotator {
     return this.cursor.isPressed;
   }
 
-  get selectedPhones() {
-    return this._selected_phones;
+  isPhoneSelected(phone: PhoneToken) {
+    const range = this._selected_phone_range;
+    if (!(range.start || range.end)){
+      return false;
+    }
+    return range.start[0] <= phone[0] && phone[0] <= range.end[0];
   }
-  
+
   updateWaveArea(waveArea: RectBox){    
     this._waveArea = waveArea;
   }
 
   onPhoneDetected(phone: PhoneToken) {
     if (this.isPressed) {
-      this._selected_phones.push(phone);
+      const range = this._selected_phone_range
+      if (!(range.start || range.end)){
+        range.start = phone;
+        range.end = phone;
+      } else if (range.start[0] > phone[0]) {
+        range.start = phone;
+      } else if (range.end[0] < phone[0]){
+        range.end = phone;
+      }
     }
   }
 
@@ -85,6 +98,7 @@ export default class VideoAnnotator {
   }
 
   onMouseDown(ev: MouseEvent) {
+    this._selected_phone_range = {} as PhoneRange;
     this.cursor.isPressed = true;
     this._redrawCallback();
   }
