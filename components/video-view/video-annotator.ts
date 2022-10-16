@@ -9,6 +9,15 @@ export interface Cursor{
   isPressed: boolean
 }
 
+export interface RenderSpan{
+  start_phone: PhoneToken
+  end_phone: PhoneToken
+  bbox: RectBox
+  start: number,
+  end: number
+  annotation: string
+}
+
 type PhoneRange = {start: PhoneToken, end: PhoneToken};
 export interface AnnotCallbacks {
   

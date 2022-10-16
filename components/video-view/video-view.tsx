@@ -1,7 +1,7 @@
 // Basing on: https://github.com/chomamateusz/react-canvas-video/blob/master/src
 
 import { TurnedIn } from "@mui/icons-material";
-import { Grid } from "@mui/material";
+import { Grid, Popover } from "@mui/material";
 import { CSSProperties, useEffect, useRef, useState } from "react"
 import Bar from './Bar'
 import OverlayDataProvider from "./overlay-data-provider";
@@ -51,14 +51,14 @@ export default function VideoView(props: VideoViewProp) {
     const video = videoRef.current;
 
     if (!callbacks || !video) return;
-    
+
     video.addEventListener('play', callbacks.onPlayHandler, false);
     video.addEventListener('canplay', callbacks.onPlayHandler, false);
     video.addEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
     window.addEventListener('resize', callbacks.onResizeHandler, false);
-    videoAnnot.setRedrawCallback(()=>requestAnimationFrame(render_frame));
-    
-    if (TO_AUTOPLAY){
+    videoAnnot.setRedrawCallback(() => requestAnimationFrame(render_frame));
+
+    if (TO_AUTOPLAY) {
       video.play();
     }
     return () => {
@@ -148,12 +148,12 @@ export default function VideoView(props: VideoViewProp) {
     // console.log("redraw");
     const overlayData = dataProvider.getData(video.currentTime);
     const cvs = canvasRef.current;
-    if (!cvs) return null;    
+    if (!cvs) return null;
     const canvasWidth = cvs.clientWidth;
-    const canvasHeight = cvs.clientWidth / ASPECT_RATIO;        
+    const canvasHeight = cvs.clientWidth / ASPECT_RATIO;
     const toShowWave = overlayOptions.current.toShowWave;
     const toShowOcr = overlayOptions.current.toShowOcr;
-        
+
     const delta_ms = timestamp - lastRenderTime.current;
     const delta_s = Math.max(delta_ms / 1000, .001);
     const fps = ~~(1 / delta_s * 100) / 100;
@@ -164,15 +164,19 @@ export default function VideoView(props: VideoViewProp) {
       cvs.width = canvasWidth;
       cvs.height = canvasHeight;
       const context = cvs.getContext('2d');
-      if (!context) return null;      
+      if (!context) return null;
       context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
       overlayPainter.setContext(context, canvasWidth, canvasHeight);
       overlayPainter.setOptions({ toShowOcr, toShowWave });
       overlayPainter.paint(overlayData, fps);
-    }    
+    }
 
     if (!video.paused && !video.ended)
       requestAnimationFrame(render_frame);
+  }
+
+  function onPopoverClose() {
+
   }
 
   const combinedStyles: any = {}
@@ -181,10 +185,28 @@ export default function VideoView(props: VideoViewProp) {
   })
 
   return (
+
     <div style={{
       display: "flex",
       flexDirection: "column"
     }}>
+      <style jsx>{`
+        .MuiPopover-paper {
+          color: #20b2aa;
+          background-color: red;
+        }
+      `}</style>
+      <Popover
+        open={true}
+        anchorPosition={{ top: 100, left: 10 }}
+        onClose={onPopoverClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        Popover content
+      </Popover>
       <video
         ref={videoRef}
         src={props.video_url}
