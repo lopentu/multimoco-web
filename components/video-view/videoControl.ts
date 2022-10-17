@@ -8,10 +8,21 @@ export default class VideoControl {
 
   constructor() {    
   }  
-
+  
   setVideo(elem: HTMLVideoElement|null, stateSetter: VideoStateSetterType) {
     this.video = elem;
     this.videoStateSetter = stateSetter;    
+  }
+
+  get videoName() {
+    const uri = this.video?.src;
+    if(uri){      
+      const parts = new URL(uri).pathname.split("/");            
+      return parts[parts.length-1].replace(".mp4", "");
+    } else {
+      return ""
+    }
+    
   }
 
   playPause() {
@@ -29,9 +40,9 @@ export default class VideoControl {
     if (!this.video) return;
 
     this.video.currentTime = offset;
-    if (this.video.paused || this.video.ended) {
-      this.video.play().then(() => this.video?.pause())
-    }
+    // if (this.video.paused || this.video.ended) {
+    //   this.video.play().then(() => this.video?.pause())
+    // }
     this.videoStateSetter(this.video);
   }
 

@@ -1,4 +1,5 @@
 import { KeyboardEvent, MouseEvent } from "react";
+import { AnnotationSpan, AnnotationSpans } from "./annot_types";
 import { PhoneToken } from "./overlay-data-types";
 import { Point, RectBox } from "./overlay-painter";
 import VideoControl from "./videoControl";
@@ -9,18 +10,17 @@ export interface Cursor {
   isPressed: boolean
 }
 
-export interface VideoAnnotSpan {
-  start_phone: PhoneToken
-  end_phone: PhoneToken
+interface VideoAnnotSpanInfo {
   start: number
-  end: number
-  annotation: string
+  end: number  
   isActive: boolean
 }
 
+export type VideoAnnotSpan = AnnotationSpan & VideoAnnotSpanInfo;
+
 type PhoneRange = { start: PhoneToken, end: PhoneToken };
 type AnnotSpansUpdated = (spans: VideoAnnotSpan[]) => void;
-type ActiveSpanChanged = (span: VideoAnnotSpan) => void;
+type ActiveSpanChanged = (span: VideoAnnotSpan, cursor_loc: [number, number]) => void;
 export default class VideoAnnotator {
   videoControl: VideoControl = {} as VideoControl;
   cursor: Cursor = { x: 0, y: 0, isPressed: false };
@@ -31,6 +31,7 @@ export default class VideoAnnotator {
   private _spanAreas: RectBox[] = [];
   private _selected_phone_range: PhoneRange = {} as PhoneRange;
   private _press_phone: PhoneToken | null = null;
+  private _span_data: AnnotationSpans = [];
   private _annot_spans: VideoAnnotSpan[] = [];
 
 
@@ -46,6 +47,18 @@ export default class VideoAnnotator {
     return this._annot_spans;
   }
 
+  setAnnotationSpans(spans: AnnotationSpans){
+    this._span_data = spans;
+    this._annot_spans = spans.map((x) => {
+      return {...x,     
+        start: x.offset,
+        end: x.offset + x.span,
+        annotation: x.annotation,
+        isActive: false
+      }
+    });
+  }
+  
   isPhoneSelected(phone: PhoneToken) {
     const range = this._selected_phone_range;
     if (!(range.start || range.end)) {
@@ -67,11 +80,12 @@ export default class VideoAnnotator {
   }
 
   setActiveSpan(span: VideoAnnotSpan){
+    // if it is already active, there is nothing to do.
+    const numActive = this._annot_spans.reduce((n,x)=>n + ~~(x.isActive), 0);
+    if (numActive==1 && span.isActive) return;
+
     this._annot_spans.forEach((x)=>x.isActive=false);
     span.isActive = true;
-    if (this._onActiveSpanChanged){
-      this._onActiveSpanChanged(span);
-    }
     this._redrawCallback();
   }
 
@@ -142,14 +156,20 @@ export default class VideoAnnotator {
       const { start: start_phone,
         end: end_phone } = range;
       const span = {
-        start_phone: start_phone,
-        end_phone: end_phone,
+        name: this.videoControl.videoName,           
+        offset: start_phone[1],
+        span: end_phone[2] - start_phone[1], // this span indicates time duration
         start: start_phone[1],
         end: end_phone[2],
-        annotation: "",
+        text: "",
+        annotation: "",        
         isActive: true
       }
       this._annot_spans.push(span)
+    }
+
+    if(this._onAnnotSpansUpdated) {
+      this._onAnnotSpansUpdated(this._annot_spans);
     }
 
     // handle playback
@@ -173,7 +193,15 @@ export default class VideoAnnotator {
 
     const isInSpans = this.cursorInBoxes(pnt, this._spanAreas);
     if (isInSpans) {
-      // pass
+      if (this._onActiveSpanChanged){
+        const spans = this._annot_spans.filter((x)=>x.isActive);
+        if (spans.length == 1){
+          const mouseX = ev.nativeEvent.clientX;
+          const mouseY = ev.nativeEvent.clientY;
+          console.log(mouseX, mouseY);
+          this._onActiveSpanChanged(spans[0], [mouseX, mouseY]);
+        }
+      }
     } else {
       this._selected_phone_range = {} as PhoneRange;
       this.cursor.isPressed = true;

@@ -9,12 +9,15 @@ import OverlayPainter from "./overlay-painter";
 import PopOverEdit from "./popover-edit";
 import styles from './styles';
 import useVideoState from "./useVideoState";
+import useAnnotEdit from "./useAnnotEdit";
 import { to_seconds } from "./utils";
-import VideoAnnotator from "./video-annotator";
+import VideoAnnotator, { VideoAnnotSpan } from "./video-annotator";
 import VideoControl from "./videoControl";
+import { AnnotationSpans, AnnotationSpan } from "./annot_types";
 
 interface VideoViewProp {
   video_url: string
+  annotSpans: AnnotationSpans
   seekToSec?: number
   seekToTimeStr?: string
   toShowWave?: boolean
@@ -33,19 +36,25 @@ const videoControl = new VideoControl();
 const videoAnnot = new VideoAnnotator(videoControl);
 const overlayPainter = new OverlayPainter(videoAnnot);
 
-
-
 function undefined_or_true(x: undefined | boolean) {
   return x === undefined ? true : x;
 }
 
 export default function VideoView(props: VideoViewProp) {
+  const [dummySpans, setDummySpans] = useState<AnnotationSpans>([]);
+  const annotSpans = dummySpans;  
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const lastRenderTime = useRef(0);    // for fps
   const [videoState, setVideoState] = useVideoState(videoRef.current);
   videoControl.setVideo(videoRef.current, setVideoState);
   const overlayOptions = useRef<OverlayOptions>({} as OverlayOptions);
+
+  const annotEditState = useAnnotEdit();
+  // videoAnnot.setAnnotationSpans(props.annotSpans);
+  videoAnnot.setAnnotationSpans(dummySpans);
+  videoAnnot.setAnnotSpansUpdatedCallback(onAnnotSpansUpdated);
 
   useEffect(() => {
     const callbacks = initialize_video();
@@ -58,6 +67,7 @@ export default function VideoView(props: VideoViewProp) {
     video.addEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
     window.addEventListener('resize', callbacks.onResizeHandler, false);
     videoAnnot.setRedrawCallback(() => requestAnimationFrame(render_frame));
+    videoAnnot.setActiveSpanChangedCallback(onActiveSpanChanged);
 
     if (TO_AUTOPLAY) {
       video.play();
@@ -142,6 +152,58 @@ export default function VideoView(props: VideoViewProp) {
     return { onPlayHandler, onTimeUpdateHandler, onResizeHandler };
   }
 
+  // *
+  // * Annotation Popover widget: States and Handlers
+  // *
+  function onActiveSpanChanged(span: VideoAnnotSpan, cursor: [number, number]) {
+    annotEditState.setLocation(cursor[0], cursor[1]);
+    annotEditState.openWidget(span);   
+  }
+
+  function onPopOverEditClosed(){
+    annotEditState.closeWidget();
+  }
+
+  function onAnnotSpanEdited(edit_span: AnnotationSpan) {    
+    let new_spans: AnnotationSpans = [];
+    for(const span_x of annotSpans) {
+      if (span_x.name==edit_span.name && span_x.offset==edit_span.offset) {
+        new_spans.push(edit_span);
+      } else {
+        new_spans.push(span_x);
+      }      
+    }
+    annotEditState.setAnnotSpan(edit_span);
+    onAnnotSpansUpdated(new_spans);
+  }
+
+  function onAnnotSpanDeleted(del_span: AnnotationSpan){    
+    let new_spans: AnnotationSpans = [];
+    
+    for(const span_x of annotSpans) {
+      if (span_x.name==del_span.name && span_x.offset==del_span.offset) {
+        // pass
+      } else {
+        new_spans.push(span_x);
+      }      
+    }
+    annotEditState.closeWidget();
+    onAnnotSpansUpdated(new_spans);
+  }
+
+  // *
+  // * Annotation span event handler
+  // *
+
+  function onAnnotSpansUpdated(annotSpans: AnnotationSpans) {
+    setDummySpans(annotSpans);
+    requestAnimationFrame(render_frame);
+  }
+
+  // *
+  // * Rendering routine
+  // *
+
   function render_frame(timestamp: number) {
     const video = videoRef.current;
     if (!video) return;
@@ -181,15 +243,26 @@ export default function VideoView(props: VideoViewProp) {
     combinedStyles[key] = { ...styles[key] }
   })
 
-  return (
+  let pop_over_edit;
+  if (annotEditState.annotSpan) {
+    pop_over_edit = <PopOverEdit
+      isOpen={annotEditState.isOpen}
+      left={annotEditState.loc.x}
+      top={annotEditState.loc.y}
+      annotSpan={annotEditState.annotSpan}
+      onDelete={onAnnotSpanDeleted}      
+      onUpdate={onAnnotSpanEdited}
+      onClose={onPopOverEditClosed} />
+  } else {
+    pop_over_edit = <div/>
+  }
 
+  return (
     <div style={{
       display: "flex",
       flexDirection: "column"
     }}>
-
-      <PopOverEdit
-        top={100} left={50} annot_text=""/>
+      {pop_over_edit}
       <video
         ref={videoRef}
         src={props.video_url}
@@ -209,7 +282,12 @@ export default function VideoView(props: VideoViewProp) {
         styles={combinedStyles}
         videoState={videoState}
         videoCtrl={videoControl}
+        annotSpans={annotSpans}
       />
     </div>
   )
+}
+
+function useAnnotEdite() {
+  throw new Error("Function not implemented.");
 }

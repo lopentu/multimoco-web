@@ -2,7 +2,7 @@ import { OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
 import parseVTT, { VTTData } from "./vtt-parser";
 
 const WAV_FR = 1000;
-const WAV_WINDOW = 2;
+let wave_window = 2;
 export interface OverlayData {
   ocr_blocks: OcrDataType[]
   phones: PhoneData
@@ -24,6 +24,10 @@ export default class OverlayDataProvider {
   baseURL: string = "https://storage.googleapis.com/multimoco/selected"
   constructor() {
 
+  }
+
+  setWaveWindow(win_sec: number){
+    wave_window = win_sec;
   }
 
   setVideoName(videoName: string) {
@@ -77,8 +81,8 @@ export default class OverlayDataProvider {
   getData(offset: number) {
     let overlayData = {} as OverlayData;
 
-    const start_sec = offset - WAV_WINDOW / 2;
-    const end_sec = offset + WAV_WINDOW / 2;
+    const start_sec = offset - wave_window / 2;
+    const end_sec = offset + wave_window / 2;
 
     if (this.ocr_blocks) {
       const offset_ms = offset * 1000;

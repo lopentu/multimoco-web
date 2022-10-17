@@ -80,7 +80,7 @@ export default class OverlayPainter {
     }
 
     const annot_spans = this.annot.annotSpans;
-    if (annot_spans) {
+    if (this.toShowWave && annot_spans) {
       this.overlay_spans(annot_spans,
         overlayData.wave_fr,
         overlayData.wave.length,

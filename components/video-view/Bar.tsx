@@ -7,11 +7,13 @@ import MuteUnMuteBtn from './MuteUnMuteBtn'
 import VolumeBar from './VolumeBar'
 import { IVideoState } from './useVideoState'
 import VideoControl from './videoControl'
+import { AnnotationSpans } from './annot_types'
 
 interface BarProps {
   styles: { [name: string]: any },
   videoState: IVideoState
   videoCtrl: VideoControl
+  annotSpans: AnnotationSpans
 }
 
 function Bar(props: BarProps) {
@@ -24,7 +26,8 @@ function Bar(props: BarProps) {
       <ProgressBar
         currentTime={videoState.currentTime}
         duration={videoState.duration}
-        onSeek={(offset) => ctrl.seek(offset)}        
+        onSeek={(offset) => ctrl.seek(offset)}
+        annotSpans={props.annotSpans}
       />
       <div style={props.styles.barContainer}>
         <PlayPauseBtn
@@ -48,6 +51,7 @@ function Bar(props: BarProps) {
           onVolumeChange={(vol) => ctrl.changeVolume(vol)}
           styles={props.styles}
         />
+        
       </div>
     </div>
   );
