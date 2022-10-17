@@ -8,12 +8,14 @@ import VolumeBar from './VolumeBar'
 import { IVideoState } from './useVideoState'
 import VideoControl from './videoControl'
 import { AnnotationSpans } from './annot_types'
+import WinSizeButtons from './winsize-buttons'
 
 interface BarProps {
   styles: { [name: string]: any },
   videoState: IVideoState
   videoCtrl: VideoControl
   annotSpans: AnnotationSpans
+  onWinSizeChanged: (winSize: number) => void;
 }
 
 function Bar(props: BarProps) {
@@ -41,17 +43,14 @@ function Bar(props: BarProps) {
           styles={props.styles}
         />
         <div style={{ flexGrow: 1 }} />
+        <WinSizeButtons
+          onWinSizeChanged={props.onWinSizeChanged} />
         <MuteUnMuteBtn
           isMuted={videoState.isMuted}
           styles={props.styles}
           onToggleMute={() => ctrl.toggleMute()}
         />
-        <VolumeBar
-          volume={videoState.volume}
-          onVolumeChange={(vol) => ctrl.changeVolume(vol)}
-          styles={props.styles}
-        />
-        
+
       </div>
     </div>
   );

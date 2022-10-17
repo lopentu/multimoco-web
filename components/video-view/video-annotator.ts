@@ -198,7 +198,6 @@ export default class VideoAnnotator {
         if (spans.length == 1){
           const mouseX = ev.nativeEvent.clientX;
           const mouseY = ev.nativeEvent.clientY;
-          console.log(mouseX, mouseY);
           this._onActiveSpanChanged(spans[0], [mouseX, mouseY]);
         }
       }

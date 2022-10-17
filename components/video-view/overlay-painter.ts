@@ -48,7 +48,7 @@ export default class OverlayPainter {
     this.annot.updateWaveArea(waveBox);
   }
 
-  notifySpanAreas(spanBoxes: RectBox[]){
+  notifySpanAreas(spanBoxes: RectBox[]) {
     this.annot.updateSpanAreas(spanBoxes);
   }
 
@@ -187,13 +187,14 @@ export default class OverlayPainter {
     wave_span: [number, number]) {
     if (!this.ctx) return;
     const n_sample = wave_nsamples;
+    const phone_modulo = Math.max(~~(n_sample / 1500), 1);
     const [wav_start, wav_end] = wave_span;
     const vw = this.cvsWidth;
     const vh = this.wave_vh;
     const to_x = (d: number) => ~~(d / n_sample * vw);
     const to_y = (v: number) => ~~(-v / 128 * vh / 2) + (this.cvsHeight - vh / 2);
     const ctx = this.ctx;
-    
+
     this.notifyWaveArea({
       x: 0, y: this.cvsHeight - vh,
       width: vw, height: vh
@@ -202,7 +203,7 @@ export default class OverlayPainter {
     // draw background
     ctx.fillStyle = "#333A";
     ctx.fillRect(0, this.cvsHeight - vh, vw, vh);
-    
+
     for (let phone_idx = 0; phone_idx < phones.length; phone_idx++) {
       let phone = phones[phone_idx];
       const [phone_serial, start, end, label] = phone;
@@ -234,15 +235,18 @@ export default class OverlayPainter {
             phone_box.width, phone_box.height);
         }
 
-        ctx.beginPath();
-        ctx.strokeStyle = "#FFF";
-        ctx.lineWidth = 1;
-        ctx.moveTo(start_x, to_y(128));
-        ctx.lineTo(start_x, to_y(-128));
-        ctx.stroke()
+        // draw phone boundaries
+        if (n_sample < 6 * wave_fr) {
+          ctx.beginPath();
+          ctx.strokeStyle = "#FFF";
+          ctx.lineWidth = 1;
+          ctx.moveTo(start_x, to_y(128));
+          ctx.lineTo(start_x, to_y(-128));
+          ctx.stroke()
+        }
       }
 
-      if (~~phone_serial % 2 == 0) {
+      if (~~phone_serial % phone_modulo == 0) {
         this.ctx.font = "14px serif";
         this.ctx.textAlign = 'center';
         ctx.fillStyle = "#EEE";
@@ -265,17 +269,17 @@ export default class OverlayPainter {
     const [wav_start, wav_end] = wave_span;
 
     const to_x = (d: number) => ~~(d / n_sample * vw);
-    const to_y = (v: number) => ~~(-v / 128 * vh / 2) + (this.cvsHeight - vh / 2);        
+    const to_y = (v: number) => ~~(-v / 128 * vh / 2) + (this.cvsHeight - vh / 2);
 
     const ctx = this.ctx;
     if (!ctx) return;
-    
+
     this.annot.clearSpanAreas();
     const spanBoxes: RectBox[] = [];
     for (const span_x of spans) {
-      if (span_x.end < wav_start || span_x.start > wav_end) continue;      
-      const start_d = (span_x.start-wav_start) * wave_fr;
-      const end_d = (span_x.end-wav_start) * wave_fr;
+      if (span_x.end < wav_start || span_x.start > wav_end) continue;
+      const start_d = (span_x.start - wav_start) * wave_fr;
+      const end_d = (span_x.end - wav_start) * wave_fr;
       const span_box = {
         x: to_x(start_d), y: to_y(128),
         width: to_x(end_d) - to_x(start_d),
@@ -284,12 +288,12 @@ export default class OverlayPainter {
       spanBoxes.push(span_box);
 
       if (this.annot.cursorInBox(span_box)) {
-        this.annot.setActiveSpan(span_x);        
+        this.annot.setActiveSpan(span_x);
         ctx.strokeStyle = FILL_SELECTED_SPAN;
       } else {
         ctx.strokeStyle = FILL_UNSELECTED_SPAN;
       }
-      
+
       ctx.lineWidth = 3;
       ctx.strokeRect(span_box.x, span_box.y,
         span_box.width, span_box.height);

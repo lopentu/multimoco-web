@@ -84,6 +84,7 @@ export default function VideoView(props: VideoViewProp) {
   useEffect(() => {
     overlayOptions.current.toShowOcr = undefined_or_true(props.toShowOcr);
     overlayOptions.current.toShowWave = undefined_or_true(props.toShowWave);
+    requestAnimationFrame(render_frame);
   }, [props.toShowOcr, props.toShowWave]);
 
   useEffect(() => {
@@ -153,6 +154,14 @@ export default function VideoView(props: VideoViewProp) {
   }
 
   // *
+  // * Other Control Bar Callbacks
+  // *
+  function onWinSizeChanged(winSize: number) {
+    dataProvider.setWaveWindow(winSize);
+    requestAnimationFrame(render_frame);
+  }
+
+  // *
   // * Annotation Popover widget: States and Handlers
   // *
   function onActiveSpanChanged(span: VideoAnnotSpan, cursor: [number, number]) {
@@ -208,7 +217,6 @@ export default function VideoView(props: VideoViewProp) {
     const video = videoRef.current;
     if (!video) return;
 
-    // console.log("redraw");
     const overlayData = dataProvider.getData(video.currentTime);
     const cvs = canvasRef.current;
     if (!cvs) return null;
@@ -283,6 +291,7 @@ export default function VideoView(props: VideoViewProp) {
         videoState={videoState}
         videoCtrl={videoControl}
         annotSpans={annotSpans}
+        onWinSizeChanged={onWinSizeChanged}
       />
     </div>
   )
