@@ -15,6 +15,39 @@ body {
   /* flex-direction: column; */
 }
 
+.MuiPopover-paper {  
+  background-color: #FFFE;
+  border-radius:5px;
+  padding: 1%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-hover {
+  animation-name: hover-out;
+  animation-duration: .2s;   
+  animation-fill-mode: forwards; 
+  animation-timing-function: ease-out;
+}
+
+.icon-hover:hover {
+  animation-name: hover-in;
+  animation-duration: .2s;  
+  animation-fill-mode: forwards; 
+  animation-timing-function: ease-out;
+}
+
+@keyframes hover-in {
+  from {transform: scale(1) }
+  to { transform: scale(1.2) }
+}
+
+@keyframes hover-out {
+  from {transform: scale(1.2) }
+  to { transform: scale(1) }
+}
+
 /* a {
   color: inherit;
   text-decoration: none;

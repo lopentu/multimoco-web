@@ -2,7 +2,7 @@ import { OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
 import parseVTT, { VTTData } from "./vtt-parser";
 
 const WAV_FR = 1000;
-const WAV_WINDOW = 4;
+const WAV_WINDOW = 2;
 export interface OverlayData {
   ocr_blocks: OcrDataType[]
   phones: PhoneData

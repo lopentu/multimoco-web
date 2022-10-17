@@ -6,6 +6,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react"
 import Bar from './Bar'
 import OverlayDataProvider from "./overlay-data-provider";
 import OverlayPainter from "./overlay-painter";
+import PopOverEdit from "./popover-edit";
 import styles from './styles';
 import useVideoState from "./useVideoState";
 import { to_seconds } from "./utils";
@@ -175,10 +176,6 @@ export default function VideoView(props: VideoViewProp) {
       requestAnimationFrame(render_frame);
   }
 
-  function onPopoverClose() {
-
-  }
-
   const combinedStyles: any = {}
   Object.keys(styles).forEach(key => {
     combinedStyles[key] = { ...styles[key] }
@@ -190,23 +187,9 @@ export default function VideoView(props: VideoViewProp) {
       display: "flex",
       flexDirection: "column"
     }}>
-      <style jsx>{`
-        .MuiPopover-paper {
-          color: #20b2aa;
-          background-color: red;
-        }
-      `}</style>
-      <Popover
-        open={true}
-        anchorPosition={{ top: 100, left: 10 }}
-        onClose={onPopoverClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
-        Popover content
-      </Popover>
+
+      <PopOverEdit
+        top={100} left={50} annot_text=""/>
       <video
         ref={videoRef}
         src={props.video_url}
