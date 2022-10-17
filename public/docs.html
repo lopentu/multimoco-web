@@ -58,16 +58,16 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent" >
         <ul class="navbar-nav align-items-lg-baseline">
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#about">0. About</a>
+            <a class="nav-link js-scroll-trigger" href="#about">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#doc-search">1. Search</a>
+            <a class="nav-link js-scroll-trigger" href="#doc-search">Search</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#doc-annotation" >2. Annotate</a>
+            <a class="nav-link js-scroll-trigger" href="#doc-annotation" >Annotate</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#doc-export">3. Export</a>
+            <a class="nav-link js-scroll-trigger" href="#doc-project">Project Details</a>
           </li>
         </ul>
       </div>
@@ -151,33 +151,54 @@
         </div>
       </section>
 
-      <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="doc-export">
+      <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="doc-project">
         <div class="my-auto">
-          <h2 class="mb-5" style="font-size: 40px; color:#019f86">3. Export</h2>
+          <h2 class="mb-5" style="font-size: 40px; color:#019f86">Project Details</h2>
 
           <div class="resume-item d-flex flex-column flex-md-row mb-5">
             <div class="resume-content mr-auto">
-              <h3 class="mb-0">3.1 匯出</h3>
-              <div class="subheading mb-3">一些步驟</div>
-              <p>一些步驟</p>
+              <h3 class="mb-2">Hardware Setup </h3>    
+              <p>We have combined a server with Debian Linux OS installed, a NAS with 4x8TB of hard drive disk mounted in RAID 5, and a SiliconDust HDHomeRun TV Tuner as our preliminary capture station. To enhance signal quality, we have an outdoor antenna connected via a coaxial cable. Also, both the server and the NAS are powered by a UPS with their network connections isolated from the main LAN by a router to ensure our data is secured physically and virtually.
+              </p>
             </div>
           </div>
 
           <div class="resume-item d-flex flex-column flex-md-row mb-5">
             <div class="resume-content mr-auto">
-              <h3 class="mb-0">3.2 匯出</h3>
-              <div class="subheading mb-3">一些步驟</div>
-              <p>一些步驟</p>
+              <h3 class="mb-2">Source Media </h3>    
+              <p>All 22 Taiwanese digital terrestrial television channels use the European-based DVB-T standard for broadcast transmission with their content accessible and recordable using a commercial TV tuner. We will mainly focus on 10 channels, including news of different Taiwanese languages and the consultation of the parliament, listed as follows: <span style="font-style: italic">CTV News
+                PTS News, PTS Taigi, Hakka TV, Taiwan Indigenous TV, TTV News, CTS News, Congress Channel I, Congress Channel II, and FTV News.</span>                
+              </p>
+              <p>Traditionally, the main news channels are broadcasted during morning, noon, and evening in Taiwan. Nevertheless, since most of the morning news is Mandarin-speaking, in order to meet the highest common factor of the four language categories we set up previously; plus, on account of the storage capacity, recording will be deployed during the evening time slots marked in bold above. Further, in both time slots, either one Mandarin channel will be chosen and take turns daily or weekly. In total, there will be five hours of news recorded every day, including two hours for Mandarin, and one hour each for Hokkien, Hakka, and Formosan languages. As for the congress channel, since all sessions are available on the Taiwan Parliament’s website with dedicated transcriptions in Mandarin, the data will be crawled directly from the Internet instead of recorded by the tuner. On the other hand, we are also planning to record talk shows, soap operas, and documentaries of the four language categories. Details will be provided in future communication.
+              </p>
+            </div>
+          </div>
+
+          <div class="resume-item d-flex flex-column flex-md-row mb-5">
+            <div class="resume-content mr-auto">
+              <h3 class="mb-2">Test Drive</h3>    
+              <p>We have successfully recorded the first batch of news during August 5-6. The resolution of the raw file captured by HDHomeRun is at 1080p and encoded in H.264. In this case, there would be a massive 2 GB per hour file size. After post-processing, the video is compressed at 720p and re-encoded in H.265. The compression process takes another hour to finish, while the result turns out to be the more acceptable 350MB per hour file size. As mentioned earlier, 5 hours of news, plus an hour of congress consultation –– a total of six hours recording, consuming approximately 2.1 GB of storage daily. Our NAS, with 20.95 TB of free space, will be able to maintain continuous recording for 9,976 days, which is considerably sufficient. 
+</p>
+            </div>
+          </div>
+
+          <div class="resume-item d-flex flex-column flex-md-row mb-5">
+            <div class="resume-content mr-auto">
+              <h3 class="mb-2">Preprocessing</h3>    
+              <p>The priority of dealing with audio data of news recording is the speech-to-text procedure. We have been evaluating two service offers, one is Google Speech-to-Text API, and the other is Philips Dictation. The former charges USD$ 0.006/15 sec, while the latter is free for academic use. Both services support Traditional Chinese output with high confidence, while the latter only accepts direct input via a microphone. We are still considering which is more suitable. On the other hand, it is worth noticing that the speech-to-text service is limited to Mandarin only. When it comes to other Taiwanese languages, we are looking forward to hiring students with language-specific knowledge for  manual transcribing.</p>
+              <p>After entering the NLP pipeline, first, for the semantic and syntactic approach, the earlier mentioned CWN project will offer corresponding tools for sense tagging and construction extraction, respectively. Secondly, for aligning sound and text, tools providing semi-manual forced alignment may be suitable to be deployed, we are now seeking an opportunity to collaborate with members from the phonetics labs in our institute. Lastly, for establishing multimodal corpus, ELAN is a great solution for annotating our audiovisual recordings. Currently, we are working on organizing the criteria of annotating the information emerging from the kinetic tier, which is considered to be the soul of multimodality. By collaborating as the members of Red Hen, our goal is to provide a multilingual multimodal corpus with a sophisticated query system.
+              </p>
             </div>
           </div>
 
           <div class="resume-item d-flex flex-column flex-md-row">
             <div class="resume-content mr-auto">
-              <h3 class="mb-0">3.3 匯出</h3>
-              <div class="subheading mb-3">一些步驟</div>
-              <p>一些步驟</p>
+              <h3 class="mb-2">Goals</h3>    
+              <p>The expected goals under this research proposal would be two-fold—for the theoretical studies on multimodal communication, lexical semantics and construction grammar may shed unique insights in multimodal linguistic research. At the same time, we would be excited to join Red Hen as a collection site and devote ourselves to the four categories of Taiwanese languages data—Taiwan Mandarin, Taiwanese Hokkien, Taiwanese Hakka, and Formosan languages. As the study progresses, we would also be glad to contribute our works on Chinese NLP, multimodal annotations, and code tools to help make the overall process pipeline better.
+              </p>
             </div>
           </div>
+
         </div>
       </section>
 
