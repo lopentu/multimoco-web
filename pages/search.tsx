@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Input, Dropdown, Spacer } from "@nextui-org/react";
-import { TextField, Button, Select, InputLabel, FormControl, MenuItem, Container } from '@mui/material';
+import { TextField, Button, Select, InputLabel, FormControl, MenuItem, Container, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import CorpusResult from '../components/corpus_results';
 import clientPromise from '../lib/mongodb'
@@ -13,6 +13,7 @@ import VideoJS from '../components/videojs';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import videojs, { VideoJsPlayer } from 'video.js';
+import VideoView from '../components/video-view';
 import { AnnotationSpans } from '../types/corpus';
 import { FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 
@@ -26,13 +27,17 @@ export async function getServerSideProps(context: any) {
 
     const { query } = context
     let searchType = query.searchType
-    console.log(query)
+    // console.log(query)
     if (searchType === undefined) {
       searchType = "asr"
     }
+
+    if ((query.query === "") || (query.query === undefined)) {
+      return { props: { searchResults: JSON.stringify(null), searchT: "" } }
+    }
     // const searchType = "asr"
     let results
-    console.log(query.query);
+    // console.log(query.query);
     // const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(100).toArray();
     // const searchResults: SearchResults = {}
     if (searchType === "asr") {
@@ -52,14 +57,14 @@ export async function getServerSideProps(context: any) {
         //     },
         //   }
         // },
-        // {
-        //   "$lookup": {
-        //     "from": "videos_meta",
-        //     "localField": "_id",
-        //     "foreignField": "name",
-        //     "as": "video_meta",
-        //   }
-        // },
+        {
+          "$lookup": {
+            "from": "videos_meta",
+            "localField": "name",
+            "foreignField": "name",
+            "as": "video_meta",
+          }
+        },
       ]).toArray()
 
     } else if (searchType === "ocr") {
@@ -78,34 +83,34 @@ export async function getServerSideProps(context: any) {
         //     },
         //   }
         // },
-        // {
-        //   "$lookup": {
-        //     "from": "videos_meta",
-        //     "localField": "_id",
-        //     "foreignField": "name",
-        //     "as": "video_meta",
-        //   }
-        // },
+        {
+          "$lookup": {
+            "from": "videos_meta",
+            "localField": "name",
+            "foreignField": "name",
+            "as": "video_meta",
+          }
+        },
       ]).toArray()
     }
     results?.forEach(function (part, index, theArray) {
       // theArray[index] = { ...theArray[index], ...{ text:theArray[index].payload.text, annotation: "" } };
       theArray[index].text = theArray[index].payload.text;
+      theArray[index].video_meta = theArray[index].video_meta[0].payload;
+      if (theArray[index].video_meta.hasOwnProperty("meeting_date")) {
+        theArray[index].video_meta.datetime = theArray[index].video_meta.meeting_date
+      }
+      theArray[index].video_meta.datetime = theArray[index].video_meta.datetime.toDateString();
       if (theArray[index].payload.hasOwnProperty('box')) {
         theArray[index]['ocrBBox'] = theArray[index].payload.box.coordinates[0];
       }
       theArray[index].annotation = "";
       delete theArray[index].phones;
       delete theArray[index].payload;
-      delete theArray[index]._id;
+      // delete theArray[index]._id;
     })
 
-    console.log(results?.slice(0));
-
-    const searchResults = {
-      searchType: searchType,
-      results: results
-    }
+    console.log(results?.slice(-5));
 
     // alignedUtt.forEach((elem) => {
     //   // console.log(elem['video_meta'])
@@ -152,6 +157,8 @@ type SearchPageProps = {
 const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
   const [queryText, setQueryText] = useState("");
   const [searchType, setSearchType] = useState(searchT);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [seekToSec, setSeekToSec] = useState(0);
   const [handSelect, setHandSelect] = useState("");
   const [soundSelect, setSoundSelect] = useState("");
   const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(searchResults));
@@ -170,18 +177,18 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
     // }]
   };
 
-  const handlePlayerReady = (player: VideoJsPlayer) => {
-    playerRef.current = player;
+  // const handlePlayerReady = (player: VideoJsPlayer) => {
+  //   playerRef.current = player;
 
-    // You can handle player events here, for example:
-    player.on('waiting', () => {
-      videojs.log('player is waiting');
-    });
+  //   // You can handle player events here, for example:
+  //   player.on('waiting', () => {
+  //     videojs.log('player is waiting');
+  //   });
 
-    player.on('dispose', () => {
-      videojs.log('player will dispose');
-    });
-  };
+  //   player.on('dispose', () => {
+  //     videojs.log('player will dispose');
+  //   });
+  // };
 
   let highlightText
   const router = useRouter();
@@ -201,9 +208,9 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
       highlightText = q
       setQueryText(q)
     }
-    console.log(getParams)
+    // console.log(getParams)
     if (getParams.searchType) {
-      setSearchType(getParams.searchType)
+      setSearchType(getParams.searchType as string)
     }
   }, [])
 
@@ -309,17 +316,28 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
             spacing={5}
           >
             <Grid2 mdOffset={2} xs={12} md={8} display="flex" justifyContent="center" alignContent="center">
-              <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+              {videoUrl &&
+                <VideoView video_url={videoUrl} seekToSec={seekToSec} />
+              }
+              {/* <VideoJS options={videoJsOptions} onReady={handlePlayerReady} /> */}
             </Grid2>
-            <Grid2 xs={12}>
-              <CorpusResult
-                annotationSpans={annotationSpans}
-                setAnnotationSpans={setAnnotationSpans}
-                player={playerRef}
-                queryText={queryText}
-                searchType={searchType}
-              />
-            </Grid2>
+            {annotationSpans ?
+              <Grid2 xs={12}>
+                <CorpusResult
+                  annotationSpans={annotationSpans}
+                  setAnnotationSpans={setAnnotationSpans}
+                  player={playerRef}
+                  queryText={queryText}
+                  searchType={searchType}
+                  setVideoUrl={setVideoUrl}
+                  setSeekToSec={setSeekToSec}
+                />
+              </Grid2>
+              :
+              <Grid2 xs={12} display="flex" justifyContent="center">
+                <Typography variant="h5">Please make a search!</Typography>
+              </Grid2>
+            }
           </Grid2>
         </Container>
       </section>

@@ -16,10 +16,10 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import Link from '@mui/material/Link';
+import { Typography } from '@mui/material';
 import { VideoJsPlayer } from 'video.js';
 import { fancyTimeFormat } from '../utils/utils';
-import { AnnotationSpan } from '../types/corpus';
-import { AlignedUtt, AnnotationSpans, OcrBlock, Results } from '../types/corpus'
+import { AlignedUtt, AnnotationSpans, AnnotationSpan, OcrBlock, Results } from '../types/corpus'
 
 
 interface TablePaginationActionsProps {
@@ -88,19 +88,55 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export default function CustomPaginationActionsTable({ annotationSpans, searchType, player }) {
+function formatVideoMeta(meta, name) {
+  // console.log(meta)
+  let mapping
+  if (meta.video_type === 'news') {
+    mapping = {
+      channel: 'Channel',
+      datetime: 'Date',
+
+    }
+  } else if (meta.video_type === 'legvid') {
+    mapping = {
+      channel: 'Channel',
+      datetime: 'Date',
+      legislator: 'Legislator',
+      // meeting_header: 'Meeting Header',
+      // meeting_name: 'Meeting Name',
+      meeting_committee: 'Meeting Committee'
+    }
+  }
+  return <>
+    {Object.entries(mapping).map(([k, v]) => {
+      return <>
+        <Typography variant="overline" display="block">
+          {v}
+        </Typography>
+        <Typography variant="button" display="block">
+          <strong>{meta[k]}</strong>
+        </Typography>
+      </>
+    })}
+    <Typography variant="overline" display="block">
+      Name
+    </Typography>
+    <Typography variant="button" display="block">
+      {name}
+    </Typography>
+  </>
+}
+export default function CorpusTable({ annotationSpans, searchType, player, setVideoUrl, setSeekToSec }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  console.log(typeof annotationSpans)
   let groupedAnnotationSpans = Array.from(annotationSpans.reduce(
     (entryMap, e) => entryMap.set(e.name, [...entryMap.get(e.name) || [], e]),
     new Map()
   ).values());
-  console.log(groupedAnnotationSpans);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - annotationSpans.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - groupedAnnotationSpans.length) : 0;
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -122,7 +158,7 @@ export default function CustomPaginationActionsTable({ annotationSpans, searchTy
         <TableHead>
           <TableRow>
             <TableCell align="left">
-              Name
+              Info
             </TableCell>
             <TableCell align="left">
               Text
@@ -137,11 +173,13 @@ export default function CustomPaginationActionsTable({ annotationSpans, searchTy
             .map(function (group, groupIndex, groupArray) {
               return group.map(function (row, rowIndex, rowArray) {
                 return (
-                  <TableRow key={row.name + row.offset + row.span}>
+                  <TableRow key={row._id}>
                     {(rowIndex === 0) &&
 
                       <TableCell sx={{ width: 200 }} component="th" scope="row" rowSpan={group.length} >
-                        {row.name}
+                        {formatVideoMeta(row.video_meta, row.name)}
+                        {/* {Object.entries(row.video_meta).map(([k, v]) => `${k}: ${v}`)} */}
+                        {/* {row.name} */}
                       </TableCell>
                     }
                     <TableCell align="left">
@@ -149,11 +187,13 @@ export default function CustomPaginationActionsTable({ annotationSpans, searchTy
                         color="primary"
                         onClick={() => {
                           let url = `https://storage.googleapis.com/multimoco/selected/h264/${row.name}.mp4`
-                          console.log(url)
-                          if (url !== player.current.src()) {
-                            player.current.src({ type: 'video/mp4', src: url })
-                          }
-                          player.current.currentTime(row.offset / 1000)
+                          setVideoUrl(url);
+                          setSeekToSec(row.offset);
+                          // if (url !== player.current.src()) {
+
+                          // player.current.src({ type: 'video/mp4', src: url })
+                          // }
+                          // player.current.currentTime(row.offset / 1000)
                         }
                         }
                       >[{fancyTimeFormat(row.offset)}]</Link> {row.text}
@@ -174,7 +214,7 @@ export default function CustomPaginationActionsTable({ annotationSpans, searchTy
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={3}
-              count={annotationSpans.length}
+              count={groupedAnnotationSpans.length}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{
