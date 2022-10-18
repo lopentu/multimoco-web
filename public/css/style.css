@@ -45,7 +45,7 @@
   --bs-danger: #dc3545;
   --bs-light: #f8f9fa;
   --bs-dark: #212529;
-  --bs-primary-rgb: 0, 32, 74;
+  --bs-primary-rgb: 26, 83, 92;
   --bs-secondary-rgb: 0, 85, 85;
   --bs-success-rgb: 25, 135, 84;
   --bs-info-rgb: 13, 202, 240;
@@ -9194,10 +9194,11 @@ textarea.form-control-lg {
 
 .logo {
   font-size: 24px;
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: #198754 !important;
   font-weight: 500; }
   .logo:hover {
     color: #fff !important; }
+
 
 .site-nav {
   padding-top: 20px;
@@ -9612,7 +9613,7 @@ body {
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, .logo {
   font-family: "cwTeXYen", "Work Sans", sans-serif;
-  color: #00204a; }
+  color: #1a535c; }
 
 a {
   -webkit-transition: .3s all ease;
@@ -9956,10 +9957,12 @@ textarea {
   padding-top: 10rem; }
 
 .section-4 {
-  background-color: #fff; }
+  background-color: #cbf3f0; }
   .section-4 .img-about {
     background-size: cover;
-    background-position: center center; }
+    background-position: center center; 
+    
+  }
     .section-4 .img-about img {
       -o-object-fit: cover;
       object-fit: cover; }
@@ -10078,12 +10081,15 @@ textarea {
     border-radius: 50%;
     margin: -45px auto 0 auto; }
   .person .person-contents {
-    padding: 30px; }
+    padding: 30px; 
+  }
     .person .person-contents h2, .person .person-contents .h2 {
-      font-size: 18px; }
+      font-size: 18px; 
+    }
       .person .person-contents h2 a, .person .person-contents .h2 a {
         color: #000;
-        text-decoration: none; }
+        text-decoration: none; 
+      }
     .person .person-contents p {
       font-size: 14px; }
 
@@ -10159,7 +10165,7 @@ textarea {
   position: relative;
   z-index: 8;
   text-align: center;
-  background-color: rgba(0, 32, 74, 0.05); }
+  background-color: #fffcf7; }
 
 .box-feature {
   background: #fff;
@@ -10381,3 +10387,6 @@ nav[aria-label="breadcrumb"] li:before {
       .site-footer .social li a:hover {
         background: #00204a;
         color: #fff; }
+
+
+  

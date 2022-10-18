@@ -36,28 +36,32 @@
       MultiMoco NTU&nbsp;|&nbsp;台大多媒體語料庫
     </title>
   </head>
-  <body>
-    <div class="site-mobile-menu site-navbar-target">
-      <div class="site-mobile-menu-header">
+  <body >
+    <div class="site-mobile-menu site-navbar-target" >
+      <div class="site-mobile-menu-header" >
         <div class="site-mobile-menu-close">
           <span class="icofont-close js-menu-toggle"></span>
         </div>
       </div>
-      <div class="site-mobile-menu-body"></div>
+      <div class="site-mobile-menu-body" ></div>
     </div>
 
-    <nav class="site-nav">
-      <div class="container">
+    <nav class="site-nav" id="mainpage-navbar" >
+      <div class="container" >
         <div class="menu-bg-wrap">
-          <div class="site-navigation">
-            <a href="index.html" class="logo ms-2 mt-2 float-start">MultiMoco NTU</a>
+          <div class="site-navigation" >
+            <a href="index.html" class="logo ms-2 mt-2 float-start" >MultiMoco NTU</a>
 
             <ul
               class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end"
+             
             >              
-              <li><a href="#corpus-content">內容</a></li>
-              <li><a href="#corpus-stat">統計</a></li>
-              <li><a href="#mmoco-people">團隊</a></li>              
+              <li><a href="#corpus-about"  style="color: #198754">About</a></li>
+              <li><a href="#content-stat"  style="color: #198754">Statistics</a></li>
+              <li><a href="#mmoco-people"  style="color: #198754">Team</a></li>
+              <li><a href="#corpus-content"  style="color: #198754">Workshop</a></li>              
+              <li><a href="/public/docs.html"  style="color: #198754">Docs</a></li> 
+                          
             </ul>
 
             <a
@@ -65,6 +69,7 @@
               class="burger light me-auto float-end mt-1 site-menu-toggle js-menu-toggle d-inline-block d-lg-none"
               data-toggle="collapse"
               data-target="#main-navbar"
+              
             >
               <span></span>
             </a>
@@ -73,19 +78,22 @@
       </div>
     </nav>
 
-    <div class="hero">
-      <div class="hero-slide">
+    <div class="hero" style="background-color: #cbf3f0">
+      <div class="hero-slide" >
         <video autoplay muted id="mp-video">
           <source src="images/mp.mp4" type="video/mp4">
         </video>
       </div>
 
-      <div class="container">
-        <div class="row justify-content-left align-items-center">
-          <div class="col-6 text-left">
-            <h1 class="ms-3 heading" data-aos="fade-up">
-              臺大多模態語料庫
-            </h1>
+      <div class="container" >
+        <div class="row justify-content-left align-items-center" >
+          <div class="col-6 text-left" >
+            <h2 class="mx-3 mb-1 heading" data-aos="fade-up" style="color:#1a535c;" >
+              臺大多模態語料庫              
+            </h2>
+            <h4 class="mb-xl-5 px-3" data-aos="fade-up" style="color:#1a535c">
+              Multimodal Corpus for Formosan Languages              
+            </h4>
             <form
               action="search" method="GET"
               class="form-search d-flex align-items-stretch mb-3"
@@ -99,93 +107,114 @@
                 placeholder="尋找文字、手勢、語氣…"
               />
               
-              <button type="submit" class="fs-5 btn btn-primary">搜尋</button>
+              <button type="submit" class="fs-5 btn btn-primary" >Search</button>
             </form>
           </div>
         </div>
       </div>
     </div>
 
-    <a id="corpus-content"></a>
-    <section class="features-1">
+    <a id="corpus-about"></a>
+    <section class="section-4 text-center">
       <div class="container">
-        <div class="row mb-5 align-items-center justify-content-center">
-          <div class="col-lg-6">
-            <h2 class="font-weight-bold text-primary heading">
-              語料庫內容
+        <div class="row justify-content-center text-center mb-auto">
+          <div class="col-lg-6 mb-4 mt-4">
+            <h2 class="font-weight-bold heading text-primary mb-auto">
+              關於  About
             </h2>
           </div>
         </div>
-        <div class="row">
-          <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-            <div class="box-feature">
-              <span class="fa-regular fa-file-lines fs-1 text-dark m-3"></span>
-              <h3 class="mb-3 text-muted fs-4">文字轉寫</h3>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
-              </p>
-              <!-- <p><a href="#" class="learn-more">Learn More</a></p> -->
-            </div>
+        <div class="row mt-3 pb-3 align-items-center justify-content-center">
+          <div class="col-xxl-auto" data-aos="fade-up" data-aos-delay="200">
+            <div class="shadow box-feature mb-xxl-5">
+              <p class="text-primary" style="font-size:18px">This project aims to serve as the pioneering work on the 
+                construction of a large-scale multimodal corpus for Formosan Languages (MultiMoCo) 
+                including four official language groups in Taiwan, as well as the corpus analysis tools 
+                enhanced by both human annotation and recent multimodal machine learning techniques. 
+                Throughout this long-term project, our primary goal is set to provide an empirical base 
+                to support/evaluate the cognitive linguistic theoretical claim.</h3>
+      </div>
+    </section>
+
+
+    <a id="content-stat"></a>
+    <section class="section-4 text-center">
+      <div class="container">
+        <div class="row justify-content-center text-center mb-auto">
+          <div class="col-lg-6 mb-4 mt-4">
+            <h2 class="font-weight-bold heading text-primary mb-auto">
+              內容統計  Statistics
+            </h2>
           </div>
-          <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
-            <div class="box-feature">
+        </div>
+        <div class="row mt-3">
+          <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="shadow box-feature">
               <span class="fa-regular fa-circle-play fs-1 text-dark m-3"></span>
-              <h3 class="mb-3 text-muted fs-4">影音資料</h3>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+              <h3 class="mb-3 text-muted fs-4">Video</h3>
+              <p >
+                臺灣數位電視公共頻道新聞 <br>
+                臺灣立法院議事轉播影像
               </p>
               <!-- <p><a href="#" class="learn-more">Learn More</a></p> -->
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
-            <div class="box-feature">
-              <span class="fa-regular fa-comments fs-1 text-dark m-3"></span>
-              <h3 class="mb-3 text-muted fs-4">對話互動</h3>
+            <div class="shadow box-feature">
+              <span class="fa-regular fa-file-lines fs-1 text-dark m-3"></span>
+              <h3 class="mb-3 text-muted fs-4">Dialogue</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                Open AI Whisper 模型<br>
+                針對音訊轉寫之文字
+              </p>
+              <!-- <p><a href="#" class="learn-more">Learn More</a></p> -->
+            </div>
+          </div>
+          <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
+            <div class="shadow box-feature">
+              <span class="fa-regular fa-comments fs-1 text-dark m-3"></span>
+              <h3 class="mb-3 text-muted fs-4 ">Caption</h3>
+              <p>
+                OCR 技術針對影像<br>
+                擷取畫面之文字
               </p>
               <!-- <p><a href="#" class="learn-more">Learn More</a></p> -->
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
-            <div class="box-feature">
+            <div class="shadow box-feature">
               <span class="fa-solid fa-hands fs-1 text-dark m-3"></span>
-              <h3 class="mb-3 text-muted fs-4">手勢辨識</h3>
+              <h3 class="mb-3 text-muted fs-4">Gesture</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                MediaPipe 針對影像<br>
+                辨識說話者之手勢
               </p>
               <!-- <p><a href="#" class="learn-more">Learn More</a></p> -->
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <a id="corpus-stat"></a>
-    <div class="section section-4 bg-light">
-      <div class="container">
-        <div class="row mb-5 align-items-center justify-content-center text-center">
-          <div class="col-lg-6">
-            <h2 class="font-weight-bold text-primary heading">
-              內容統計
-            </h2>
+        <div class="row section-counter text-center mt-4 pb-3">
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="200" >
+            <div class="counter-wrap mb-5 mb-lg-0">
+              <span class="number"
+                ><span class="countup">223</span>
+              </span>
+              <span class="caption text-black-50">total clips</span>
+            </div>
           </div>
-        </div>
-        <div class="row section-counter text-center mt-5">
           <div
             class="col-6 col-sm-6 col-md-6 col-lg-3"
             data-aos="fade-up"
             data-aos-delay="300"
           >
             <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">3298</span>?</span
-              >
-              <span class="caption text-black-50">影片數</span>
+              <span class="number">
+                <span class="countup">5854</span>
+              </span>
+              <span class="caption text-black-50">total minutes</span>
             </div>
           </div>
           <div
@@ -194,10 +223,63 @@
             data-aos-delay="400"
           >
             <div class="counter-wrap mb-5 mb-lg-0">
+              <span class="number">
+                <span class="countup">1485297</span>
+              </span>
+              <span class="caption text-black-50">total characters</span>
+            </div>
+          </div>
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="500"
+          >
+            <div class="counter-wrap mb-xxl-5">
+              <span class="number">
+                <span class="countup">22805</span>
+              </span>
+              <span class="caption text-black-50">total gestures</span>
+            </div>
+          </div>
+      </div>
+    </section>
+
+  
+<!--    原本的資料庫內容/資料統計是分開的section
+  <a id="corpus-stat"></a>
+    <div class="section section-4 ">
+      <div class="container">
+        <div class="row mb-5 align-items-center justify-content-center text-center">
+          <div class="col-lg-6">
+            <h2 class="font-weight-bold text-primary heading">
+              內容統計  Statistics
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row section-counter text-center mt-5">
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
+            <div class="counter-wrap mb-5 mb-lg-0">
               <span class="number"
-                ><span class="countup text-primary">2181</span>?</span
-              >
-              <span class="caption text-black-50">總時數</span>
+                ><span class="countup text-primary">223</span>
+              </span>
+              <span class="caption text-black-50">total clips</span>
+            </div>
+          </div>
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="400"
+          >
+            <div class="counter-wrap mb-5 mb-lg-0">
+              <span class="number">
+                <span class="countup text-primary">5854</span>
+              </span>
+              <span class="caption text-black-50">total minutes</span>
             </div>
           </div>
           <div
@@ -206,10 +288,10 @@
             data-aos-delay="500"
           >
             <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">9316</span>?</span
-              >
-              <span class="caption text-black-50">索引字數</span>
+              <span class="number">
+                <span class="countup text-primary">1485297</span>
+              </span>
+              <span class="caption text-black-50">total characters</span>
             </div>
           </div>
           <div
@@ -218,82 +300,169 @@
             data-aos-delay="600"
           >
             <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">7191</span>?</span
-              >
-              <span class="caption text-black-50">索引手勢數</span>
+              <span class="number">
+                <span class="countup text-primary">22805</span>
+              </span>
+              <span class="caption text-black-50">total gestures</span>
             </div>
           </div>
         </div>
       </div>
     </div>
+-->
 
-    <div class="section section-5">
+  
+  <div class="section section-4" id="mmoco-people">
       <div class="container">
-        <div class="row justify-content-center text-center mb-5">
-          <div class="col-lg-6 mb-5">
-            <h2 class="font-weight-bold heading text-primary mb-4">
-              計畫團隊
+        <div class="row justify-content-center text-center mb-auto">
+          <div class="col-lg-5 mb-5 mt-4">
+            <h2 class="font-weight-bold heading text-primary mb-auto">
+              計畫團隊 Team
             </h2>
-            <p class="text-black-50">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-              enim pariatur similique debitis vel nisi qui reprehenderit totam?
-              Quod maiores.
-            </p>
           </div>
         </div>
 
-
-        <a id="mmoco-people"></a>
-        <div class="row">
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
+        <div class="row g-0" >
+          <div class="col " >
+            <div class="h-100 person" >
               <img
-                src="images/person_placeholder.jpg"
+                src="images/members/shukai-2.jpg"
                 alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">James Doe</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
+                class="img-fluid mt-5" />
+              
+                <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">謝舒凱</a></h2>
+                <span class="meta d-block mb-3">Shu-Kai Hsieh</span>
+                <span class="meta d-block">臺大語言所 <br>LOPE實驗室 主持人</span>
               </div>
             </div>
           </div>
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
-              <img
-                src="images/person_placeholder.jpg"
-                alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">Jean Smith</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
+          <div class="col " >
+              <div class="h-100 person" >
+                <img
+                  src="images/members/sean.png"
+                  alt="Image"
+                  class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">曾昱翔</a></h2>
+                <span class="meta d-block mb-3">Yu-Hsiang Tseng</span>
+                <span class="meta d-block">臺大語言所<br>LOPE實驗室 博士後研究員</span>
               </div>
             </div>
           </div>
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
+          <div class="col " >
+            <div class="h-100 person" >
               <img
-                src="images/person_placeholder.jpg"
+                src="images/members/richard.jpg"
                 alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">Alicia Huston</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
-
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">連大成</a></h2>
+                <span class="meta d-block mb-3">Richard Lian</span>
+                <span class="meta d-block">臺大資訊網路<br>與多媒體研究所 博士生</span>
               </div>
             </div>
           </div>
+          <div class="col " >
+            <div class="h-100 person" >
+              <img
+                src="images/members/derek.png"
+                alt="Image"
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#"></a>廖聿鋆</h2>
+                <span class="meta d-block mb-3">Yu-Yun Liao</span>
+                <span class="meta d-block">臺大語言所<br>LOPE實驗室 碩士生</span>
+              </div>
+            </div>
+          </div>
+          <div class="col " >
+            <div class="h-100 person" >
+              <img
+                src="images/members/yulin.jpeg"
+                alt="Image"
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">張鈺琳</a></h2>
+                <span class="meta d-block mb-3">Yu-Lin Chang</span>
+                <span class="meta d-block">臺大語言所<br>LOPE實驗室 碩士生</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row g-0" >
+          <div class="col " >
+            <div class="h-100 person" >
+              <img
+                src="images/members/piner.jpg"
+                alt="Image"
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">陳品而</a></h2>
+                <span class="meta d-block mb-3">Pin-Er Chen</span>
+                <span class="meta d-block">臺大語言所<br>LOPE實驗室 碩士生</span>
+              </div>
+            </div>
+          </div>
+          <div class="col " >
+            <div class="h-100 person" >
+              <img
+                src="images/members/willy.jpg"
+                alt="Image"
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">王麒瑋</a></h2>
+                <span class="meta d-block mb-3">Chi-Wei Wang</span>
+                <span class="meta d-block">臺大語言所<br>SBS實驗室 碩士生</span>
+              </div>
+            </div>
+          </div>
+          <div class="col " >
+            <div class="h-100 person" >
+              <img
+                src="images/members/wei-zhe.jpg"
+                alt="Image"
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">顏暐哲</a></h2>
+                <span class="meta d-block mb-3">Wei-Jhe Yen</span>
+                <span class="meta d-block">臺大心理系 四年級<br>實習生</span>
+              </div>
+            </div>
+          </div>
+          <div class="col " >
+            <div class="h-100 person" >
+              <img
+                src="images/members/alan.png"
+                alt="Image"
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">郭建廷</a></h2>
+                <span class="meta d-block mb-3">Alan Kuo</span>
+                <span class="meta d-block">康乃薾美國學校 G12<br>實習生</span>
+              </div>
+            </div>
+          </div>
+          <div class="col " >
+            <div class="h-100 person" >
+              <img
+                src="images/members/haoxuan.JPG"
+                alt="Image"
+                class="img-fluid mt-5" />
+              <div class="person-contents" >
+                <h2 class="mb-0"><a href="#">高顥瑄</a></h2>
+                <span class="meta d-block mb-3">Hao-Hsuan Kao</span>
+                <span class="meta d-block">普台高中 二年級<br>實習生</span>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
-    </div>
-
-    <div class="site-footer">
+  </div>
+  
+  <!-- /.site-footer -->
+  <div class="site-footer">
       <div class="container">
         <div class="row mt-0">
           <div class="col-12 text-center">
@@ -326,7 +495,7 @@
       </div>
       <!-- /.container -->
     </div>
-    <!-- /.site-footer -->
+   
 
     <!-- Preloader -->
     <div id="overlayer"></div>
@@ -335,12 +504,18 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="js/resume.min.js"></script>
+    
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/tiny-slider.js"></script>
     <script src="js/aos.js"></script>
     <script src="js/navbar.js"></script>
     <script src="js/counter.js"></script>
     <script src="js/custom.js"></script>
+
   </body>
 </html>
