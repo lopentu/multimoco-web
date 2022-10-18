@@ -126,7 +126,7 @@ function formatVideoMeta(meta) {
     </Typography>
   </>
 }
-export default function CorpusTable({ annotationSpans, searchType, player, onSelectedSpanChanged }) {
+export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   let groupedAnnotationSpans = Array.from(annotationSpans.reduce(

@@ -352,6 +352,8 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                   // player={playerRef}
                   queryText={queryText}
                   searchType={searchType}
+                  setQueryText={setQueryText}
+                  setSearchType={setSearchType}
                   onSelectedSpanChanged={onSelectedSpanChanged}
                 />
               </Grid2>

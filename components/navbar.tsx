@@ -42,7 +42,7 @@ export default function Searchbar() {
 				<MDBCollapse navbar show={showBasic}>
 					<MDBNavbarNav className='mr-auto m-1 mb-lg-0'>
 						<MDBNavbarItem>
-							<MDBNavbarLink active aria-current='page' href='#'>
+							<MDBNavbarLink active aria-current='page' href='/'>
 								Home
 							</MDBNavbarLink>
 						</MDBNavbarItem>

@@ -52,7 +52,8 @@ export interface CorpusResultProps {
   setAnnotationSpans: React.Dispatch<React.SetStateAction<AnnotationSpans>>
   queryText: string
   searchType: string
-  player: React.MutableRefObject<VideoJsPlayer>
+  setQueryText: React.Dispatch<React.SetStateAction<string>>
+  setSearchType: React.Dispatch<React.SetStateAction<string>>
   onSelectedSpanChanged: (url: string, offset: number) => void
 }
 

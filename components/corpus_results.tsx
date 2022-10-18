@@ -10,7 +10,7 @@ import { flattenObject } from '../utils/utils';
 
 export default function CorpusResult(props: CorpusResultProps) {
   const { annotationSpans, setAnnotationSpans,
-    player, queryText, searchType,
+    queryText, searchType, setQueryText, setSearchType,
     onSelectedSpanChanged } = props;
 
   function downloadBlob(content, filename, contentType) {
@@ -26,17 +26,17 @@ export default function CorpusResult(props: CorpusResultProps) {
   function buildCsv(data: AnnotationSpans) {
     let flattenedData = data.map(flattenObject);
     let leaveOut = ['clip_lowres_link', 'clip_highres_link', 'video_id', 'filename']
-    let h = Array.from(new Set(flattenedData.map(d => Object.keys(d)).flat()))
-    console.log(h)
+    let h = Array.from(new Set(flattenedData.map(d => Object.keys(d)).flat())).concat(['query_text', 'search_type'])
+    console.log("H", h)
 
     let header: string[] = h.filter(item => !leaveOut.includes(item));
     console.log(header)
 
     let rows = flattenedData.map(d => {
       let row: any[] = []
-      header.forEach((head) => d[head] ?
-        row.push(d[head])
-        : row.push("na"))
+      d['query_text'] = queryText;
+      d['search_type'] = searchType;
+      header.forEach((head) => d[head] ? row.push(d[head]) : row.push("na"))
 
       return row.join(',')
     });
@@ -69,6 +69,8 @@ export default function CorpusResult(props: CorpusResultProps) {
       }, {});
       return el;
     });
+    setQueryText(arr[0].query_text);
+    setSearchType(arr[0].search_type);
     return arr;
   }
 
@@ -111,7 +113,6 @@ export default function CorpusResult(props: CorpusResultProps) {
       <CorpusTable
         annotationSpans={annotationSpans}
         searchType={searchType}
-        player={player}
         onSelectedSpanChanged={onSelectedSpanChanged}
       />
     </>
