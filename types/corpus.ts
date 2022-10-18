@@ -62,6 +62,7 @@ export interface AnnotationSpan {
   offset: number,
   span: number,
   text: string,
+  videoMeta: Record<string, any>,
   annotation: string,
   ocrBBox?: Point[]
 }

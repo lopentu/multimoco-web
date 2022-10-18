@@ -88,7 +88,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-function formatVideoMeta(meta, name) {
+function formatVideoMeta(meta) {
   // console.log(meta)
   let mapping
   if (meta.video_type === 'news') {
@@ -122,7 +122,7 @@ function formatVideoMeta(meta, name) {
       Name
     </Typography>
     <Typography variant="button" display="block">
-      {name}
+      {meta.name}
     </Typography>
   </>
 }
@@ -153,7 +153,7 @@ export default function CorpusTable({ annotationSpans, searchType, player, onSel
   };
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} >
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table" size="small">
         <TableHead>
           <TableRow>
@@ -173,14 +173,11 @@ export default function CorpusTable({ annotationSpans, searchType, player, onSel
             .map(function (group, groupIndex, groupArray) {
               return group.map(function (row, rowIndex, rowArray) {
                 return (
-                  <TableRow key={`${row._id}-${groupIndex}`}>
+                  <TableRow key={`${(Math.random() + 1).toString(36).substring(8)}`}>
                     {(rowIndex === 0) &&
 
-                      <TableCell sx={{ width: 200 }}
-                        component="th" scope="row" rowSpan={group.length} >
-                        {formatVideoMeta(row.video_meta, row.name)}
-                        {/* {Object.entries(row.video_meta).map(([k, v]) => `${k}: ${v}`)} */}
-                        {/* {row.name} */}
+                      <TableCell sx={{ width: 200 }} component="th" scope="row" rowSpan={group.length} >
+                        {formatVideoMeta(row)}
                       </TableCell>
                     }
                     <TableCell align="left" >
@@ -189,18 +186,12 @@ export default function CorpusTable({ annotationSpans, searchType, player, onSel
                         onClick={() => {
                           let url = `https://storage.googleapis.com/multimoco/selected/h264/${row.name}.mp4`
                           onSelectedSpanChanged(url, row.offset / 1000);
-                          // if (url !== player.current.src()) {
-
-                          // player.current.src({ type: 'video/mp4', src: url })
-                          // }
-                          // player.current.currentTime(row.offset / 1000)
-                        }
-                        }
+                        }}
                       >[{fancyTimeFormat(row.offset)}]</Link>&nbsp;
                       {
                         row.annotation ?
-                        `<${row.annotation}>${row.text}` :
-                        row.text
+                          `<${row.annotation}>${row.text}` :
+                          row.text
                       }
                     </TableCell>
                   </TableRow>

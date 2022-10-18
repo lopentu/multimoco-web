@@ -19,28 +19,22 @@ import { FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 import { getVideoName, groupAnnotationSpans } from '../components/span-data-utils';
 
 
-
-
 export async function getServerSideProps(context: any) {
   try {
     const client = await clientPromise
     const db = client.db("multimoco")
-
+    let results
     const { query } = context
     let searchType = query.searchType
-    // console.log(query)
+
     if (searchType === undefined) {
       searchType = "asr"
     }
 
-    if ((query.query === "") || (query.query === undefined)) {
+    if (((query.query === "") || (query.query === undefined)) || (query.query === undefined)) {
       return { props: { searchResults: JSON.stringify(null), searchT: "" } }
     }
-    // const searchType = "asr"
-    let results
-    // console.log(query.query);
-    // const searchResults = await db.collection("aligned_utt").find({ "payload.text": new RegExp(query.query, "i") }).limit(100).toArray();
-    // const searchResults: SearchResults = {}
+
     if (searchType === "asr") {
       results = await db.collection("aligned_utt").aggregate([
         { "$match": { "payload.text": new RegExp(query.query, "i") } },
@@ -50,6 +44,7 @@ export async function getServerSideProps(context: any) {
             "offset": 1
           }
         },
+        // group results by video name
         // {
         //   "$group": {
         //     "_id": "$name",
@@ -76,6 +71,7 @@ export async function getServerSideProps(context: any) {
             "offset": 1
           }
         },
+        // group results by video name
         // {
         //   "$group": {
         //     "_id": "$name",
@@ -95,20 +91,27 @@ export async function getServerSideProps(context: any) {
       ]).toArray()
     }
     results?.forEach(function (part, index, theArray) {
-      // theArray[index] = { ...theArray[index], ...{ text:theArray[index].payload.text, annotation: "" } };
       theArray[index].text = theArray[index].payload.text;
-      theArray[index].video_meta = theArray[index].video_meta[0].payload;
-      if (theArray[index].video_meta.hasOwnProperty("meeting_date")) {
-        theArray[index].video_meta.datetime = theArray[index].video_meta.meeting_date
+
+      for (const [key, value] of Object.entries(theArray[index].video_meta[0].payload)) {
+        theArray[index][key] = value;
       }
-      theArray[index].video_meta.datetime = theArray[index].video_meta.datetime.toDateString();
+
+      if (theArray[index].hasOwnProperty("meeting_date")) {
+        theArray[index].datetime = theArray[index].meeting_date
+      }
+
+      theArray[index].datetime = theArray[index].datetime.toDateString();
       if (theArray[index].payload.hasOwnProperty('box')) {
         theArray[index]['ocrBBox'] = theArray[index].payload.box.coordinates[0];
       }
+
+      // include field for user annotations
       theArray[index].annotation = "";
       delete theArray[index].phones;
       delete theArray[index].payload;
-      // delete theArray[index]._id;
+      delete theArray[index]._id;
+      delete theArray[index].video_meta;
     })
 
     console.log(results?.slice(-5));
@@ -138,13 +141,12 @@ export async function getServerSideProps(context: any) {
     // db.find({}) or any of the MongoDB Node Driver commands
 
     return {
-      // props: { searchResults: JSON.stringify(searchResults) },
       props: { searchResults: JSON.stringify(results), searchT: searchType },
     }
   } catch (e) {
     console.error(e)
     return {
-      props: { isConnected: false },
+      props: { searchResults: JSON.stringify(null), searchT: "" }
     }
   }
 }
@@ -152,7 +154,6 @@ export async function getServerSideProps(context: any) {
 type SearchPageProps = {
   searchResults: string,
   searchT: string,
-  isConnected?: boolean
 }
 
 const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
@@ -164,36 +165,9 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
   const [soundSelect, setSoundSelect] = useState("");
   const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(searchResults));
 
-  const selectedSpans = annotationSpans.filter((x) => x.name == getVideoName(videoUrl));
+  const selectedSpans = annotationSpans !== null ?
+    annotationSpans.filter((x) => x.name == getVideoName(videoUrl)) : null;
 
-  const playerRef: React.MutableRefObject<VideoJsPlayer> = React.useRef(null);
-  const videoJsOptions = {
-    autoplay: true,
-    controls: true,
-    responsive: true,
-    preload: 'metadata',
-    playbackRates: [0.5, 1, 1.5, 2],
-    fluid: true,
-    // sources: [{
-    //   src: '',
-    //   type: 'video/mp4'
-    // }]
-  };
-
-  // const handlePlayerReady = (player: VideoJsPlayer) => {
-  //   playerRef.current = player;
-
-  //   // You can handle player events here, for example:
-  //   player.on('waiting', () => {
-  //     videojs.log('player is waiting');
-  //   });
-
-  //   player.on('dispose', () => {
-  //     videojs.log('player will dispose');
-  //   });
-  // };
-
-  let highlightText
   const router = useRouter();
   const getParams = router.query;
 
@@ -204,16 +178,16 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
   useEffect(() => {
     if (Array.isArray(getParams.query)) {
       let q = getParams.query.at(0) || ""
-      highlightText = q
       setQueryText(q)
     } else {
       let q = getParams.query || ""
-      highlightText = q
       setQueryText(q)
     }
-    // console.log(getParams)
-    if (getParams.searchType) {
-      setSearchType(getParams.searchType as string)
+    if (getParams.searchType !== undefined) {
+      setSearchType(getParams.searchType as string);
+    }
+    else {
+      setSearchType('asr');
     }
   }, []);
 
@@ -251,7 +225,6 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
         </title>
       </Head>
 
-
       <section className="features-1"
         // style={{ overflow: "visible", minHeight: "100vh", overflowY: "scroll" }}>
         style={{ minHeight: "100vh", }}>
@@ -276,7 +249,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                   <Grid2 xs={12}>
                     <TextField
                       fullWidth
-                      label="搜尋文字、聲音、手勢"
+                      label="Query Text"
                       id="search"
                       type="text"
                       name="query"
@@ -306,11 +279,11 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                       >
                         <FormControlLabel value="asr" control={<Radio />} label="ASR" />
                         <FormControlLabel value="ocr" control={<Radio />} label="OCR" />
-                        <FormControlLabel value="blank" control={<Radio />} label="Blank" />
+                        {/* <FormControlLabel value="blank" control={<Radio />} label="Blank" /> */}
                       </RadioGroup>
                     </FormControl>
                   </Grid2>
-                  <Grid2 md={6} >
+                  {/* <Grid2 md={6} >
                     <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
                       <InputLabel id="hand-select-label">手勢</InputLabel>
                       <Select
@@ -341,7 +314,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                         <MenuItem value="sound-overlapping">語音重疊</MenuItem>
                       </Select>
                     </FormControl>
-                  </Grid2>
+                  </Grid2> */}
                 </Grid2>
               </form>
             </Grid2>
@@ -376,7 +349,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                 <CorpusResult
                   annotationSpans={annotationSpans}
                   setAnnotationSpans={setAnnotationSpans}
-                  player={playerRef}
+                  // player={playerRef}
                   queryText={queryText}
                   searchType={searchType}
                   onSelectedSpanChanged={onSelectedSpanChanged}
@@ -385,7 +358,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
 
               :
               <Grid2 xs={12} display="flex" justifyContent="center">
-                <Typography variant="h5">Please make a search!</Typography>
+                <Typography variant="h5">Query cannot be empty</Typography>
               </Grid2>
             }
           </Grid2>

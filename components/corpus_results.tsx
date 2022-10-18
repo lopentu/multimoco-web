@@ -1,36 +1,17 @@
-import { VideoJsPlayer } from 'video.js';
 import { AnnotationSpans, CorpusResultProps, SearchResults } from '../types/corpus';
 import CorpusTable from './corpus_table';
 import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider';
 import { useState } from 'react';
+import { flattenObject } from '../utils/utils';
 
 
 export default function CorpusResult(props: CorpusResultProps) {
-  const { annotationSpans, setAnnotationSpans, 
-          player, queryText, searchType, 
-          onSelectedSpanChanged } = props;
-
-  function buildCsv(data) {
-    // console.log(data);
-    let header = [...Object.keys(data[0]), "notes"].join(',') + "\n";
-    let rows = data.map(d => [...Object.values(d), ""]
-      .map(String)
-      .map(v => v.replaceAll('"', '""'))
-      .map(v => `"${v}"`)
-      .join(',')
-    ).join('\n')
-    // let rows = data.map(row => 
-    //   row
-    //   .map(Object.values)
-
-    let csv = header + rows
-    return csv
-
-  }
+  const { annotationSpans, setAnnotationSpans,
+    player, queryText, searchType,
+    onSelectedSpanChanged } = props;
 
   function downloadBlob(content, filename, contentType) {
     let blob = new Blob([content], { type: contentType });
@@ -42,14 +23,48 @@ export default function CorpusResult(props: CorpusResultProps) {
     pom.click();
   }
 
+  function buildCsv(data: AnnotationSpans) {
+    let flattenedData = data.map(flattenObject);
+    let leaveOut = ['clip_lowres_link', 'clip_highres_link', 'video_id', 'filename']
+    let h = Array.from(new Set(flattenedData.map(d => Object.keys(d)).flat()))
+    console.log(h)
+
+    let header: string[] = h.filter(item => !leaveOut.includes(item));
+    console.log(header)
+
+    let rows = flattenedData.map(d => {
+      let row: any[] = []
+      header.forEach((head) => d[head] ?
+        row.push(d[head])
+        : row.push("na"))
+
+      return row.join(',')
+    });
+
+    console.log(rows.slice(0, 5))
+
+    let csv = '\ufeff' + header.join(',') + "\n" + rows.join('\n')
+    return csv
+
+  }
+
   function csvToArray(str, delimiter = ",") {
     const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(v => v.trim());
     const rows = str.slice(str.indexOf("\n") + 1).split(/\r?\n|\r|\n/);
+    const numericFields = ['offset', 'span', 'duration', 'start', 'end']
 
     const arr = rows.map((row) => {
       const values = row.split(delimiter);
       const el = headers.reduce((object, header, index) => {
-        object[header] = values[index];
+        let value = values[index]
+        if (value !== 'na') {
+          if (numericFields.includes(header)) {
+            value = Number(value);
+          }
+        } else {
+          value = "";
+        }
+        object[header] = value;
         return object;
       }, {});
       return el;
@@ -79,10 +94,8 @@ export default function CorpusResult(props: CorpusResultProps) {
               reader.onload = function (e) {
                 const text = e.target?.result;
                 const data = csvToArray(text)
-                // console.log("Uploaded!")
-                // console.log(data)
-                setAnnotationSpans(annotationSpans);
-                // console.log(data)
+                console.log(data)
+                setAnnotationSpans(data);
               }
               // console.log(e.target.files[0])
               reader.readAsText(e.target.files![0])
