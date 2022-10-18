@@ -1,5 +1,5 @@
 import { VideoJsPlayer } from 'video.js';
-import { CorpusResultProps, SearchResults } from '../types/corpus';
+import { AnnotationSpans, CorpusResultProps, SearchResults } from '../types/corpus';
 import CorpusTable from './corpus_table';
 import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
@@ -8,7 +8,11 @@ import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider';
 import { useState } from 'react';
 
-export default function CorpusResult({ annotationSpans, setAnnotationSpans, player, queryText, searchType, setVideoUrl, setSeekToSec }: CorpusResultProps) {
+
+export default function CorpusResult(props: CorpusResultProps) {
+  const { annotationSpans, setAnnotationSpans, 
+          player, queryText, searchType, 
+          onSelectedSpanChanged } = props;
 
   function buildCsv(data) {
     // console.log(data);
@@ -95,8 +99,7 @@ export default function CorpusResult({ annotationSpans, setAnnotationSpans, play
         annotationSpans={annotationSpans}
         searchType={searchType}
         player={player}
-        setVideoUrl={setVideoUrl}
-        setSeekToSec={setSeekToSec}
+        onSelectedSpanChanged={onSelectedSpanChanged}
       />
     </>
 

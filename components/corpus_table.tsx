@@ -126,7 +126,7 @@ function formatVideoMeta(meta, name) {
     </Typography>
   </>
 }
-export default function CorpusTable({ annotationSpans, searchType, player, setVideoUrl, setSeekToSec }) {
+export default function CorpusTable({ annotationSpans, searchType, player, onSelectedSpanChanged }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   let groupedAnnotationSpans = Array.from(annotationSpans.reduce(
@@ -173,22 +173,22 @@ export default function CorpusTable({ annotationSpans, searchType, player, setVi
             .map(function (group, groupIndex, groupArray) {
               return group.map(function (row, rowIndex, rowArray) {
                 return (
-                  <TableRow key={row._id}>
+                  <TableRow key={`${row._id}-${groupIndex}`}>
                     {(rowIndex === 0) &&
 
-                      <TableCell sx={{ width: 200 }} component="th" scope="row" rowSpan={group.length} >
+                      <TableCell sx={{ width: 200 }}
+                        component="th" scope="row" rowSpan={group.length} >
                         {formatVideoMeta(row.video_meta, row.name)}
                         {/* {Object.entries(row.video_meta).map(([k, v]) => `${k}: ${v}`)} */}
                         {/* {row.name} */}
                       </TableCell>
                     }
-                    <TableCell align="left">
+                    <TableCell align="left" >
                       <Link
                         color="primary"
                         onClick={() => {
                           let url = `https://storage.googleapis.com/multimoco/selected/h264/${row.name}.mp4`
-                          setVideoUrl(url);
-                          setSeekToSec(row.offset);
+                          onSelectedSpanChanged(url, row.offset / 1000);
                           // if (url !== player.current.src()) {
 
                           // player.current.src({ type: 'video/mp4', src: url })
@@ -196,7 +196,12 @@ export default function CorpusTable({ annotationSpans, searchType, player, setVi
                           // player.current.currentTime(row.offset / 1000)
                         }
                         }
-                      >[{fancyTimeFormat(row.offset)}]</Link> {row.text}
+                      >[{fancyTimeFormat(row.offset)}]</Link>&nbsp;
+                      {
+                        row.annotation ?
+                        `<${row.annotation}>${row.text}` :
+                        row.text
+                      }
                     </TableCell>
                   </TableRow>
                 )

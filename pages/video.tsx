@@ -25,6 +25,8 @@ export default function VideoPage(props: VideoPageProps) {
       <Grid item xs={6}>
         <VideoView
           video_url="https://storage.googleapis.com/multimoco/selected/h264/c5000-2109071858.mp4"
+          annotSpans={[]}
+          onAnnotSpansUpdated={(spans)=>{}}
           seekToSec={456}
           toShowOcr={showOCR}
           toShowWave = {showWave}

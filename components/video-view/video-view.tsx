@@ -10,7 +10,7 @@ import PopOverEdit from "./popover-edit";
 import styles from './styles';
 import useVideoState from "./useVideoState";
 import useAnnotEdit from "./useAnnotEdit";
-import { to_seconds } from "./utils";
+import { convertSpansToMsecs, convertSpansToSecs, to_seconds } from "./utils";
 import VideoAnnotator, { VideoAnnotSpan } from "./video-annotator";
 import VideoControl from "./videoControl";
 import { AnnotationSpans, AnnotationSpan } from "./annot_types";
@@ -18,6 +18,7 @@ import { AnnotationSpans, AnnotationSpan } from "./annot_types";
 interface VideoViewProp {
   video_url: string
   annotSpans: AnnotationSpans
+  onAnnotSpansUpdated: (spans: AnnotationSpans) => void;
   seekToSec?: number
   seekToTimeStr?: string
   toShowWave?: boolean
@@ -41,8 +42,10 @@ function undefined_or_true(x: undefined | boolean) {
 }
 
 export default function VideoView(props: VideoViewProp) {
-  const [dummySpans, setDummySpans] = useState<AnnotationSpans>([]);
-  const annotSpans = dummySpans;  
+  // For individual component testing
+  // const [dummySpans, setDummySpans] = useState<AnnotationSpans>([]);
+  // const annotSpans = dummySpans;  
+  const annotSpans = convertSpansToSecs(props.annotSpans);  
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -53,9 +56,9 @@ export default function VideoView(props: VideoViewProp) {
 
   const annotEditState = useAnnotEdit();
   // videoAnnot.setAnnotationSpans(props.annotSpans);
-  videoAnnot.setAnnotationSpans(dummySpans);
+  videoAnnot.setAnnotationSpans(annotSpans);
   videoAnnot.setAnnotSpansUpdatedCallback(onAnnotSpansUpdated);
-
+  console.log(annotSpans);
   useEffect(() => {
     const callbacks = initialize_video();
     const video = videoRef.current;
@@ -175,8 +178,8 @@ export default function VideoView(props: VideoViewProp) {
 
   function onAnnotSpanEdited(edit_span: AnnotationSpan) {    
     let new_spans: AnnotationSpans = [];
-    for(const span_x of annotSpans) {
-      if (span_x.name==edit_span.name && span_x.offset==edit_span.offset) {
+    for(const span_x of annotSpans) {      
+      if (span_x.name==edit_span.name && span_x.offset==edit_span.offset) {                
         new_spans.push(edit_span);
       } else {
         new_spans.push(span_x);
@@ -205,7 +208,9 @@ export default function VideoView(props: VideoViewProp) {
   // *
 
   function onAnnotSpansUpdated(annotSpans: AnnotationSpans) {
-    setDummySpans(annotSpans);
+    // setDummySpans(annotSpans);
+    const msec_spans = convertSpansToMsecs(annotSpans);
+    props.onAnnotSpansUpdated(msec_spans);
     requestAnimationFrame(render_frame);
   }
 

@@ -16,6 +16,7 @@ import videojs, { VideoJsPlayer } from 'video.js';
 import VideoView from '../components/video-view';
 import { AnnotationSpans } from '../types/corpus';
 import { FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material';
+import { getVideoName, groupAnnotationSpans } from '../components/span-data-utils';
 
 
 
@@ -160,8 +161,10 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [seekToSec, setSeekToSec] = useState(0);
   const [handSelect, setHandSelect] = useState("");
-  const [soundSelect, setSoundSelect] = useState("");
+  const [soundSelect, setSoundSelect] = useState("");    
   const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(searchResults));
+
+  const selectedSpans = annotationSpans.filter((x)=>x.name == getVideoName(videoUrl));
 
   const playerRef: React.MutableRefObject<VideoJsPlayer> = React.useRef(null);
   const videoJsOptions = {
@@ -212,9 +215,33 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
     if (getParams.searchType) {
       setSearchType(getParams.searchType as string)
     }
-  }, [])
+  }, []);
 
+  // *
+  // * Handle VideoView Seeking and spans
+  // *  
+  function onSelectedSpanChanged(videoUrl: string,
+    seekToSec: number
+  ) {
+    setVideoUrl(videoUrl);
+    setSeekToSec(seekToSec);    
+  }
 
+  function onSelectedSpansUpdated(selSpans: AnnotationSpans) {
+    const videoName = getVideoName(videoUrl);
+    const baseIndex = annotationSpans.findIndex((x)=>x.name == videoName);    
+    let newSpans = annotationSpans;
+    if (baseIndex >= 0) {
+      newSpans = annotationSpans.filter((x)=>x.name!=videoName);
+      console.log("selected Spans: ", newSpans);
+      newSpans.splice(baseIndex, 0, ...selSpans);
+    }
+
+    console.log("newSpans: ",  newSpans);
+    setAnnotationSpans(newSpans);
+  }
+
+  
   return (
     <>
       <Head>
@@ -315,24 +342,35 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
             container
             spacing={5}
           >
-            <Grid2 mdOffset={2} xs={12} md={8} display="flex" justifyContent="center" alignContent="center">
-              {videoUrl &&
-                <VideoView video_url={videoUrl} seekToSec={seekToSec} />
-              }
-              {/* <VideoJS options={videoJsOptions} onReady={handlePlayerReady} /> */}
-            </Grid2>
             {annotationSpans ?
-              <Grid2 xs={12}>
-                <CorpusResult
-                  annotationSpans={annotationSpans}
-                  setAnnotationSpans={setAnnotationSpans}
-                  player={playerRef}
-                  queryText={queryText}
-                  searchType={searchType}
-                  setVideoUrl={setVideoUrl}
-                  setSeekToSec={setSeekToSec}
-                />
-              </Grid2>
+              <>
+                <Grid2 mdOffset={2} xs={12} md={8} display="flex"
+                  justifyContent="center"
+                  alignContent="center"
+                  sx={{
+                    position: "sticky",
+                    top: "10px",                    
+                  }}>
+                  {videoUrl && selectedSpans &&
+                    <VideoView
+                      video_url={videoUrl}
+                      seekToSec={seekToSec}
+                      annotSpans={selectedSpans}
+                      toShowOcr={false}
+                      onAnnotSpansUpdated={onSelectedSpansUpdated} />
+                  }
+                </Grid2>
+                <Grid2 xs={12}>
+                  <CorpusResult
+                    annotationSpans={annotationSpans}
+                    setAnnotationSpans={setAnnotationSpans}
+                    player={playerRef}
+                    queryText={queryText}
+                    searchType={searchType}
+                    onSelectedSpanChanged={onSelectedSpanChanged}
+                  />
+                </Grid2>
+              </>
               :
               <Grid2 xs={12} display="flex" justifyContent="center">
                 <Typography variant="h5">Please make a search!</Typography>

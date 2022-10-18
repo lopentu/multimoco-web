@@ -29,7 +29,7 @@ export default function ProgressBar(props: ProgressBarProps) {
   const span_rects = props.annotSpans.map((span_x) => {
     const start_x = (span_x.offset / duration) * INNER_LENGTH_PX;
     const end_x = (span_x.offset + span_x.span) / duration * INNER_LENGTH_PX;
-    const width = Math.max(end_x - start_x, 5);
+    const width = Math.max(end_x - start_x, 5) || 0;
     const rect_elem = (
       <rect
         key={`${start_x}-${end_x}`}
