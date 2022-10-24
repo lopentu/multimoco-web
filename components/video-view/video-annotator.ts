@@ -161,6 +161,7 @@ export default class VideoAnnotator {
         span: end_phone[2] - start_phone[1], // this span indicates time duration
         start: start_phone[1],
         end: end_phone[2],
+        videoMeta: {},
         text: "",
         annotation: "",        
         isActive: true
