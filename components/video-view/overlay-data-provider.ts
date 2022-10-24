@@ -217,7 +217,7 @@ export default class OverlayDataProvider {
   }
 
   async getPose() {
-    const resp = await fetch(this.baseURL + `/mp/${this.videoName}.mp.json?ignoreCache=1`);
+    const resp = await fetch(this.baseURL + `/mp/${this.videoName}.mp.json`);
     if (resp.status == 200) {
       const text = await resp.text();
       const mp = JSON.parse(text);
