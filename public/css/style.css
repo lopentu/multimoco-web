@@ -153,7 +153,7 @@ address {
 
 ol,
 ul {
-  padding-left: 2rem; }
+  padding-left: unset; }
 
 ol,
 ul,
@@ -266,19 +266,24 @@ caption {
   color: #6c757d;
   text-align: left; }
 
-th {
+th,
+.date,
+.place {
   text-align: inherit;
-  text-align: -webkit-match-parent; }
+  text-align: -webkit-match-parent; 
+  border-left: 1px solid #FFFFFF; border-right: 1px solid #FFFFFF;
+  padding: 3px;}
 
-thead,
+/* thead, */
 tbody,
 tfoot,
 tr,
-td,
-th {
-  border-color: inherit;
+td {
+  border-color: #EEEEEE  ;
+  /* border-color: inherit; */
   border-style: solid;
-  border-width: 0; }
+  border-width: 1px; 
+  padding: 2px;}
 
 label {
   display: inline-block; }
