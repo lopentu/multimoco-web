@@ -9,13 +9,14 @@ import { IVideoState } from './useVideoState'
 import VideoControl from './videoControl'
 import { AnnotationSpans } from './annot_types'
 import WinSizeButtons from './winsize-buttons'
+import OverlayBtn from './OverlayBtn'
 
 interface BarProps {
   styles: { [name: string]: any },
   videoState: IVideoState
   videoCtrl: VideoControl
   annotSpans: AnnotationSpans
-  onWinSizeChanged: (winSize: number) => void;
+  onWinSizeChanged: (winSize: number) => void
 }
 
 function Bar(props: BarProps) {
@@ -43,6 +44,12 @@ function Bar(props: BarProps) {
           styles={props.styles}
         />
         <div style={{ flexGrow: 1 }} />
+        <OverlayBtn 
+          toShowPosture={props.videoState.toShowPosture}
+          toShowWaveform={props.videoState.toShowWaveform}
+          onPostureToggled={()=>ctrl.togglePosture()}
+          onWaveformToggled={()=>ctrl.toggleWaveform()}
+          styles={props.styles}/>
         <WinSizeButtons
           onWinSizeChanged={props.onWinSizeChanged} />
         <MuteUnMuteBtn

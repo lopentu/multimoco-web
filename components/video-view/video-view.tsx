@@ -21,13 +21,12 @@ interface VideoViewProp {
   onAnnotSpansUpdated: (spans: AnnotationSpans) => void;
   seekToSec?: number
   seekToTimeStr?: string
-  toShowWave?: boolean
-  toShowOcr?: boolean
 }
 
 interface OverlayOptions {
   toShowOcr: boolean
   toShowWave: boolean
+  toShowPosture: boolean
 }
 
 const ASPECT_RATIO = 640 / 360;
@@ -45,14 +44,17 @@ export default function VideoView(props: VideoViewProp) {
   // For individual component testing
   // const [dummySpans, setDummySpans] = useState<AnnotationSpans>([]);
   // const annotSpans = dummySpans;  
-  const annotSpans = convertSpansToSecs(props.annotSpans);  
+  const annotSpans = convertSpansToSecs(props.annotSpans);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const lastRenderTime = useRef(0);    // for fps
-  const [videoState, setVideoState] = useVideoState(videoRef.current);
-  videoControl.setVideo(videoRef.current, setVideoState);
+  const { videoState, ...videoStateCtrl } = useVideoState(videoRef.current);
+  videoControl.setVideo(videoRef.current, videoStateCtrl);
   const overlayOptions = useRef<OverlayOptions>({} as OverlayOptions);
+  overlayOptions.current.toShowOcr = false;
+  overlayOptions.current.toShowPosture = videoState.toShowPosture;
+  overlayOptions.current.toShowWave = videoState.toShowWaveform;
 
   const annotEditState = useAnnotEdit();
   // videoAnnot.setAnnotationSpans(props.annotSpans);
@@ -85,12 +87,6 @@ export default function VideoView(props: VideoViewProp) {
   }, [props.video_url]);
 
   useEffect(() => {
-    overlayOptions.current.toShowOcr = undefined_or_true(props.toShowOcr);
-    overlayOptions.current.toShowWave = undefined_or_true(props.toShowWave);
-    requestAnimationFrame(render_frame);
-  }, [props.toShowOcr, props.toShowWave]);
-
-  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.currentTime = props.seekToSec || 0;
@@ -120,7 +116,7 @@ export default function VideoView(props: VideoViewProp) {
     overlayPainter.setContext(context, cvs.width, cvs.height);
 
     // initialize videoControl
-    videoControl.setVideo(videoRef.current, setVideoState);
+    videoControl.setVideo(videoRef.current, videoStateCtrl);
 
     // initialize dataProvider
     const pathTokens = new URL(props.video_url).pathname.split("/")
@@ -137,7 +133,7 @@ export default function VideoView(props: VideoViewProp) {
 
     const onTimeUpdateHandler = () => {
       if (videoRef.current) {
-        setVideoState(videoRef.current);
+        videoControl.setVideo(videoRef.current, videoStateCtrl);
       }
     }
 
@@ -169,35 +165,35 @@ export default function VideoView(props: VideoViewProp) {
   // *
   function onActiveSpanChanged(span: VideoAnnotSpan, cursor: [number, number]) {
     annotEditState.setLocation(cursor[0], cursor[1]);
-    annotEditState.openWidget(span);   
+    annotEditState.openWidget(span);
   }
 
-  function onPopOverEditClosed(){
+  function onPopOverEditClosed() {
     annotEditState.closeWidget();
   }
 
-  function onAnnotSpanEdited(edit_span: AnnotationSpan) {    
+  function onAnnotSpanEdited(edit_span: AnnotationSpan) {
     let new_spans: AnnotationSpans = [];
-    for(const span_x of annotSpans) {      
-      if (span_x.name==edit_span.name && span_x.offset==edit_span.offset) {                
+    for (const span_x of annotSpans) {
+      if (span_x.name == edit_span.name && span_x.offset == edit_span.offset) {
         new_spans.push(edit_span);
       } else {
         new_spans.push(span_x);
-      }      
+      }
     }
     annotEditState.setAnnotSpan(edit_span);
     onAnnotSpansUpdated(new_spans);
   }
 
-  function onAnnotSpanDeleted(del_span: AnnotationSpan){    
+  function onAnnotSpanDeleted(del_span: AnnotationSpan) {
     let new_spans: AnnotationSpans = [];
-    
-    for(const span_x of annotSpans) {
-      if (span_x.name==del_span.name && span_x.offset==del_span.offset) {
+
+    for (const span_x of annotSpans) {
+      if (span_x.name == del_span.name && span_x.offset == del_span.offset) {
         // pass
       } else {
         new_spans.push(span_x);
-      }      
+      }
     }
     annotEditState.closeWidget();
     onAnnotSpansUpdated(new_spans);
@@ -222,13 +218,14 @@ export default function VideoView(props: VideoViewProp) {
     const video = videoRef.current;
     if (!video) return;
 
-    const overlayData = dataProvider.getData(video.currentTime);
+    const overlayData = dataProvider.getData(video.currentTime, videoState.toShowPosture);
     const cvs = canvasRef.current;
     if (!cvs) return null;
     const canvasWidth = cvs.clientWidth;
     const canvasHeight = cvs.clientWidth / ASPECT_RATIO;
     const toShowWave = overlayOptions.current.toShowWave;
-    const toShowOcr = overlayOptions.current.toShowOcr;
+    const toShowOcr = false;
+    const toShowPosture = overlayOptions.current.toShowPosture;
 
     const delta_ms = timestamp - lastRenderTime.current;
     const delta_s = Math.max(delta_ms / 1000, .001);
@@ -243,7 +240,7 @@ export default function VideoView(props: VideoViewProp) {
       if (!context) return null;
       context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
       overlayPainter.setContext(context, canvasWidth, canvasHeight);
-      overlayPainter.setOptions({ toShowOcr, toShowWave });
+      overlayPainter.setOptions({ toShowOcr, toShowWave, toShowPosture });
       overlayPainter.paint(overlayData, fps);
     }
 
@@ -263,11 +260,15 @@ export default function VideoView(props: VideoViewProp) {
       left={annotEditState.loc.x}
       top={annotEditState.loc.y}
       annotSpan={annotEditState.annotSpan}
-      onDelete={onAnnotSpanDeleted}      
+      onDelete={onAnnotSpanDeleted}
       onUpdate={onAnnotSpanEdited}
       onClose={onPopOverEditClosed} />
   } else {
-    pop_over_edit = <div/>
+    pop_over_edit = <div />
+  }
+
+  if (videoRef.current) {
+    requestAnimationFrame(render_frame);
   }
 
   return (

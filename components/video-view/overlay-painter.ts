@@ -26,7 +26,8 @@ export default class OverlayPainter {
   cvsHeight: number = 360;
   wave_vh: number = 50;
   toShowWave: boolean = true;
-  toShowOcr: boolean = true;
+  toShowOcr: boolean = false;
+  toShowPosture: boolean = false;
 
   constructor(annot: VideoAnnotator) {
     this.annot = annot;
@@ -43,6 +44,7 @@ export default class OverlayPainter {
   setOptions(options: { [key: string]: any }) {
     this.toShowWave = options.toShowWave === undefined ? true : options.toShowWave;
     this.toShowOcr = options.toShowOcr === undefined ? true : options.toShowOcr;
+    this.toShowPosture = options.toShowPosture === undefined? true: options.toShowPosture
   }
 
   notifyWaveArea(waveBox: RectBox) {
@@ -92,7 +94,7 @@ export default class OverlayPainter {
       this.overlay_vtt(overlayData.vtt[0].text);
     }
 
-    if (overlayData.poses.length > 0){
+    if (this.toShowPosture && overlayData.poses.length > 0){      
       this.overlay_pose(overlayData.poses[0], 0);
       this.overlay_pose(overlayData.poses[1], 0.5);
     }

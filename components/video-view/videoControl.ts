@@ -1,17 +1,27 @@
 import { IVideoState } from "./useVideoState";
 
 type VideoStateSetterType = (video: HTMLVideoElement) => void;
+interface VideoStateControlType {
+  stateSetter: VideoStateSetterType,
+  toggleWaveform: ()=>void,
+  togglePosture: ()=> void
+}
 
 export default class VideoControl {
   private video: HTMLVideoElement | null = null;
   videoStateSetter: VideoStateSetterType = (_)=>{};
+  toggleWaveform: ()=>void = ()=>{};
+  togglePosture: ()=>void = ()=> {};
 
   constructor() {    
   }  
   
-  setVideo(elem: HTMLVideoElement|null, stateSetter: VideoStateSetterType) {
+  setVideo(elem: HTMLVideoElement|null, 
+      stateCtrl: VideoStateControlType) {
     this.video = elem;
-    this.videoStateSetter = stateSetter;    
+    this.videoStateSetter = stateCtrl.stateSetter;    
+    this.toggleWaveform = stateCtrl.toggleWaveform;
+    this.togglePosture = stateCtrl.togglePosture;
   }
 
   get videoName() {

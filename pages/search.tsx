@@ -330,8 +330,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                   <VideoView
                     video_url={videoUrl}
                     seekToSec={seekToSec}
-                    annotSpans={selectedSpans}
-                    toShowOcr={false}
+                    annotSpans={selectedSpans}                    
                     onAnnotSpansUpdated={onSelectedSpansUpdated} />
                 }
               </Grid2>

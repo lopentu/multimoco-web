@@ -68,8 +68,7 @@ export default function draw_mediapipe(
       [9, 10, 11, 12],
       [13, 14, 15, 19]
     ]
-
-    console.log("hand coords: ", coords);
+    
     for (let path_x of hands) {
       ctx.beginPath();
 
