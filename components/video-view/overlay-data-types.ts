@@ -16,13 +16,14 @@ interface OcrPayload {
   box: PolygonBox
 }
 
-type XYZCoord = [x: number, y: number, z:number];
-type XYZVCoord = [x: number, y: number, z: number, visibility: number];
-type MeshCoords = XYZCoord[];
-type HandCoords = XYZCoord[];
-type BodyCoords = XYZVCoord[];
+export type XYZCoord = [x: number, y: number, z:number];
+export type XYZVCoord = [x: number, y: number, z: number, visibility: number];
+export type MeshCoords = XYZCoord[];
+export type HandCoords = XYZCoord[];
+export type BodyCoords = XYZVCoord[];
 
-interface FaceData {
+export interface FaceData {
+  [key: string]: MeshCoords
   lip_inner: MeshCoords
   left_eye: MeshCoords
   left_eyebrow: MeshCoords
@@ -30,16 +31,17 @@ interface FaceData {
   right_eyebrow: MeshCoords
 }
 
-interface MediapipeData {
+export interface MediapipeData {
+  [key: string]: FaceData|HandCoords|BodyCoords|null;
   face: FaceData | null
   left_hand: HandCoords | null
   right_hand: HandCoords | null
-  posture: BodyCoords | null
+  pose: BodyCoords | null
 }
 
-interface PostureData {
+export interface PostureData {
   offset: number
-  span: number
+  span: number  
   left: MediapipeData
   right: MediapipeData
 }

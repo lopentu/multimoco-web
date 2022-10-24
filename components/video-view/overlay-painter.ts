@@ -1,5 +1,6 @@
 import { OverlayData } from "./overlay-data-provider";
-import { OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
+import { MediapipeData, OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
+import draw_mediapipe from "./overlay-poses";
 import VideoAnnotator, { VideoAnnotSpan } from "./video-annotator";
 
 export type Point = { x: number, y: number }
@@ -89,6 +90,11 @@ export default class OverlayPainter {
 
     if (overlayData.vtt.length > 0) {
       this.overlay_vtt(overlayData.vtt[0].text);
+    }
+
+    if (overlayData.poses.length > 0){
+      this.overlay_pose(overlayData.poses[0], 0);
+      this.overlay_pose(overlayData.poses[1], 0.5);
     }
 
   }
@@ -300,5 +306,10 @@ export default class OverlayPainter {
     }
 
     this.notifySpanAreas(spanBoxes);
+  }
+
+  overlay_pose(pose: MediapipeData, offset: number=0) {
+    if (!this.ctx) return;
+    draw_mediapipe(this.ctx, pose, this.cvsWidth, this.cvsHeight, offset);
   }
 }

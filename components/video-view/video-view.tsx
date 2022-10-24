@@ -58,7 +58,7 @@ export default function VideoView(props: VideoViewProp) {
   // videoAnnot.setAnnotationSpans(props.annotSpans);
   videoAnnot.setAnnotationSpans(annotSpans);
   videoAnnot.setAnnotSpansUpdatedCallback(onAnnotSpansUpdated);
-  console.log(annotSpans);
+
   useEffect(() => {
     const callbacks = initialize_video();
     const video = videoRef.current;

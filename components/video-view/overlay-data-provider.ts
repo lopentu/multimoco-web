@@ -1,4 +1,6 @@
-import { OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
+import { MediapipeData, OcrDataType, 
+         PhoneData, PostureData, SpeechEvents } from "./overlay-data-types";
+import { intrapolateMediapipeData } from "./utils";
 import parseVTT, { VTTData } from "./vtt-parser";
 
 const WAV_FR = 1000;
@@ -11,6 +13,7 @@ export interface OverlayData {
   wave_fr: number
   vtt: VTTData
   speech_events: SpeechEvents
+  poses: MediapipeData[]
 }
 
 export default class OverlayDataProvider {
@@ -20,13 +23,15 @@ export default class OverlayDataProvider {
   wave: Int8Array = new Int8Array(0);
   vtt: VTTData = [];
   speech_events: SpeechEvents = [];
+  poses: PostureData[] = [];
+  posesTimestamps: number[] = [];
 
   baseURL: string = "https://storage.googleapis.com/multimoco/selected"
   constructor() {
 
   }
 
-  setWaveWindow(win_sec: number){
+  setWaveWindow(win_sec: number) {
     wave_window = win_sec;
   }
 
@@ -46,7 +51,7 @@ export default class OverlayDataProvider {
   loadData() {
     this._reset_data();
     const load_promises: Promise<any>[] = [
-      this.getOCR(), this.getPhones(), this.getVTT(), 
+      this.getOCR(), this.getPhones(), this.getVTT(),
       this.getWave(), this.getSpeechEvents()
     ];
 
@@ -75,7 +80,12 @@ export default class OverlayDataProvider {
       if (ev_results.status == "fulfilled") {
         this.speech_events = ev_results.value;
       }
-    })
+    });
+    
+    this.getPose().then((result: PostureData[]) => {
+      this.poses = result;
+      this.posesTimestamps = this.poses.map((x)=>x.offset);
+    });
   }
 
   getData(offset: number) {
@@ -120,21 +130,46 @@ export default class OverlayDataProvider {
     if (this.speech_events) {
       const events = this.speech_events.filter((x) => {
         return (x[0] < start_sec && start_sec < x[1]) ||
-               (x[0] < end_sec && end_sec < x[1])
+          (x[0] < end_sec && end_sec < x[1])
       });
 
       overlayData.speech_events = events;
     }
 
+    if (this.poses){            
+      const offset_ms = offset*1000;
+      const t2 = this.posesTimestamps.findIndex((t)=>t>offset_ms) || 1;
+      const t1 = Math.max(t2-1, 0);            
+      const pose_t1 = this.poses[t1];
+      const pose_t2 = this.poses[t2];
+      let t = 0;
+      if (pose_t1 && pose_t2){
+        t = (offset_ms-pose_t1.offset) / (pose_t2.offset - pose_t1.offset);
+      }
+
+      let poseData = [
+        intrapolateMediapipeData(t, 
+          pose_t1 && pose_t1.left, 
+          pose_t2 && pose_t2.left),
+        intrapolateMediapipeData(t, 
+          pose_t1 && pose_t1.right, 
+          pose_t2 && pose_t2.right),
+      ];
+            
+      overlayData.poses = poseData.filter((x)=>x) as MediapipeData[];
+    }
     return overlayData;
   }
 
-  async getOCR(): Promise<OcrDataType> {
+  async getOCR(): Promise<OcrDataType[]> {
     const resp = await fetch(this.baseURL + `/ocr_blocks/${this.videoName}.ocr.blocks.json`);
-    const text = await resp.text();
-    const json = JSON.parse(text);
-
-    return json;
+    if (resp.status==200){
+      const text = await resp.text();    
+      const json = JSON.parse(text);
+      return json;
+    } else {      
+      return [];
+    }    
   }
 
   async getPhones(): Promise<PhoneData> {
@@ -159,7 +194,15 @@ export default class OverlayDataProvider {
     return vtt;
   }
 
-  getPose() {
+  async getPose() {
+    const resp = await fetch(this.baseURL + `/mp/${this.videoName}.mp.json?ignoreCache=1`);
+    if (resp.status == 200) {
+      const text = await resp.text();
+      const mp = JSON.parse(text);
+      return mp;
+    } else {
+      return [];
+    }
 
   }
 
