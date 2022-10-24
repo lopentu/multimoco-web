@@ -2,7 +2,7 @@
 
 import { TurnedIn } from "@mui/icons-material";
 import { Grid, Popover } from "@mui/material";
-import { CSSProperties, useEffect, useRef, useState } from "react"
+import React, { CSSProperties, KeyboardEvent, useEffect, useRef, useState } from "react"
 import Bar from './Bar'
 import OverlayDataProvider from "./overlay-data-provider";
 import OverlayPainter from "./overlay-painter";
@@ -71,6 +71,7 @@ export default function VideoView(props: VideoViewProp) {
     video.addEventListener('canplay', callbacks.onPlayHandler, false);
     video.addEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
     window.addEventListener('resize', callbacks.onResizeHandler, false);
+    window.addEventListener('keydown', onKeyDown, true);
     videoAnnot.setRedrawCallback(() => requestAnimationFrame(render_frame));
     videoAnnot.setActiveSpanChangedCallback(onActiveSpanChanged);
 
@@ -82,6 +83,7 @@ export default function VideoView(props: VideoViewProp) {
       video.removeEventListener('canplay', callbacks.onPlayHandler, false);
       video.removeEventListener('timeupdate', callbacks.onTimeUpdateHandler, false);
       window.removeEventListener('resize', callbacks.onResizeHandler, false);
+      window.removeEventListener('keydown', onKeyDown, true);
     }
 
   }, [props.video_url]);
@@ -160,6 +162,27 @@ export default function VideoView(props: VideoViewProp) {
     requestAnimationFrame(render_frame);
   }
 
+  function onKeyDown(ev: globalThis.KeyboardEvent) {    
+    if (ev.key == "ArrowRight") {      
+      if (videoRef.current) {
+        const delta = 1 * (10 ** (Number(ev.ctrlKey) - Number(ev.altKey))); 
+        videoControl.seek(videoRef.current.currentTime + delta);
+        ev.stopPropagation();
+        ev.preventDefault();
+      }
+    } else if (ev.key == " ") {      
+      videoControl.playPause();
+      ev.stopPropagation();
+      ev.preventDefault();
+    } else if (ev.key == "ArrowLeft") {
+      if (videoRef.current) {
+        const delta = 1 * (10 ** (Number(ev.ctrlKey) - Number(ev.altKey)));        
+        videoControl.seek(videoRef.current.currentTime - delta);
+        ev.stopPropagation();
+        ev.preventDefault();
+      }
+    }
+  }
   // *
   // * Annotation Popover widget: States and Handlers
   // *
@@ -301,8 +324,4 @@ export default function VideoView(props: VideoViewProp) {
       />
     </div>
   )
-}
-
-function useAnnotEdite() {
-  throw new Error("Function not implemented.");
 }

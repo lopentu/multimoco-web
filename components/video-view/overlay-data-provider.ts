@@ -237,9 +237,9 @@ export default class OverlayDataProvider {
       reader.onload = () => {
         if (reader.result) {
           const raw = new Int8Array(reader.result as ArrayBuffer);
-          const minVal = raw.reduce((v, x)=> Math.min(v, x), 128);
-          const maxVal = raw.reduce((v, x)=> Math.max(v, x), -128);
-          raw.forEach((v,i)=>raw[i] = (v-minVal)/(maxVal-minVal)*128-64);
+          const minVal = raw.reduce((v, x)=> Math.min(v, x), 96);
+          const maxVal = raw.reduce((v, x)=> Math.max(v, x), -96);
+          raw.forEach((v,i)=>raw[i] = (v-minVal)/(maxVal-minVal)*96-48);
           resolver(raw);
         } else {
           reject("Error reading wave data");

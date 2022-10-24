@@ -49,7 +49,7 @@ export default class VideoControl {
   seek(offset: number) {
     if (!this.video) return;
 
-    this.video.currentTime = offset;
+    this.video.currentTime = offset;    
     // if (this.video.paused || this.video.ended) {
     //   this.video.play().then(() => this.video?.pause())
     // }

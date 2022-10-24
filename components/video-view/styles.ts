@@ -12,7 +12,7 @@ export const style: {[name: string]: CSSProperties} = {
   },
   barContainer: {
       display: 'flex',
-      backgroundColor: '#d0d0d0',
+      backgroundColor: '#F0F0F0',
       justifyContent: "space-between",
       position: 'relative',
       top: '0px',
