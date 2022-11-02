@@ -106,7 +106,7 @@ export default class OverlayDataProvider {
 
     if (this.phones.length>0) {
       const phones = this.phones.filter((x) => {
-        return start_sec <= x[0] && x[1] < end_sec;
+        return start_sec <= x[1] && x[2] < end_sec;
       });
       overlayData.phones = phones;
     } else {
@@ -135,8 +135,11 @@ export default class OverlayDataProvider {
 
     if (this.speech_events.length>0) {
       const events = this.speech_events.filter((x) => {
-        return (x[0] < start_sec && start_sec < x[1]) ||
-          (x[0] < end_sec && end_sec < x[1])
+        return (
+          (x[0] < start_sec && start_sec < x[1]) ||
+          (x[0] < end_sec && end_sec < x[1]) ||
+          (start_sec < x[0] && x[1] < end_sec)
+        )
       });
 
       overlayData.speech_events = events;
@@ -195,7 +198,7 @@ export default class OverlayDataProvider {
   }
 
   async getPhones(): Promise<PhoneData> {
-    const resp = await fetch(this.baseURL + `/phones/${this.videoName}.phones.json`);
+    const resp = await fetch(this.baseURL + `/phone_cosp/${this.videoName}.phones.json`);
     const text = await resp.text();
     let json = JSON.parse(text);
     json = json.map((x: any, i: number) => [i, ...x]);
@@ -238,15 +241,17 @@ export default class OverlayDataProvider {
       reader.onload = () => {
         if (reader.result) {
           const raw = new Int8Array(reader.result as ArrayBuffer);
-          const minVal = raw.reduce((v, x)=> Math.min(v, x), 96);
-          const maxVal = raw.reduce((v, x)=> Math.max(v, x), -96);
-          raw.forEach((v,i)=>raw[i] = (v-minVal)/(maxVal-minVal)*96-48);
+          const minVal = raw.reduce((v, x)=> Math.min(v, x), 128);
+          const maxVal = raw.reduce((v, x)=> Math.max(v, x), -128);
+          raw.forEach((v,i)=>raw[i] = (v-minVal)/(maxVal-minVal)*128-64);
+          
           resolver(raw);
         } else {
           reject("Error reading wave data");
         }
       };
     });
+    
     return wave;
   }
 }

@@ -1,3 +1,5 @@
+import { CospFeatureEnum } from "./cosp_enum";
+import { draw_cosp_badges } from "./overlay-cosp-badges";
 import { OverlayData } from "./overlay-data-provider";
 import { MediapipeData, OcrDataType, PhoneData, SpeechEvents } from "./overlay-data-types";
 import draw_mediapipe from "./overlay-poses";
@@ -8,11 +10,17 @@ export type RectBox = { x: number, y: number, width: number, height: number };
 
 
 const SPEAKER_EV_COLOR: { [name: string]: string } = {
-  "SPEAKER_00": "#AAFFFF",
-  "SPEAKER_01": "#AAAAFF",
-  "SPEAKER_02": "#AACCCC",
-  "OVERLAP": "#FFAAAA"
+  "SPEAKER_00": "#8dd3c7",
+  "SPEAKER_01": "#bebada",
+  "SPEAKER_02": "#fdcdac",
+  "OVERLAP": "#fb8072"
 }
+const EV_LABELS: {[name: string]: number} = {
+  "OVERLAP": 0,
+  "SPEAKER_00": 1, 
+  "SPEAKER_01": 2, 
+  "SPEAKER_02": 3
+};
 
 const FILL_SELECTED_PHONE = "#FD9A";
 const FILL_HOVER_PHONE = "#DD9A";
@@ -44,7 +52,7 @@ export default class OverlayPainter {
   setOptions(options: { [key: string]: any }) {
     this.toShowWave = options.toShowWave === undefined ? true : options.toShowWave;
     this.toShowOcr = options.toShowOcr === undefined ? true : options.toShowOcr;
-    this.toShowPosture = options.toShowPosture === undefined? true: options.toShowPosture
+    this.toShowPosture = options.toShowPosture === undefined ? true : options.toShowPosture
   }
 
   notifyWaveArea(waveBox: RectBox) {
@@ -56,7 +64,7 @@ export default class OverlayPainter {
   }
 
   paint(overlayData: OverlayData, fps: number) {
-    // this.overlay_text(`fps: ${fps}`);    
+    // this.overlay_text(`fps: ${fps}`);
 
     this.toShowOcr = this.toShowOcr &&
       overlayData.ocr_blocks.length > 0;
@@ -94,11 +102,12 @@ export default class OverlayPainter {
       this.overlay_vtt(overlayData.vtt[0].text);
     }
 
-    if (this.toShowPosture && overlayData.poses.length > 0){      
+    if (this.toShowPosture && overlayData.poses.length > 0) {
       this.overlay_pose(overlayData.poses[0], 0);
       this.overlay_pose(overlayData.poses[1], 0.5);
     }
 
+    this.overlay_cosp(overlayData.phones, overlayData.wave_span);
   }
 
   overlay_text(text: string) {
@@ -149,29 +158,33 @@ export default class OverlayPainter {
     wave_span: [number, number],
     events: SpeechEvents) {
     if (!this.ctx) return;
-
+        
     const n_sample = wave.length;
     const vw = this.cvsWidth;
     const vh = this.wave_vh;
-    const [wav_start, wav_end] = wave_span;
+    const [wav_start, wav_end] = wave_span;        
 
     const to_x = (d: number) => ~~(d / n_sample * vw);
     const to_y = (v: number) => ~~(v / 128 * vh) + (this.cvsHeight - vh / 2);
-    const ctx = this.ctx;
+    const ctx = this.ctx;    
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = "#FFFFFF";
     ctx.beginPath();
     ctx.moveTo(to_x(0), to_y(0));
     let last_color = "";
+        
+    const sorted_events = events
+      .sort((a,b)=>(EV_LABELS[b[2]]||9)-(EV_LABELS[a[2]]||9));
 
-    for (let i = 0; i < wave.length; i++) {
-      let ev = events.filter(([s, e, ev]) => {
-        const wav_t = wav_start + i / wave_fr;
-        return s < wav_t && wav_t < e;
-      });
-
-      const ev_type = ev.length > 0 ? ev[0][2] : "other";
+    for (let i = 0; i < wave.length; i++) {      
+      let ev = sorted_events        
+        .filter(([s, e, ev]) => {
+          const wav_t = wav_start + i / wave_fr;          
+          return s < wav_t && wav_t < e;
+        });      
+      
+      const ev_type = ev.length > 0 ? ev[0][2] : "other";      
       const ev_color = SPEAKER_EV_COLOR[ev_type] || "#FFFFFF";
       const x = to_x(i);
       const y = to_y(wave[i]);
@@ -267,6 +280,36 @@ export default class OverlayPainter {
     }
   }
 
+  overlay_cosp(
+    phones: PhoneData,
+    wave_span: [number, number]) {
+
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const vw = this.cvsWidth;
+    const vh = this.cvsHeight;
+
+    const center = (wave_span[0] + wave_span[1]) / 2;
+    const cosp_set = new Set<string>();    
+    phones.filter((x) => (center - 1 < x[1]) && (center > x[1]+0.05))
+      .forEach((tok) => {
+        tok[4]
+          .map((x) => {
+            if (x > 17) {
+              return "SP2_" + CospFeatureEnum[x-17-1]
+            } else {
+              return "SP1_" + CospFeatureEnum[x-1]
+            }
+          })
+          .forEach((xx) => cosp_set.add(xx));
+      });
+    
+    draw_cosp_badges(ctx, vw, vh, cosp_set);
+
+
+  }
+
   overlay_spans(spans: VideoAnnotSpan[],
     wave_fr: number,
     wave_nsamples: number,
@@ -310,7 +353,7 @@ export default class OverlayPainter {
     this.notifySpanAreas(spanBoxes);
   }
 
-  overlay_pose(pose: MediapipeData, offset: number=0) {
+  overlay_pose(pose: MediapipeData, offset: number = 0) {
     if (!this.ctx) return;
     draw_mediapipe(this.ctx, pose, this.cvsWidth, this.cvsHeight);
   }

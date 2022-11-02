@@ -24,11 +24,11 @@ export default function VideoPage(props: VideoPageProps) {
       <Grid item xs={3} />
       <Grid item xs={6}>
         <VideoView
-          video_url="https://storage.googleapis.com/multimoco/selected/h264/clgvd-210315091356.mp4"
-          // video_url="https://storage.googleapis.com/multimoco/selected/h264/c5011-2204062000.mp4"
+          // video_url="https://storage.googleapis.com/multimoco/selected/h264/clgvd-210315091356.mp4"
+          video_url="https://storage.googleapis.com/multimoco/selected/h264/c5011-2204062000.mp4"
           annotSpans={[]}
           onAnnotSpansUpdated={(spans)=>{}}
-          seekToSec={456}
+          seekToSec={310}
         />
         <Grid container>
           <Grid item xs={4}>
