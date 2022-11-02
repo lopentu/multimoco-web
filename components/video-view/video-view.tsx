@@ -135,7 +135,7 @@ export default function VideoView(props: VideoViewProp) {
 
     const onTimeUpdateHandler = () => {
       if (videoRef.current) {
-        videoControl.setVideo(videoRef.current, videoStateCtrl);
+        videoStateCtrl.stateSetter(videoRef.current);
       }
     }
 

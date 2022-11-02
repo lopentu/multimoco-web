@@ -312,6 +312,6 @@ export default class OverlayPainter {
 
   overlay_pose(pose: MediapipeData, offset: number=0) {
     if (!this.ctx) return;
-    draw_mediapipe(this.ctx, pose, this.cvsWidth, this.cvsHeight, offset);
+    draw_mediapipe(this.ctx, pose, this.cvsWidth, this.cvsHeight);
   }
 }

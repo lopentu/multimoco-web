@@ -40,20 +40,20 @@ export function convertSpansToMsecs(annotSpans: AnnotationSpans) {
 
 function intrapolateCoords(t: number,
   c1: XYZCoord | XYZVCoord,
-  c2: XYZCoord | XYZVCoord): XYZCoord | XYZVCoord {  
+  c2: XYZCoord | XYZVCoord): XYZCoord | XYZVCoord {
   let intCoords: number[] = [];
-  
+
   c1.forEach((_, idx) => {
     const a = c1[idx];
     const b = c2[idx];
     let v = a;
-    if (a!=b){
+    if (a != b) {
       v = a + (b - a) * t;
-    }    
+    }
     intCoords.push(v);
   });
-  
-  return intCoords as (XYZCoord|XYZVCoord);
+
+  return intCoords as (XYZCoord | XYZVCoord);
 }
 
 function intrapolateFace(t: number,
@@ -118,4 +118,43 @@ export function intrapolateMediapipeData(t: number,
   mp_x.pose = intrapolateBody(t, mp1.pose, mp2.pose) as BodyCoords;
 
   return mp_x
+}
+
+export function post_process_pose(mp: PostureData[], videoName: string) {
+  // only post processing the left/right split occurred in clgvd poses
+  if (videoName.indexOf("clgvd") < 0) return mp;
+
+  mp.forEach((x)=>renormalize_half(x.left, 0.));
+  mp.forEach((x)=>renormalize_half(x.right, 0.5));
+
+  return mp
+}
+
+function renormalize_half(mp_data: MediapipeData, offset: number) {  
+  if (!mp_data) {
+    return mp_data;
+  }
+
+  // handle face data  
+  if (mp_data.face) {
+    for (const [k, v] of Object.entries(mp_data.face)) {
+      v.forEach((coord) => coord[0]=coord[0]/2+offset)
+    }
+  }
+
+  // handle coordinate data
+  if (mp_data.pose) {
+    mp_data.pose.forEach((coord) => coord[0]=coord[0]/2+offset);
+  }
+
+
+  if (mp_data.left_hand) {
+    mp_data.left_hand.forEach((coord)=>coord[0]=coord[0]/2+offset)
+  }
+
+  if (mp_data.right_hand) {
+    mp_data.right_hand.forEach((coord)=>coord[0]=coord[0]/2+offset)
+  }
+
+  return mp_data
 }

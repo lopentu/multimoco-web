@@ -1,19 +1,19 @@
 import { BodyCoords, FaceData, HandCoords, MediapipeData, MeshCoords } from "./overlay-data-types";
 
-function coord_conversion(coord: number[], offset: number, w: number, h: number) {
+function coord_conversion(coord: number[], w: number, h: number) {
   if (coord.length < 2) return coord;
-  return [(coord[0] / 2 + offset) * w, coord[1] * h]
+  return [coord[0] * w, coord[1] * h]
 }
 
 
 
 export default function draw_mediapipe(
   ctx: CanvasRenderingContext2D,
-  pose: MediapipeData, w: number, h: number, offset = 0) {
+  pose: MediapipeData, w: number, h: number) {
 
 
   function to_coord(x: number[]) {
-    return coord_conversion(x, offset, w, h);
+    return coord_conversion(x, w, h);
   }
 
   function draw_body_landmarks(coords: BodyCoords,

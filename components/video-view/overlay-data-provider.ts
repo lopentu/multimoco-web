@@ -2,7 +2,7 @@ import {
   MediapipeData, OcrDataType,
   PhoneData, PostureData, SpeechEvents
 } from "./overlay-data-types";
-import { intrapolateMediapipeData } from "./utils";
+import { intrapolateMediapipeData, post_process_pose } from "./utils";
 import parseVTT, { VTTData } from "./vtt-parser";
 
 const WAV_FR = 1000;
@@ -220,7 +220,8 @@ export default class OverlayDataProvider {
     const resp = await fetch(this.baseURL + `/mp/${this.videoName}.mp.json`);
     if (resp.status == 200) {
       const text = await resp.text();
-      const mp = JSON.parse(text);
+      let mp = JSON.parse(text);
+      mp = post_process_pose(mp, this.videoName);
       return mp;
     } else {
       return [];
