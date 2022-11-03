@@ -11,6 +11,26 @@ export interface AlignedUtt {
   // payload: { text: string, phones?: string }
 }
 
+export enum CospeechGesture {
+    LOS_DOWN = 1,           // 視線往下
+    LOS_LEFT,           // 視線往左
+    LOS_RIGHT,          // 視線往右
+    LEFT_PALM_IN,       // 左掌心朝裡
+    LEFT_PALM_OUT,      // 左掌心朝外
+    LEFT_PALM_UP,       // 左掌心向上
+    LEFT_PALM_DOWN,     // 左掌心向下
+    LEFT_PALM_MEDIAL,   // 左掌心向中間
+    LEFT_THUMB_UP,      // 左拇指豎起
+    LEFT_INDEX_UP,     // 左食指伸直
+    RIGHT_PALM_IN,     // 右掌心朝內 
+    RIGHT_PALM_OUT,    // 右掌心朝外
+    RIGHT_PALM_UP,     // 右掌心向上 
+    RIGHT_PALM_DOWN,   // 右掌心向下 
+    RIGHT_PALM_MEDIAL, // 右掌心向中間    
+    RIGHT_THUMB_UP,    // 右拇指豎起
+    RIGHT_INDEX_UP    // 右食指伸直    
+}
+
 export interface OcrBlock {
   _id: string
   name: string

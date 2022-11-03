@@ -2,7 +2,6 @@ import type { NextPage } from 'next'
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Input, Dropdown, Spacer } from "@nextui-org/react";
 import { TextField, Button, Select, InputLabel, FormControl, MenuItem, Container, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import CorpusResult from '../components/corpus_results';
@@ -12,12 +11,12 @@ import Searchbar from '../components/navbar';
 import VideoJS from '../components/videojs';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import videojs, { VideoJsPlayer } from 'video.js';
 import VideoView from '../components/video-view';
 import { AnnotationSpans } from '../types/corpus';
 import { FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 import { getVideoName, groupAnnotationSpans } from '../components/span-data-utils';
-
+import CospGestureMultipleSelectCheckmarks from '../components/cospeech-select';
+import { OutlinedInput } from '@mui/material';
 
 export async function getServerSideProps(context: any) {
   try {
@@ -100,6 +99,7 @@ export async function getServerSideProps(context: any) {
     //   return { props: { searchResults: JSON.stringify(null), searchT: searchType } }
     // }
 
+    // filter results by collection
     if (searchCollection !== 'all') {
       results = results?.filter((doc) => doc.video_meta[0].payload.video_type === searchCollection);
     }
@@ -107,6 +107,7 @@ export async function getServerSideProps(context: any) {
     results?.forEach(function (part, index, theArray) {
       theArray[index].text = theArray[index].payload.text;
 
+      // move payload to first level
       for (const [key, value] of Object.entries(theArray[index].video_meta[0].payload)) {
         theArray[index][key] = value;
       }
@@ -230,6 +231,17 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
     setAnnotationSpans(newSpans);
   }
 
+  const ITEM_HEIGHT = 50;
+  const ITEM_PADDING_TOP = 50;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        padding: 0,
+        minWidth: 100,
+      },
+    },
+  };
 
   return (
     <>
@@ -282,7 +294,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                   justifyContent="left"
                   alignItems="center"
                 >
-                  <Grid2 md={6} display="flex" sx={{ flexDirection: "row" }}>
+                  <Grid2 sm={6} lg={4} display="flex" sx={{ flexDirection: "row" }}>
                     <FormControl>
                       <FormLabel id="demo-radio-buttons-group-label">Search Type</FormLabel>
                       <RadioGroup
@@ -298,8 +310,8 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                       </RadioGroup>
                     </FormControl>
                   </Grid2>
-                  <Grid2 md={6}>
-                    <FormControl sx={{ minWidth: 80 }}>
+                  <Grid2 sm={6} lg={4}>
+                    <FormControl sx={{ width: 150 }} >
                       <InputLabel id="search-collection-label">Collection</InputLabel>
                       <Select
                         labelId="search-collection-label"
@@ -307,8 +319,10 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                         value={searchCollection}
                         label="Collection"
                         name="searchCollection"
+                        // input={<OutlinedInput label="Tag" />}
                         onChange={(e) => setSearchCollection(e.target.value)}
-                        autoWidth
+                        MenuProps={MenuProps}
+                        // autoWidth
                       >
                         <MenuItem value="legvid">Legislature</MenuItem>
                         <MenuItem value="news">News</MenuItem>
@@ -316,38 +330,9 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                       </Select>
                     </FormControl>
                   </Grid2>
-                  {/* <Grid2 md={6} >
-                    <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-                      <InputLabel id="hand-select-label">手勢</InputLabel>
-                      <Select
-                        labelId="hand-select-label"
-                        id="hand-select"
-                        value={handSelect}
-                        label="手勢"
-                        onChange={(e) => setHandSelect(e.target.value)}
-                        autoWidth
-                      >
-                        <MenuItem value="hand-moving">手揮動</MenuItem>
-                        <MenuItem value="hand-palm-visible">手掌可見</MenuItem>
-                      </Select>
-                    </FormControl>
+                  <Grid2 sm={6} lg={4}>
+                    <CospGestureMultipleSelectCheckmarks />
                   </Grid2>
-
-                  <Grid2 md={6} >
-                    <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-                      <InputLabel id="sound-select-label">語音</InputLabel>
-                      <Select
-                        labelId="sound-select-label"
-                        id="sound-select"
-                        value={soundSelect}
-                        label="語音"
-                        onChange={(e) => setSoundSelect(e.target.value)}
-                        autoWidth
-                      >
-                        <MenuItem value="sound-overlapping">語音重疊</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid2> */}
                 </Grid2>
               </form>
             </Grid2>
