@@ -47,7 +47,6 @@ export default class OverlayPainter {
     this.cvsWidth = width;
     this.cvsHeight = height;
     this.wave_vh = 50;
-    console.log("CVS size: ", width, height);
   }
 
   setOptions(options: { [key: string]: any }) {
@@ -166,7 +165,7 @@ export default class OverlayPainter {
     const [wav_start, wav_end] = wave_span;        
 
     const to_x = (d: number) => ~~(d / n_sample * vw);
-    const to_y = (v: number) => ~~(v / 128 * vh) + (this.cvsHeight - vh / 2);
+    const to_y = (v: number) => ~~(v / 196 * vh) + (this.cvsHeight - vh / 2);
     const ctx = this.ctx;    
 
     ctx.lineWidth = 1;

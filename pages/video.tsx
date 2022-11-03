@@ -10,7 +10,7 @@ export default function VideoPage(props: VideoPageProps) {
 
   const {query} = useRouter();
 
-  // another testing clip: c5011-2204062000
+  // another testing clip: c5011-2204062000 / clgvd-210315091356
   const videoName = (query.name? query.name: "clgvd-210315091356") + ".mp4";
   const offset = parseInt(query.offset? query.offset.toString(): "0");
 
