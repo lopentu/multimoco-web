@@ -47,6 +47,7 @@ export default class OverlayPainter {
     this.cvsWidth = width;
     this.cvsHeight = height;
     this.wave_vh = 50;
+    console.log("CVS size: ", width, height);
   }
 
   setOptions(options: { [key: string]: any }) {
