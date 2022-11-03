@@ -26,12 +26,17 @@ export async function getServerSideProps(context: any) {
     let results
     const { query } = context
     let searchType = query.searchType
+    let searchCollection = query.searchCollection
 
     if (searchType === undefined) {
       searchType = "asr"
     }
 
-    if (((query.query === "") || (query.query === undefined)) || (query.query === undefined)) {
+    if (searchCollection === undefined) {
+      searchCollection = "legvid"
+    }
+
+    if (((query.query === "") || (query.query === undefined))) {
       return { props: { searchResults: JSON.stringify(null), searchT: "" } }
     }
 
@@ -90,6 +95,15 @@ export async function getServerSideProps(context: any) {
         },
       ]).toArray()
     }
+
+    // if (results === undefined) {
+    //   return { props: { searchResults: JSON.stringify(null), searchT: searchType } }
+    // }
+
+    if (searchCollection !== 'all') {
+      results = results?.filter((doc) => doc.video_meta[0].payload.video_type === searchCollection);
+    }
+
     results?.forEach(function (part, index, theArray) {
       theArray[index].text = theArray[index].payload.text;
 
@@ -161,6 +175,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
   const [searchType, setSearchType] = useState(searchT);
   const [videoUrl, setVideoUrl] = useState("");
   const [seekToSec, setSeekToSec] = useState(0);
+  const [searchCollection, setSearchCollection] = useState("legvid");
   const [handSelect, setHandSelect] = useState("");
   const [soundSelect, setSoundSelect] = useState("");
   const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(searchResults));
@@ -233,10 +248,10 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
           <Grid2
             display="flex"
             container
-            spacing={5}
+            spacing={2}
             sx={{ flexDirection: "row" }}
           >
-            <Grid2 xs={6} md={6} lg={7}>
+            <Grid2 xs={3} lg={5}>
               <form
                 action="search" method="GET"
               >
@@ -267,7 +282,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                   justifyContent="left"
                   alignItems="center"
                 >
-                  <Grid2 md={12} display="flex" sx={{ flexDirection: "row" }}>
+                  <Grid2 md={6} display="flex" sx={{ flexDirection: "row" }}>
                     <FormControl>
                       <FormLabel id="demo-radio-buttons-group-label">Search Type</FormLabel>
                       <RadioGroup
@@ -281,6 +296,24 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                         <FormControlLabel value="ocr" control={<Radio />} label="OCR" />
                         {/* <FormControlLabel value="blank" control={<Radio />} label="Blank" /> */}
                       </RadioGroup>
+                    </FormControl>
+                  </Grid2>
+                  <Grid2 md={6}>
+                    <FormControl sx={{ minWidth: 80 }}>
+                      <InputLabel id="search-collection-label">Collection</InputLabel>
+                      <Select
+                        labelId="search-collection-label"
+                        id="collection-select"
+                        value={searchCollection}
+                        label="Collection"
+                        name="searchCollection"
+                        onChange={(e) => setSearchCollection(e.target.value)}
+                        autoWidth
+                      >
+                        <MenuItem value="legvid">Legislature</MenuItem>
+                        <MenuItem value="news">News</MenuItem>
+                        <MenuItem value="all">All</MenuItem>
+                      </Select>
                     </FormControl>
                   </Grid2>
                   {/* <Grid2 md={6} >
@@ -330,7 +363,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                   <VideoView
                     video_url={videoUrl}
                     seekToSec={seekToSec}
-                    annotSpans={selectedSpans}                    
+                    annotSpans={selectedSpans}
                     onAnnotSpansUpdated={onSelectedSpansUpdated} />
                 }
               </Grid2>
