@@ -9199,7 +9199,7 @@ textarea.form-control-lg {
 
 .logo {
   font-size: 24px;
-  color: #198754 !important;
+  color: #DFFFFC !important;
   font-weight: 500; }
   .logo:hover {
     color: #fff !important; }
@@ -9665,7 +9665,7 @@ textarea {
   float: left;
   width: 100%;
   border-radius: 3px;
-  border-bottom: 3px solid var(--visual-primary);
+  border-bottom: 3px solid #53b2a3;
   -webkit-box-shadow: 0 15px 30px -15px rgba(0, 0, 0, 0.1);
   box-shadow: 0 15px 30px -15px rgba(0, 0, 0, 0.1); }
 
