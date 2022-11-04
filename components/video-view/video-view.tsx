@@ -31,10 +31,10 @@ interface OverlayOptions {
 
 const ASPECT_RATIO = 640 / 360;
 const TO_AUTOPLAY = false;
-const dataProvider = new OverlayDataProvider();
 const videoControl = new VideoControl();
 const videoAnnot = new VideoAnnotator(videoControl);
 const overlayPainter = new OverlayPainter(videoAnnot);
+let dataProvider = new OverlayDataProvider();
 
 function undefined_or_true(x: undefined | boolean) {
   return x === undefined ? true : x;
@@ -62,6 +62,7 @@ export default function VideoView(props: VideoViewProp) {
   videoAnnot.setAnnotSpansUpdatedCallback(onAnnotSpansUpdated);
 
   useEffect(() => {
+    if (props.video_url === "") return;
     const callbacks = initialize_video();
     const video = videoRef.current;
 
@@ -124,6 +125,7 @@ export default function VideoView(props: VideoViewProp) {
     const pathTokens = new URL(props.video_url).pathname.split("/")
     if (pathTokens.length > 1) {
       const videoName = pathTokens.at(pathTokens.length - 1);
+      dataProvider = new OverlayDataProvider();
       dataProvider.setVideoName(videoName as string);
       dataProvider.loadData();
     }
