@@ -22,90 +22,98 @@ export async function getServerSideProps(context: any) {
   try {
     const client = await clientPromise
     const db = client.db("multimoco")
-    let results
-    const { query } = context
-    let searchType = query.searchType
-    let searchCollection = query.searchCollection
 
-    if (searchType === undefined) {
-      searchType = "asr"
-    }
+    let results;
+    const { query } = context;
+    let searchType = query.searchType;
+    let searchCollection = query.searchCollection;
+    let gestures = query.gestureSelect;
+    let speaker = query.gestureSpeaker;
 
-    if (searchCollection === undefined) {
-      searchCollection = "legvid"
-    }
+    console.log(query)
+
+    if (searchType === undefined) searchType = "asr"
+    if (searchCollection === undefined) searchCollection = "legvid"
 
     if (((query.query === "") || (query.query === undefined))) {
-      return { props: { searchResults: JSON.stringify(null), searchT: "" } }
+      return {
+        props: {
+          searchResults: JSON.stringify(null),
+          searchT: "",
+          searchCollection: "",
+          gestureSelect: null,
+          gestureSpeaker: "",
+        }
+      }
     }
+
+    const aggregationPipeline = [
+      { "$match": { "payload.text": new RegExp(query.query, "i") } },
+      {
+        "$sort": {
+          "name": 1,
+          "offset": 1
+        }
+      },
+      // group results by video name
+      // {
+      //   "$group": {
+      //     "_id": "$name",
+      //     "groupResults": {
+      //       "$push": "$$ROOT",
+      //     },
+      //   }
+      // },
+      {
+        "$lookup": {
+          "from": "videos_meta",
+          "localField": "name",
+          "foreignField": "name",
+          "as": "video_meta",
+        }
+      },
+    ]
+
+    if (gestures !== "") {
+      let gestureSearch: string[] = []
+      if (speaker === 'any') {
+        gestures.split(',').forEach((ges) => {
+          gestureSearch.push(`SP1_${ges}`);
+          gestureSearch.push(`SP2_${ges}`);
+        })
+      } else if (speaker === 'SP1') {
+        gestures.split(',').forEach((ges) => {
+          gestureSearch.push(`SP1_${ges}`);
+        })
+      } else if (speaker === 'SP2') {
+        gestures.split(',').forEach((ges) => {
+          gestureSearch.push(`SP2_${ges}`);
+        })
+      }
+      console.log(gestureSearch)
+      aggregationPipeline.splice(1, 0, { "$match": { "payload.cosp": { $in: gestureSearch } } })
+    }
+
+    console.log(aggregationPipeline);
 
     if (searchType === "asr") {
-      results = await db.collection("aligned_utt").aggregate([
-        { "$match": { "payload.text": new RegExp(query.query, "i") } },
-        {
-          "$sort": {
-            "name": 1,
-            "offset": 1
-          }
-        },
-        // group results by video name
-        // {
-        //   "$group": {
-        //     "_id": "$name",
-        //     "groupResults": {
-        //       "$push": "$$ROOT",
-        //     },
-        //   }
-        // },
-        {
-          "$lookup": {
-            "from": "videos_meta",
-            "localField": "name",
-            "foreignField": "name",
-            "as": "video_meta",
-          }
-        },
-      ]).toArray()
+      results = await db.collection("aligned_utt").aggregate(aggregationPipeline).toArray()
 
     } else if (searchType === "ocr") {
-      results = await db.collection("ocr_blocks").aggregate([
-        { "$match": { "payload.text": new RegExp(query.query, "i") } },
-        {
-          "$sort": {
-            "offset": 1
-          }
-        },
-        // group results by video name
-        // {
-        //   "$group": {
-        //     "_id": "$name",
-        //     "groupResults": {
-        //       "$push": "$$ROOT",
-        //     },
-        //   }
-        // },
-        {
-          "$lookup": {
-            "from": "videos_meta",
-            "localField": "name",
-            "foreignField": "name",
-            "as": "video_meta",
-          }
-        },
-      ]).toArray()
+      results = await db.collection("ocr_blocks").aggregate(aggregationPipeline).toArray()
     }
-
-    // if (results === undefined) {
-    //   return { props: { searchResults: JSON.stringify(null), searchT: searchType } }
-    // }
 
     // filter results by collection
     if (searchCollection !== 'all') {
       results = results?.filter((doc) => doc.video_meta[0].payload.video_type === searchCollection);
     }
 
+    console.log(results?.slice(0, 3))
+
     results?.forEach(function (part, index, theArray) {
       theArray[index].text = theArray[index].payload.text;
+      theArray[index].cosp = theArray[index].payload.cosp
+      theArray[index].blankIntervals = theArray[index].payload.blank_intervals
 
       // move payload to first level
       for (const [key, value] of Object.entries(theArray[index].video_meta[0].payload)) {
@@ -131,32 +139,14 @@ export async function getServerSideProps(context: any) {
 
     console.log(results?.slice(-5));
 
-    // alignedUtt.forEach((elem) => {
-    //   // console.log(elem['video_meta'])
-    //   searchResults[elem._id] = { aligned_utt: elem['aligned_utt'], video_meta: elem['video_meta'][0] }
-    // })
-    // ocrBlocks.forEach((elem) => {
-    //   if (!(elem._id in searchResults)) {
-    //     searchResults[elem._id] = { ocr_blocks: elem["ocr_blocks"], video_meta: elem['video_meta'][0] }
-    //   } else {
-    //     searchResults[elem._id]["ocr_blocks"] = elem["ocr_blocks"]
-    //     searchResults[elem._id]["video_meta"] = elem["video_meta"][0]
-    //   }
-    // })
-
-    // console.log(JSON.stringify(searchResults))
-
-    // `await clientPromise` will use the default database passed in the MONGODB_URI
-    // However you can use another database (e.g. myDatabase) by replacing the `await clientPromise` with the following code:
-    //
-    // `const client = await clientPromise`
-    // `const db = client.db("myDatabase")`
-    //
-    // Then you can execute queries against your database like so:
-    // db.find({}) or any of the MongoDB Node Driver commands
-
     return {
-      props: { searchResults: JSON.stringify(results), searchT: searchType },
+      props: {
+        searchResults: JSON.stringify(results),
+        searchT: searchType,
+        searchCollection: searchCollection,
+        gestureSpeaker: query.gestureSpeaker,
+        gestureSelect: query.gestureSelect
+      },
     }
   } catch (e) {
     console.error(e)
@@ -177,8 +167,6 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [seekToSec, setSeekToSec] = useState(0);
   const [searchCollection, setSearchCollection] = useState("legvid");
-  const [handSelect, setHandSelect] = useState("");
-  const [soundSelect, setSoundSelect] = useState("");
   const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(searchResults));
 
   const selectedSpans = annotationSpans !== null ?
@@ -199,12 +187,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
       let q = getParams.query || ""
       setQueryText(q)
     }
-    if (getParams.searchType !== undefined) {
-      setSearchType(getParams.searchType as string);
-    }
-    else {
-      setSearchType('asr');
-    }
+    (getParams.searchType !== undefined) ? setSearchType(getParams.searchType as string) : setSearchType('asr');
   }, []);
 
   // *
@@ -263,7 +246,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
             spacing={2}
             sx={{ flexDirection: "row" }}
           >
-            <Grid2 xs={3} lg={5}>
+            <Grid2 xs={6}>
               <form
                 action="search" method="GET"
               >
@@ -288,52 +271,60 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                     />
                   </Grid2>
                 </Grid2>
-                <Grid2
+                {/* <Grid2
                   container
+                  // spacing={1}
+                  // justifyContent="left"
+                  // alignItems="center"
+                > */}
+                <Stack
+                  direction={{ xs: 'column', md: 'row' }}
                   spacing={1}
-                  justifyContent="left"
                   alignItems="center"
+                  justifyContent="space-between"
+                // sx={{paddingX: 4}}
                 >
-                  <Grid2 sm={6} lg={4} display="flex" sx={{ flexDirection: "row" }}>
-                    <FormControl>
-                      <FormLabel id="demo-radio-buttons-group-label">Search Type</FormLabel>
-                      <RadioGroup
-                        row={true}
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        value={searchType}
-                        onChange={(e) => setSearchType(e.target.value)}
-                        name="searchType"
-                      >
-                        <FormControlLabel value="asr" control={<Radio />} label="ASR" />
-                        <FormControlLabel value="ocr" control={<Radio />} label="OCR" />
-                        {/* <FormControlLabel value="blank" control={<Radio />} label="Blank" /> */}
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid2>
-                  <Grid2 sm={6} lg={4}>
-                    <FormControl sx={{ width: 150 }} >
-                      <InputLabel id="search-collection-label">Collection</InputLabel>
-                      <Select
-                        labelId="search-collection-label"
-                        id="collection-select"
-                        value={searchCollection}
-                        label="Collection"
-                        name="searchCollection"
-                        // input={<OutlinedInput label="Tag" />}
-                        onChange={(e) => setSearchCollection(e.target.value)}
-                        MenuProps={MenuProps}
-                        // autoWidth
-                      >
-                        <MenuItem value="legvid">Legislature</MenuItem>
-                        <MenuItem value="news">News</MenuItem>
-                        <MenuItem value="all">All</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid2>
-                  <Grid2 sm={6} lg={4}>
-                    <CospGestureMultipleSelectCheckmarks />
-                  </Grid2>
-                </Grid2>
+                  {/* <Grid2 sm={12} md={4} display="flex" sx={{ flexDirection: "row" }}> */}
+                  <FormControl>
+                    <FormLabel id="demo-radio-buttons-group-label">Search Type</FormLabel>
+                    <RadioGroup
+                      row={true}
+                      aria-labelledby="demo-radio-buttons-group-label"
+                      value={searchType}
+                      onChange={(e) => setSearchType(e.target.value)}
+                      name="searchType"
+                    >
+                      <FormControlLabel value="asr" control={<Radio />} label="ASR" />
+                      <FormControlLabel value="ocr" control={<Radio />} label="OCR" />
+                      {/* <FormControlLabel value="blank" control={<Radio />} label="Blank" /> */}
+                    </RadioGroup>
+                  </FormControl>
+                  {/* </Grid2>
+                  <Grid2 sm={12} md={4}> */}
+                  <FormControl sx={{ width: 150 }} size="small" >
+                    <InputLabel id="search-collection-label">Collection</InputLabel>
+                    <Select
+                      labelId="search-collection-label"
+                      id="collection-select"
+                      value={searchCollection}
+                      label="Collection"
+                      name="searchCollection"
+                      // input={<OutlinedInput label="Tag" />}
+                      onChange={(e) => setSearchCollection(e.target.value)}
+                      MenuProps={MenuProps}
+                    // autoWidth
+                    >
+                      <MenuItem value="legvid">Legislature</MenuItem>
+                      <MenuItem value="news">News</MenuItem>
+                      <MenuItem value="all">All</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* </Grid2>
+                  <Grid2 sm={12} md={4}> */}
+                  <CospGestureMultipleSelectCheckmarks />
+                  {/* </Grid2> */}
+                </Stack>
+                {/* </Grid2> */}
               </form>
             </Grid2>
             {annotationSpans ?
