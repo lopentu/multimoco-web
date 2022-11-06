@@ -1,25 +1,23 @@
-import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import Link from '@mui/material/Link';
 import { Typography } from '@mui/material';
-import { VideoJsPlayer } from 'video.js';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableFooter from '@mui/material/TableFooter';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import * as React from 'react';
 import { fancyTimeFormat } from '../utils/utils';
-import { AlignedUtt, AnnotationSpans, AnnotationSpan, OcrBlock, Results } from '../types/corpus'
 
 
 interface TablePaginationActionsProps {

@@ -1,22 +1,16 @@
-import type { NextPage } from 'next'
-import React, { useState, useEffect } from 'react';
+import { Container, Typography } from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { TextField, Button, Select, InputLabel, FormControl, MenuItem, Container, Typography } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import CorpusResult from '../components/corpus_results';
-import clientPromise from '../lib/mongodb'
-import SearchIcon from '@mui/icons-material/Search';
-import Searchbar from '../components/navbar';
-import VideoJS from '../components/videojs';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
+import React, { useEffect, useState } from 'react';
+import CorpusResult from '../components/corpus-result';
+import { getVideoName } from '../components/span-data-utils';
 import VideoView from '../components/video-view';
+import clientPromise from '../lib/mongodb';
 import { AnnotationSpans } from '../types/corpus';
-import { FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material';
-import { getVideoName, groupAnnotationSpans } from '../components/span-data-utils';
-import CospGestureMultipleSelectCheckmarks from '../components/cospeech-select';
-import { OutlinedInput } from '@mui/material';
+
+import SearchForm from '../components/search-form';
 
 export async function getServerSideProps(context: any) {
   try {
@@ -34,15 +28,17 @@ export async function getServerSideProps(context: any) {
 
     if (searchType === undefined) searchType = "asr"
     if (searchCollection === undefined) searchCollection = "legvid"
+    if (gestures === undefined) gestures = []
+    if (speaker === undefined) speaker = "any"
 
     if (((query.query === "") || (query.query === undefined))) {
       return {
         props: {
           searchResults: JSON.stringify(null),
-          searchT: "",
-          searchCollection: "",
+          searchType: null,
+          searchCollection: null,
           gestureSelect: null,
-          gestureSpeaker: "",
+          gestureSpeaker: null,
         }
       }
     }
@@ -142,8 +138,8 @@ export async function getServerSideProps(context: any) {
     return {
       props: {
         searchResults: JSON.stringify(results),
-        searchT: searchType,
-        searchCollection: searchCollection,
+        searchType,
+        searchCollection,
         gestureSpeaker: query.gestureSpeaker,
         gestureSelect: query.gestureSelect
       },
@@ -151,33 +147,40 @@ export async function getServerSideProps(context: any) {
   } catch (e) {
     console.error(e)
     return {
-      props: { searchResults: JSON.stringify(null), searchT: "" }
+        props: {
+          searchResults: JSON.stringify(null),
+          searchType: null,
+          searchCollection: null,
+          gestureSelect: null,
+          gestureSpeaker: null,
+        }
     }
   }
 }
 
 type SearchPageProps = {
-  searchResults: string,
-  searchT: string,
+  searchResults: string
+  searchType: string
+  searchCollection: string
+  gestureSpeaker: string
+  gestureSelect: string
 }
 
-const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
+const SearchPage: NextPage<SearchPageProps> = (props) => {
   const [queryText, setQueryText] = useState("");
-  const [searchType, setSearchType] = useState(searchT);
+  const [searchType, setSearchType] = useState("");
+  const [searchCollection, setSearchCollection] = useState("legvid");
+  const [cosp, setCosp] = React.useState<string[]>([]);
+  const [speaker, setSpeaker] = React.useState<string>("any");
   const [videoUrl, setVideoUrl] = useState("");
   const [seekToSec, setSeekToSec] = useState(0);
-  const [searchCollection, setSearchCollection] = useState("legvid");
-  const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(searchResults));
+  const [annotationSpans, setAnnotationSpans] = useState<AnnotationSpans>(JSON.parse(props.searchResults));
 
   const selectedSpans = annotationSpans !== null ?
     annotationSpans.filter((x) => x.name == getVideoName(videoUrl)) : null;
 
   const router = useRouter();
   const getParams = router.query;
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQueryText(event.target.value);
-  }
 
   useEffect(() => {
     if (Array.isArray(getParams.query)) {
@@ -188,6 +191,10 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
       setQueryText(q)
     }
     (getParams.searchType !== undefined) ? setSearchType(getParams.searchType as string) : setSearchType('asr');
+    (getParams.searchCollection !== undefined) ? setSearchCollection(getParams.searchCollection as string) : setSearchCollection('legvid');
+    (getParams.searchCollection !== undefined) ? setSearchCollection(getParams.searchCollection as string) : setSearchCollection('legvid');
+    (getParams.gestureSelect !== undefined) ? setCosp((getParams.gestureSelect as string).split(',')) : setCosp([]);
+    (getParams.gestureSpeaker !== undefined) ? setSpeaker((getParams.gestureSpeaker as string)) : setSpeaker("any");
   }, []);
 
   // *
@@ -214,18 +221,6 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
     setAnnotationSpans(newSpans);
   }
 
-  const ITEM_HEIGHT = 50;
-  const ITEM_PADDING_TOP = 50;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        padding: 0,
-        minWidth: 100,
-      },
-    },
-  };
-
   return (
     <>
       <Head>
@@ -236,9 +231,7 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
       </Head>
 
       <section className="features-1"
-        // style={{ overflow: "visible", minHeight: "100vh", overflowY: "scroll" }}>
         style={{ minHeight: "100vh", }}>
-        {/* <Container className="mt-5" maxWidth="xl"> */}
         <Container maxWidth="xl">
           <Grid2
             display="flex"
@@ -246,87 +239,19 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
             spacing={2}
             sx={{ flexDirection: "row" }}
           >
-            <Grid2 xs={6}>
-              <form
-                action="search" method="GET"
-              >
-                <Grid2
-                  container
-                  spacing={1}
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Grid2 xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Query Text"
-                      id="search"
-                      type="text"
-                      name="query"
-                      value={queryText}
-                      onChange={handleChange}
-                      InputLabelProps={{ shrink: true }}
-                      InputProps={{ endAdornment: <Button type="submit" variant="contained" disableElevation><SearchIcon /></Button> }}
-                      required
-                    />
-                  </Grid2>
-                </Grid2>
-                {/* <Grid2
-                  container
-                  // spacing={1}
-                  // justifyContent="left"
-                  // alignItems="center"
-                > */}
-                <Stack
-                  direction={{ xs: 'column', md: 'row' }}
-                  spacing={1}
-                  alignItems="center"
-                  justifyContent="space-between"
-                // sx={{paddingX: 4}}
-                >
-                  {/* <Grid2 sm={12} md={4} display="flex" sx={{ flexDirection: "row" }}> */}
-                  <FormControl>
-                    <FormLabel id="demo-radio-buttons-group-label">Search Type</FormLabel>
-                    <RadioGroup
-                      row={true}
-                      aria-labelledby="demo-radio-buttons-group-label"
-                      value={searchType}
-                      onChange={(e) => setSearchType(e.target.value)}
-                      name="searchType"
-                    >
-                      <FormControlLabel value="asr" control={<Radio />} label="ASR" />
-                      <FormControlLabel value="ocr" control={<Radio />} label="OCR" />
-                      {/* <FormControlLabel value="blank" control={<Radio />} label="Blank" /> */}
-                    </RadioGroup>
-                  </FormControl>
-                  {/* </Grid2>
-                  <Grid2 sm={12} md={4}> */}
-                  <FormControl sx={{ width: 150 }} size="small" >
-                    <InputLabel id="search-collection-label">Collection</InputLabel>
-                    <Select
-                      labelId="search-collection-label"
-                      id="collection-select"
-                      value={searchCollection}
-                      label="Collection"
-                      name="searchCollection"
-                      // input={<OutlinedInput label="Tag" />}
-                      onChange={(e) => setSearchCollection(e.target.value)}
-                      MenuProps={MenuProps}
-                    // autoWidth
-                    >
-                      <MenuItem value="legvid">Legislature</MenuItem>
-                      <MenuItem value="news">News</MenuItem>
-                      <MenuItem value="all">All</MenuItem>
-                    </Select>
-                  </FormControl>
-                  {/* </Grid2>
-                  <Grid2 sm={12} md={4}> */}
-                  <CospGestureMultipleSelectCheckmarks />
-                  {/* </Grid2> */}
-                </Stack>
-                {/* </Grid2> */}
-              </form>
-            </Grid2>
+            <SearchForm
+              queryText={queryText}
+              setQueryText={setQueryText}
+              searchType={searchType}
+              setSearchType={setSearchType}
+              searchCollection={searchCollection}
+              setSearchCollection={setSearchCollection}
+              cosp={cosp}
+              setCosp={setCosp}
+              speaker={speaker}
+              setSpeaker={setSpeaker}
+            />
+
             {annotationSpans ?
               <Grid2 xs={6} md={6} lg={5} display="flex"
                 justifyContent="center"
@@ -357,12 +282,17 @@ const SearchPage: NextPage<SearchPageProps> = ({ searchResults, searchT }) => {
                 <CorpusResult
                   annotationSpans={annotationSpans}
                   setAnnotationSpans={setAnnotationSpans}
-                  // player={playerRef}
                   queryText={queryText}
                   searchType={searchType}
+                  searchCollection={searchCollection}
+                  speaker={speaker}
+                  cosp={cosp}
                   setQueryText={setQueryText}
                   setSearchType={setSearchType}
+                  setCosp={setCosp}
+                  setSearchCollection={setSearchCollection}
                   onSelectedSpanChanged={onSelectedSpanChanged}
+                  setSpeaker={setSpeaker}
                 />
               </Grid2>
 

@@ -71,9 +71,15 @@ export interface CorpusResultProps {
   annotationSpans: AnnotationSpans
   setAnnotationSpans: React.Dispatch<React.SetStateAction<AnnotationSpans>>
   queryText: string
-  searchType: string
   setQueryText: React.Dispatch<React.SetStateAction<string>>
+  searchType: string
   setSearchType: React.Dispatch<React.SetStateAction<string>>
+  speaker: string
+  setSpeaker: React.Dispatch<React.SetStateAction<string>>
+  cosp: string[]
+  setCosp: React.Dispatch<React.SetStateAction<string[]>>
+  searchCollection: string
+  setSearchCollection: React.Dispatch<React.SetStateAction<string>>
   onSelectedSpanChanged: (url: string, offset: number) => void
 }
 

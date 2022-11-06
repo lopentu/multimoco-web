@@ -22,15 +22,13 @@ const MenuProps = {
 	},
 };
 
-export default function CospGestureMultipleSelectCheckmarks() {
-	const [cosp, setCosp] = React.useState<string[]>([]);
-	const [speaker, setSpeaker] = React.useState<string>("any");
+export default function CospGestureMultipleSelectCheckmarks(props) {
 
-	const handleGestureChange = (event: SelectChangeEvent<typeof cosp>) => {
+	const handleGestureChange = (event: SelectChangeEvent<typeof props.cosp>) => {
 		const {
 			target: { value },
 		} = event;
-		setCosp(
+		props.setCosp(
 			// On autofill we get a stringified value.
 			typeof value === 'string' ? value.split(',') : value,
 		);
@@ -45,7 +43,7 @@ export default function CospGestureMultipleSelectCheckmarks() {
 				sx={{ flexDirection: "row" }}
 			> */}
 			<Stack
-				direction={{ xs: 'column', md: 'row' }}
+				direction={{ xs: 'row' }}
 				spacing={1}
 			// justifyContent="space-around"
 			>
@@ -56,10 +54,9 @@ export default function CospGestureMultipleSelectCheckmarks() {
 						labelId="gesture-multiple-checkbox-label"
 						id="gesture-multiple-checkbox"
 						multiple
-						value={cosp}
+						value={props.cosp}
 						label="Gesture"
 						onChange={handleGestureChange}
-						// input={<OutlinedInput label="Tag" />}
 						renderValue={(selected) => selected.join(', ')}
 						MenuProps={MenuProps}
 						name="gestureSelect"
@@ -67,7 +64,7 @@ export default function CospGestureMultipleSelectCheckmarks() {
 					>
 						{(Object.keys(CospeechGesture).filter(key => isNaN(Number(key)))).map((ges) => (
 							<MenuItem key={ges} value={ges}>
-								<Checkbox checked={cosp.indexOf(ges) > -1} />
+								<Checkbox checked={props.cosp.indexOf(ges) > -1} />
 								<ListItemText primary={ges} />
 							</MenuItem>
 						))}
@@ -80,9 +77,9 @@ export default function CospGestureMultipleSelectCheckmarks() {
 					<Select
 						labelId="speaker-select-small"
 						id="speaker-select-small"
-						value={speaker}
+						value={props.speaker}
 						label="Speaker"
-						onChange={(e) => setSpeaker(e.target.value)}
+						onChange={(e) => props.setSpeaker(e.target.value)}
 						MenuProps={MenuProps}
 						name="gestureSpeaker"
 					>
