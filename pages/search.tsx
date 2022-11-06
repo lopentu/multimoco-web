@@ -28,7 +28,7 @@ export async function getServerSideProps(context: any) {
 
     if (searchType === undefined) searchType = "asr"
     if (searchCollection === undefined) searchCollection = "legvid"
-    if (gestures === undefined) gestures = []
+    if (gestures === undefined) gestures = ""
     if (speaker === undefined) speaker = "any"
 
     if (((query.query === "") || (query.query === undefined))) {
@@ -70,7 +70,9 @@ export async function getServerSideProps(context: any) {
       },
     ]
 
-    if (gestures !== "") {
+    if ((gestures !== "")) {
+      console.log("Gestures")
+      console.log(gestures)
       let gestureSearch: string[] = []
       if (speaker === 'any') {
         gestures.split(',').forEach((ges) => {
@@ -140,8 +142,8 @@ export async function getServerSideProps(context: any) {
         searchResults: JSON.stringify(results),
         searchType,
         searchCollection,
-        gestureSpeaker: query.gestureSpeaker,
-        gestureSelect: query.gestureSelect
+        gestureSpeaker: speaker,
+        gestureSelect: gestures,
       },
     }
   } catch (e) {

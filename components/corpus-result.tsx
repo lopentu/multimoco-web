@@ -78,9 +78,10 @@ export default function CorpusResult(props: CorpusResultProps) {
     });
     setQueryText(arr[0].query_text);
     setSearchType(arr[0].search_type);
-    setSearchCollection(arr[0].searchCollection);
+    setSearchCollection(arr[0].collection);
     setCosp(arr[0].gesture_select);
     setSpeaker(arr[0].gesture_speaker)
+    console.log(arr)
     return arr;
   }
 
