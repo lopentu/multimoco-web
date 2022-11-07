@@ -27,7 +27,8 @@ export default function CorpusResult(props: CorpusResultProps) {
     let flattenedData = data.map(flattenObject);
     let leaveOut = ['clip_lowres_link', 'clip_highres_link', 'video_id', 'filename']
     let h = Array.from(new Set(flattenedData.map(d => Object.keys(d)).flat()))
-      .concat(['query_text', 'search_type', 'gesture_speaker', 'collection', 'gesture_select'])
+      .concat(['query_text', 'search_type'])
+      // .concat(['query_text', 'search_type', 'gesture_speaker', 'collection', 'gesture_select'])
     console.log("H", h)
 
     let header: string[] = h.filter(item => !leaveOut.includes(item));
@@ -37,10 +38,11 @@ export default function CorpusResult(props: CorpusResultProps) {
       let row: any[] = []
       d['query_text'] = queryText;
       d['search_type'] = searchType;
-      d['gesture_speaker'] = speaker;
       d['collection'] = searchCollection;
+      d['gesture_speaker'] = speaker;
       d['gesture_select'] = cosp
-      header.forEach((head) => d[head] ? row.push(String(d[head]).replace(/(.*)/, '"$1"')) : row.push("na"))
+      // header.forEach((head) => d[head] ? row.push(String(d[head]).replace(/(.*)/, '"$1"')) : row.push("na"))
+      header.forEach((head) => d[head] ? row.push(String(d[head]).replace(/,/g, '||')) : row.push("na"))
 
 
       return row.join(',')
@@ -78,9 +80,9 @@ export default function CorpusResult(props: CorpusResultProps) {
     });
     setQueryText(arr[0].query_text);
     setSearchType(arr[0].search_type);
-    setSearchCollection(arr[0].collection);
-    setCosp(arr[0].gesture_select);
-    setSpeaker(arr[0].gesture_speaker)
+    // setSearchCollection(arr[0].collection);
+    // setCosp(arr[0].gesture_select);
+    // setSpeaker(arr[0].gesture_speaker)
     console.log(arr)
     return arr;
   }

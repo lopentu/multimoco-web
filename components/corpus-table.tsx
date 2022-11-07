@@ -107,14 +107,14 @@ function formatVideoMeta(meta) {
   }
   return <>
     {Object.entries(mapping).map(([k, v]) => {
-      return <>
+      return <React.Fragment key={`${(Math.random() + 1).toString(36).substring(8)}`}>
         <Typography variant="overline" display="block">
           {v}
         </Typography>
         <Typography variant="button" display="block">
           <strong>{meta[k]}</strong>
         </Typography>
-      </>
+      </React.Fragment>
     })}
     <Typography variant="overline" display="block">
       Name
