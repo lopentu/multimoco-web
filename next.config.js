@@ -2,7 +2,7 @@ const fs = require("fs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: process.env.MULTIMOCO_STATIC_BUILD? "multimoco-web": "",
+  basePath: process.env.MULTIMOCO_STATIC_BUILD? "/multimoco-web": "",
   typescript: {
     ignoreBuildErrors: true,
   },

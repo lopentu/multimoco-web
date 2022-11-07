@@ -28,10 +28,7 @@ or
 `export MULTIMOCO_STATIC_BUILD=1`
 
 * Build
-`pnpm next build && pnpm next export`
-
-* GitHub only allows serving `docs` directory
-`mv out docs`
+`pnpm next build && pnpm next export -o docs`
 
 * Push to Github
 `git push`
