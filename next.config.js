@@ -1,8 +1,26 @@
+const fs = require("fs");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   reactStrictMode: false,
   swcMinify: true,
-  async redirects() {
+  exportPathMap: async function (defaultPathMap, args) {
+    const pathMap = {
+      "/video": { page: '/video' },
+      ...Object.fromEntries(
+        fs.readdirSync("pages/search_static")
+          .map((x) => {
+            const fname = x.replace(".tsx", "");
+            return ["/" + fname, { page: "/search_static/" + fname }]
+          }))
+    };
+    console.log(pathMap);
+    return pathMap
+  },
+  redirects: async function () {
     return [
       {
         source: '/',
