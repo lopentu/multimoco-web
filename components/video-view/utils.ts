@@ -16,6 +16,16 @@ export function to_seconds(time_str: string | null | undefined) {
   return seconds + ms;
 }
 
+export function to_timestr(seconds: number){
+  const min = ~~(seconds / 60)
+  const hour = ~~(min / 60)
+  const sec_mod = (~~seconds) % 60
+  const hour_str = hour.toString().padStart(2, "0");
+  const min_str = min.toString().padStart(2, "0");
+  const sec_str = sec_mod.toString().padStart(2, "0");
+  return `${hour_str}:${min_str}:${sec_str}`
+}
+
 export function convertSpansToSecs(annotSpans: AnnotationSpans) {
   const converted: AnnotationSpans = []
   for (const span_x of annotSpans) {

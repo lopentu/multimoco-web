@@ -12,7 +12,7 @@ interface ProgressBarProps {
 
 export default function ProgressBar(props: ProgressBarProps) {
 
-  const duration = props.duration;
+  const duration = props.duration || 1;
   const divRef = useRef<HTMLDivElement | null>(null);
   const currentTimeNorm = props.currentTime ? (props.currentTime / duration) : 0;
 

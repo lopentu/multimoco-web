@@ -1,7 +1,9 @@
 import { KeyboardEvent, MouseEvent } from "react";
+import { OcrBlock } from "../../types/corpus";
 import { AnnotationSpan, AnnotationSpans } from "./annot_types";
-import { PhoneToken } from "./overlay-data-types";
+import { OcrDataType, PhoneToken } from "./overlay-data-types";
 import { Point, RectBox } from "./overlay-painter";
+import { to_timestr } from "./utils";
 import VideoControl from "./videoControl";
 
 export interface Cursor {
@@ -29,6 +31,7 @@ export default class VideoAnnotator {
   private _onActiveSpanChanged: ActiveSpanChanged | null = null;
   private _waveArea: RectBox = { width: 0, height: 0, x: 0, y: 0 };
   private _spanAreas: RectBox[] = [];
+  private _ocrAreas: RectBox[] = [];
   private _selected_phone_range: PhoneRange = {} as PhoneRange;
   private _press_phone: PhoneToken | null = null;
   private _span_data: AnnotationSpans = [];
@@ -75,6 +78,10 @@ export default class VideoAnnotator {
     this._spanAreas = spanAreas;
   }
 
+  updateOcrAreas(ocrAreas: RectBox[]){
+    this._ocrAreas = ocrAreas;
+  }
+
   clearSpanAreas() {
     this._spanAreas = [];
   }
@@ -104,6 +111,18 @@ export default class VideoAnnotator {
         // detected phone is on the left
         range.start = phone;
       }
+    }
+  }
+
+  onOcrDetected(span: OcrDataType) {
+    if (this.isPressed){
+      const timestamp = to_timestr(span.offset/1000)
+      const ocr_info = `[${span.name}] ${timestamp} ${span.payload.text}`;
+      if (navigator?.clipboard){
+        navigator.clipboard.writeText(ocr_info);
+        console.log("Text copied: ", ocr_info);
+      }
+      
     }
   }
 
@@ -179,7 +198,13 @@ export default class VideoAnnotator {
       y: ev.nativeEvent.offsetY
     };
 
-    if (!this._pointInBox(pnt, this._waveArea)) {
+    const pntInOcrs = this._ocrAreas
+      .some((box_x)=>{
+        return this._pointInBox(pnt, box_x)
+      });
+
+    if (!this._pointInBox(pnt, this._waveArea)
+        && !pntInOcrs) {
       this.videoControl.playPause();
     } else {
       this._redrawCallback();

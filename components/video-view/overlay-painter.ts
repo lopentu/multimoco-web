@@ -15,10 +15,10 @@ const SPEAKER_EV_COLOR: { [name: string]: string } = {
   "SPEAKER_02": "#fdcdac",
   "OVERLAP": "#fb8072"
 }
-const EV_LABELS: {[name: string]: number} = {
+const EV_LABELS: { [name: string]: number } = {
   "OVERLAP": 0,
-  "SPEAKER_00": 1, 
-  "SPEAKER_01": 2, 
+  "SPEAKER_00": 1,
+  "SPEAKER_01": 2,
   "SPEAKER_02": 3
 };
 
@@ -121,14 +121,33 @@ export default class OverlayPainter {
     if (!this.ctx) return;
 
     const ctx = this.ctx;
+    type OcrTuple = [ocr_box: RectBox, ocr: OcrDataType];
+    const ocr_boxes: OcrTuple[] = [];
     for (let ocr of ocr_blocks) {
       const [tl, tr, br, bl] = ocr.payload.box.coordinates[0];
+
       const tl_norm = [tl[0] * this.cvsWidth / 1280, tr[1] * this.cvsHeight / 720]
       const w_norm = (tr[0] - tl[0]) * this.cvsWidth / 1280;
       const h_norm = (bl[1] - tl[1]) * this.cvsHeight / 720;
-      const text = ocr.payload.text;
-      ctx.fillStyle = "#3333FF99";
-      ctx.fillRect(tl_norm[0], tl_norm[1], w_norm, h_norm);
+      const ocr_box = {
+        x: tl_norm[0],
+        y: tl_norm[1],
+        width: w_norm,
+        height: h_norm
+      }
+
+      ocr_boxes.push([ocr_box, ocr]);
+    }
+
+    this.annot.updateOcrAreas(ocr_boxes.map((x)=>x[0]));
+
+    for (let [box_x, ocr] of ocr_boxes) {
+      if (this.annot.cursorInBox(box_x)) {
+        this.annot.onOcrDetected(ocr);
+        ctx.strokeStyle = this.annot.isPressed? "#F2B183": "#fd8d3c";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(box_x.x, box_x.y, box_x.width, box_x.height);
+      }
     }
   }
 
@@ -158,33 +177,33 @@ export default class OverlayPainter {
     wave_span: [number, number],
     events: SpeechEvents) {
     if (!this.ctx) return;
-        
+
     const n_sample = wave.length;
     const vw = this.cvsWidth;
     const vh = this.wave_vh;
-    const [wav_start, wav_end] = wave_span;        
+    const [wav_start, wav_end] = wave_span;
 
     const to_x = (d: number) => ~~(d / n_sample * vw);
     const to_y = (v: number) => ~~(v / 196 * vh) + (this.cvsHeight - vh / 2);
-    const ctx = this.ctx;    
+    const ctx = this.ctx;
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = "#FFFFFF";
     ctx.beginPath();
     ctx.moveTo(to_x(0), to_y(0));
     let last_color = "";
-        
-    const sorted_events = events
-      .sort((a,b)=>(EV_LABELS[b[2]]||9)-(EV_LABELS[a[2]]||9));
 
-    for (let i = 0; i < wave.length; i++) {      
-      let ev = sorted_events        
+    const sorted_events = events
+      .sort((a, b) => (EV_LABELS[b[2]] || 9) - (EV_LABELS[a[2]] || 9));
+
+    for (let i = 0; i < wave.length; i++) {
+      let ev = sorted_events
         .filter(([s, e, ev]) => {
-          const wav_t = wav_start + i / wave_fr;          
+          const wav_t = wav_start + i / wave_fr;
           return s < wav_t && wav_t < e;
-        });      
-      
-      const ev_type = ev.length > 0 ? ev[0][2] : "other";      
+        });
+
+      const ev_type = ev.length > 0 ? ev[0][2] : "other";
       const ev_color = SPEAKER_EV_COLOR[ev_type] || "#FFFFFF";
       const x = to_x(i);
       const y = to_y(wave[i]);
@@ -291,20 +310,20 @@ export default class OverlayPainter {
     const vh = this.cvsHeight;
 
     const center = (wave_span[0] + wave_span[1]) / 2;
-    const cosp_set = new Set<string>();    
-    phones.filter((x) => (center - 1 < x[1]) && (center > x[1]+0.05))
+    const cosp_set = new Set<string>();
+    phones.filter((x) => (center - 1 < x[1]) && (center > x[1] + 0.05))
       .forEach((tok) => {
         tok[4]
           .map((x) => {
             if (x > 17) {
-              return "SP2_" + CospFeatureEnum[x-17-1]
+              return "SP2_" + CospFeatureEnum[x - 17 - 1]
             } else {
-              return "SP1_" + CospFeatureEnum[x-1]
+              return "SP1_" + CospFeatureEnum[x - 1]
             }
           })
           .forEach((xx) => cosp_set.add(xx));
       });
-    
+
     draw_cosp_badges(ctx, vw, vh, cosp_set);
 
 

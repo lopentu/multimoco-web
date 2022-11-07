@@ -52,7 +52,7 @@ export default function VideoView(props: VideoViewProp) {
   const { videoState, ...videoStateCtrl } = useVideoState(videoRef.current);
   videoControl.setVideo(videoRef.current, videoStateCtrl);
   const overlayOptions = useRef<OverlayOptions>({} as OverlayOptions);
-  overlayOptions.current.toShowOcr = false;
+  overlayOptions.current.toShowOcr = true;
   overlayOptions.current.toShowPosture = videoState.toShowPosture;
   overlayOptions.current.toShowWave = videoState.toShowWaveform;
 
@@ -243,22 +243,24 @@ export default function VideoView(props: VideoViewProp) {
     const video = videoRef.current;
     if (!video) return;
 
-    const overlayData = dataProvider.getData(video.currentTime, videoState.toShowPosture);
-    const cvs = canvasRef.current;
-    if (!cvs) return null;
-    const canvasWidth = cvs.clientWidth;
-    const canvasHeight = cvs.clientWidth / ASPECT_RATIO;
-    const toShowWave = overlayOptions.current.toShowWave;
-    const toShowOcr = false;
-    const toShowPosture = overlayOptions.current.toShowPosture;
-
     const delta_ms = timestamp - lastRenderTime.current;
     const delta_s = Math.max(delta_ms / 1000, .001);
     const fps = ~~(1 / delta_s * 100) / 100;
     lastRenderTime.current = timestamp;
+        
+    const toShowWave = overlayOptions.current.toShowWave;
+    const toShowOcr = true;
+    const toShowPosture = overlayOptions.current.toShowPosture;
 
-    // drawing routines and options
-    if (delta_ms > 15) {
+    // skip rendering tighter than 16ms interval
+    if (delta_ms > 15) {      
+      const overlayData = dataProvider.getData(video.currentTime, videoState.toShowPosture);
+      const cvs = canvasRef.current;
+      if (!cvs) return null;
+
+      // drawing routines and options
+      const canvasWidth = cvs.clientWidth;
+      const canvasHeight = cvs.clientWidth / ASPECT_RATIO;
       cvs.width = canvasWidth;
       cvs.height = canvasHeight;
       const context = cvs.getContext('2d');
