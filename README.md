@@ -18,17 +18,22 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## Learn More
+## Build & Export
+* checkout static-render, merge other branches if necessary
+`git checkout static-render `
 
-To learn more about Next.js, take a look at the following resources:
+* set environment variable
+`$env:MULTIMOCO_STATIC_BUILD="1"`
+or
+`export MULTIMOCO_STATIC_BUILD=1`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* Build
+`pnpm next build && pnpm next export`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+* GitHub only allows serving `docs` directory
+`mv out docs`
 
-## Deploy on Vercel
+* Push to Github
+`git push`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
