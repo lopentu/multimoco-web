@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fsearch_static\u002Fclgvd_gesture","\u002Fsearch_static\u002Fclgvd_president","\u002Fsearch_static\u002Fnews_president"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
