@@ -89,7 +89,22 @@ export interface AnnotationSpan {
   offset: number,
   span: number,
   text: string,
-  videoMeta: Record<string, any>,
+  cosp: string[],
+  blankIntervals: number[],
+  video_type: string,
+  channel: string,
+  datetime: string,
+  legislator?: string,
+  meeting_header?: string
+  meeting_date?: Date,
+  meeting_name?: string,
+  meeting_committee?: string,
+  clip_lowres_link?: string,
+  clip_highres_link?: string,
+  video_id?: string,
+  filename?: string,
+
+  // videoMeta: Record<string, any>,
   annotation: string,
   ocrBBox?: Point[]
 }

@@ -45,7 +45,6 @@ const SearchPage = (props: SearchPageProps) => {
     }
     (getParams.searchType !== undefined) ? setSearchType(getParams.searchType as string) : setSearchType('asr');
     (getParams.searchCollection !== undefined) ? setSearchCollection(getParams.searchCollection as string) : setSearchCollection('legvid');
-    (getParams.searchCollection !== undefined) ? setSearchCollection(getParams.searchCollection as string) : setSearchCollection('legvid');
     (getParams.gestureSelect !== undefined) ? setCosp((getParams.gestureSelect as string).split(',')) : setCosp([]);
     (getParams.gestureSpeaker !== undefined) ? setSpeaker((getParams.gestureSpeaker as string)) : setSpeaker("any");
   }, []);

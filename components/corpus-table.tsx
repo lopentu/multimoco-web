@@ -17,6 +17,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import * as React from 'react';
+import { AnnotationSpan, AnnotationSpans } from '../types/corpus';
 import { fancyTimeFormat } from '../utils/utils';
 
 
@@ -86,33 +87,32 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-function formatVideoMeta(meta) {
-  // console.log(meta)
-  let mapping
+function formatVideoMeta(meta: AnnotationSpan) {
+  let mapping: Partial<Record<keyof AnnotationSpan, string>>
+
   if (meta.video_type === 'news') {
     mapping = {
       channel: 'Channel',
       datetime: 'Date',
-
     }
   } else if (meta.video_type === 'legvid') {
     mapping = {
       channel: 'Channel',
       datetime: 'Date',
       legislator: 'Legislator',
+      meeting_committee: 'Meeting Committee',
       // meeting_header: 'Meeting Header',
       // meeting_name: 'Meeting Name',
-      meeting_committee: 'Meeting Committee'
     }
   }
   return <>
-    {Object.entries(mapping).map(([k, v]) => {
+    {Object.entries(mapping!).map(([k, v]) => {
       return <React.Fragment key={`${(Math.random() + 1).toString(36).substring(8)}`}>
         <Typography variant="overline" display="block">
           {v}
         </Typography>
         <Typography variant="button" display="block">
-          <strong>{meta[k]}</strong>
+          <strong>{(meta[(k as keyof AnnotationSpan)] as string)}</strong>
         </Typography>
       </React.Fragment>
     })}
@@ -124,7 +124,14 @@ function formatVideoMeta(meta) {
     </Typography>
   </>
 }
-export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged }) {
+
+interface ICorpusTable {
+  annotationSpans: AnnotationSpans
+  searchType: string
+  onSelectedSpanChanged(arg0: string, arg1: number): void
+}
+
+export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged }: ICorpusTable) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   let groupedAnnotationSpans = Array.from(annotationSpans.reduce(
@@ -168,7 +175,7 @@ export default function CorpusTable({ annotationSpans, searchType, onSelectedSpa
             ? groupedAnnotationSpans.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : groupedAnnotationSpans
           )
-            .map(function (group, groupIndex, groupArray) {
+            .map(function (group: AnnotationSpans, groupIndex, groupArray) {
               return group.map(function (row, rowIndex, rowArray) {
                 return (
                   <TableRow key={`${(Math.random() + 1).toString(36).substring(8)}`}>

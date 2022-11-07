@@ -130,7 +130,7 @@ export default async function search_db(query: ParsedUrlQuery) {
       delete theArray[index].video_meta;
     })
 
-    // console.log(results?.slice(-5));
+    console.log(results?.slice(-5));
     console.log("Hit records: ", results?.length);
 
     return {
