@@ -1,6 +1,7 @@
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import { CorpusResultProps } from '../types/corpus';
 
 import CospGestureMultipleSelectCheckmarks from './cospeech-select';
 
@@ -16,7 +17,8 @@ const MenuProps = {
 	},
 };
 
-export default function SearchForm(props) {
+
+export default function SearchForm(props: Partial<CorpusResultProps>) {
 
 	return (
 		<Grid2
@@ -39,7 +41,7 @@ export default function SearchForm(props) {
 								type="text"
 								name="query"
 								value={props.queryText}
-								onChange={(e) => props.setQueryText(e.target.value)}
+								onChange={(e) => props.setQueryText!(e.target.value)}
 								InputLabelProps={{ shrink: true }}
 								InputProps={{ endAdornment: <Button type="submit" variant="contained" disableElevation><SearchIcon /></Button> }}
 								required
@@ -60,7 +62,7 @@ export default function SearchForm(props) {
 									row={true}
 									aria-labelledby="demo-radio-buttons-group-label"
 									value={props.searchType}
-									onChange={(e) => props.setSearchType(e.target.value)}
+									onChange={(e) => props.setSearchType!(e.target.value)}
 									name="searchType"
 								>
 									<FormControlLabel value="asr" control={<Radio />} label="ASR" />
@@ -78,7 +80,7 @@ export default function SearchForm(props) {
 									value={props.searchCollection}
 									label="Collection"
 									name="searchCollection"
-									onChange={(e) => props.setSearchCollection(e.target.value)}
+									onChange={(e) => props.setSearchCollection!(e.target.value)}
 									MenuProps={MenuProps}
 								>
 									<MenuItem value="legvid">Legislature</MenuItem>

@@ -5,7 +5,7 @@ import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { AnnotationSpans } from '../types/corpus';
+import { AnnotationSpans, AnnotationSpan } from '../types/corpus';
 import CorpusResult from './corpus-result';
 import { getVideoName } from './span-data-utils';
 import VideoView from './video-view';

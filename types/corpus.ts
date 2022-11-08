@@ -70,7 +70,7 @@ export interface SearchResults extends Results {
 
 export interface CorpusResultProps {
   annotationSpans: AnnotationSpans
-  setAnnotationSpans: React.Dispatch<React.SetStateAction<AnnotationSpans|AnnotationSpanFromCsv[]>>
+  setAnnotationSpans: React.Dispatch<React.SetStateAction<AnnotationSpans>>
   queryText: string
   setQueryText: React.Dispatch<React.SetStateAction<string>>
   searchType: string

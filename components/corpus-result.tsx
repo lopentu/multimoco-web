@@ -6,7 +6,6 @@ import { AnnotationSpans, CorpusResultProps, AnnotationSpan } from '../types/cor
 import { flattenObject } from '../utils/utils';
 import CorpusTable from './corpus-table';
 
-
 export default function CorpusResult(props: CorpusResultProps) {
   const { annotationSpans, setAnnotationSpans,
     queryText, searchType, setQueryText, setSearchType,
@@ -57,7 +56,7 @@ export default function CorpusResult(props: CorpusResultProps) {
   }
 
   // converts uploaded CSV file into an array to display in table
-  function csvToArray(str: string, delimiter = ","): Partial<AnnotationSpan>[] {
+  function csvToArray(str: string, delimiter = ","): AnnotationSpans {
     const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(v => v.trim());
     const rows = str.slice(str.indexOf("\n") + 1).split(/\r?\n|\r|\n/);
     const numericFields = ['offset', 'span', 'duration', 'start', 'end']
@@ -73,7 +72,7 @@ export default function CorpusResult(props: CorpusResultProps) {
         // (object as NonNullable<Partial<AnnotationSpan>>)[header as keyof AnnotationSpan] = value;
         (object as any)[header as keyof AnnotationSpan] = value;
         return object;
-      }, {} as NonNullable<Partial<AnnotationSpan>>);
+      }, {} as AnnotationSpan);
       return el;
     });
     setQueryText(arr[0].query_text as string);
@@ -117,7 +116,6 @@ export default function CorpusResult(props: CorpusResultProps) {
             type="file"
             id="csvFile"
             accept=".csv" />
-          {/* </form> */}
         </Button>
       </Stack>
       <CorpusTable

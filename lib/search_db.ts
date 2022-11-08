@@ -1,6 +1,7 @@
 import { Document } from 'mongodb';
 import { ParsedUrlQuery } from 'querystring';
 import clientPromise from '../lib/mongodb';
+import { AnnotationSpans } from '../types/corpus';
 
 function str_param(
     x: string | string[] | undefined, 
@@ -131,7 +132,7 @@ export default async function search_db(query: ParsedUrlQuery) {
     })
 
     console.log(results?.slice(-5));
-    console.log("Hit records: ", results?.length);
+    console.log("Hit records: ", (results as AnnotationSpans)!?.length);
 
     return {
       props: {
