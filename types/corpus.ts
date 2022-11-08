@@ -67,9 +67,10 @@ export interface SearchResults extends Results {
   //   video_meta: VideoMeta
   // }[]
 }
+
 export interface CorpusResultProps {
   annotationSpans: AnnotationSpans
-  setAnnotationSpans: React.Dispatch<React.SetStateAction<AnnotationSpans>>
+  setAnnotationSpans: React.Dispatch<React.SetStateAction<AnnotationSpans|AnnotationSpanFromCsv[]>>
   queryText: string
   setQueryText: React.Dispatch<React.SetStateAction<string>>
   searchType: string
@@ -94,6 +95,8 @@ export interface AnnotationSpan {
   video_type: string,
   channel: string,
   datetime: string,
+  query_text?: string,
+  search_type?: string,
   legislator?: string,
   meeting_header?: string
   meeting_date?: Date,

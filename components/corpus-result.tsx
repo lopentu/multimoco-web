@@ -2,7 +2,7 @@ import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { AnnotationSpans, CorpusResultProps } from '../types/corpus';
+import { AnnotationSpans, CorpusResultProps, AnnotationSpan } from '../types/corpus';
 import { flattenObject } from '../utils/utils';
 import CorpusTable from './corpus-table';
 
@@ -28,7 +28,7 @@ export default function CorpusResult(props: CorpusResultProps) {
     let leaveOut = ['clip_lowres_link', 'clip_highres_link', 'video_id', 'filename']
     let h = Array.from(new Set(flattenedData.map(d => Object.keys(d)).flat()))
       .concat(['query_text', 'search_type'])
-      // .concat(['query_text', 'search_type', 'gesture_speaker', 'collection', 'gesture_select'])
+    // .concat(['query_text', 'search_type', 'gesture_speaker', 'collection', 'gesture_select'])
     console.log("H", h)
 
     let header: string[] = h.filter(item => !leaveOut.includes(item));
@@ -57,7 +57,7 @@ export default function CorpusResult(props: CorpusResultProps) {
   }
 
   // converts uploaded CSV file into an array to display in table
-  function csvToArray(str: string, delimiter = ","): AnnotationSpans {
+  function csvToArray(str: string, delimiter = ","): Partial<AnnotationSpan>[] {
     const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(v => v.trim());
     const rows = str.slice(str.indexOf("\n") + 1).split(/\r?\n|\r|\n/);
     const numericFields = ['offset', 'span', 'duration', 'start', 'end']
@@ -66,20 +66,18 @@ export default function CorpusResult(props: CorpusResultProps) {
     const arr = rows.map((row) => {
       const values = row.split(delimiter);
       const el = headers.reduce((object, header, index) => {
-        let value = values[index]
-        if (value !== 'na') {
-          if (numericFields.includes(header)) value = Number(value);
-          if (arrayFields.includes(header)) value = value.split(',')
-        } else {
-          value = "";
-        }
-        object[header] = value;
+        let value: NonNullable<AnnotationSpan[keyof AnnotationSpan]> = values[index]
+        if (value === 'na') value = "";
+        else if (numericFields.includes(header)) value = Number(value);
+        else if (arrayFields.includes(header)) value = (value as string).replace(/||/g, ',').split(',');
+        // (object as NonNullable<Partial<AnnotationSpan>>)[header as keyof AnnotationSpan] = value;
+        (object as any)[header as keyof AnnotationSpan] = value;
         return object;
-      }, {});
+      }, {} as NonNullable<Partial<AnnotationSpan>>);
       return el;
     });
-    setQueryText(arr[0].query_text);
-    setSearchType(arr[0].search_type);
+    setQueryText(arr[0].query_text as string);
+    setSearchType(arr[0].search_type as string);
     // setSearchCollection(arr[0].collection);
     // setCosp(arr[0].gesture_select);
     // setSpeaker(arr[0].gesture_speaker)
@@ -89,7 +87,7 @@ export default function CorpusResult(props: CorpusResultProps) {
 
   return (
     <>
-      <div className="fs-2 text-muted">Search Results</div>
+      <div className="fs-2 text-muted">Search Results <small>({annotationSpans.length})</small></div>
       <Stack direction="row"
         spacing={2}
         justifyContent="flex-end"
