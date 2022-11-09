@@ -29,6 +29,9 @@ const nextConfig = {
         permanent: true
       }
     ]
+  },
+  generateBuildId: async () => {
+    return 'multimoco-build-id'
   }
 }
 
