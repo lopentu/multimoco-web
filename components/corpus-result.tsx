@@ -89,7 +89,7 @@ export default function CorpusResult(props: CorpusResultProps) {
       <div className="fs-2 text-muted">Search Results <small>({annotationSpans.length})</small></div>
       <Stack direction="row"
         spacing={2}
-        justifyContent="flex-end"
+        justifyContent="flex-start"
       >
         <Button
           onClick={() => downloadBlob(buildCsv(annotationSpans), `multimoco-${queryText}-${searchType}.csv`, 'text/csv;charset=UTF-8;')}
