@@ -2,3 +2,14 @@
   color: #c7ece8 !important;
   font-weight: normal !important;
 }
+
+.live-icon {
+  display: inline;
+  animation: blink 2s ease-in infinite;
+
+}
+
+@keyframes blink {
+  from, to { opacity: 1}
+  50% { opacity: 0}
+}
