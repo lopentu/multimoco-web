@@ -1,5 +1,8 @@
 # Multimoco Web frontend
 
+## Starting Server
+Run `npm run start`
+
 ## Prerequisites
 
 The frontend depends on a MongoDB server indicated by environment variable `MONGODB_URI`. The codebase is bootstrapped with `create-next-app`.
