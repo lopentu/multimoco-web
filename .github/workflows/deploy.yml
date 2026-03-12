@@ -17,6 +17,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: Debug versions
+        run: node --version && npm --version && which node
+
       - name: Install dependencies
         working-directory: ${{ github.workspace }}
         run: npm install
