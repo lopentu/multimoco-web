@@ -20,6 +20,14 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Write environment variables
+        run: |
+          cat > ${{ github.workspace }}/.env.local << 'EOF'
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          MONGO_DB=${{ secrets.MONGO_DB }}
+          GC_API_KEY=${{ secrets.GC_API_KEY }}
+          EOF
+
       - name: Install dependencies
         working-directory: ${{ github.workspace }}
         run: pnpm install --frozen-lockfile
