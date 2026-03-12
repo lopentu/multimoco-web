@@ -1,0 +1,24 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        working-directory: ${{ github.workspace }}
+        run: npm install
+
+      - name: Build
+        working-directory: ${{ github.workspace }}
+        run: npm run build
+
+      - name: Restart app
+        run: pm2 restart multimoco
