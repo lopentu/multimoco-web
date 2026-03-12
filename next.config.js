@@ -1,4 +1,11 @@
 const fs = require("fs");
+const withTM = require("next-transpile-modules")([
+  "@mui/material",
+  "@mui/system",
+  "@mui/icons-material",
+  "@mui/x-data-grid",
+  "@mui/utils",
+]);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -35,4 +42,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig
+module.exports = withTM(nextConfig)
