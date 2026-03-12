@@ -17,16 +17,16 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: Debug versions
-        run: node --version && npm --version && which node
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
         working-directory: ${{ github.workspace }}
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         working-directory: ${{ github.workspace }}
-        run: npm run build
+        run: pnpm run build
 
       - name: Restart app
         run: pm2 restart multimoco
