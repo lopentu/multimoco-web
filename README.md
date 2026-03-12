@@ -38,6 +38,8 @@ pm2 start "npm run start" --name multimoco
 pm2 save
 ```
 
+> Runner workspace: `/opt/github-runners/runner-01/_work/multimoco-web/multimoco-web`
+
 ## Prerequisites
 
 - Node.js 18.20.4 (see `.nvmrc`)
