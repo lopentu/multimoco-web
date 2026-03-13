@@ -10,6 +10,7 @@ import CorpusResult from './corpus-result';
 import { getVideoName } from './span-data-utils';
 import VideoView from './video-view';
 import SearchForm from './search-form';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export type SearchPageProps = {
   searchResults: string
@@ -34,6 +35,23 @@ const SearchPage = (props: SearchPageProps) => {
 
   const router = useRouter();
   const getParams = router.query;
+
+  const [loading, setLoading] = React.useState(false);
+
+useEffect(() => {
+  const handleStart = () => setLoading(true);
+  const handleDone = () => setLoading(false);
+
+  router.events.on('routeChangeStart', handleStart);
+  router.events.on('routeChangeComplete', handleDone);
+  router.events.on('routeChangeError', handleDone);
+
+  return () => {
+    router.events.off('routeChangeStart', handleStart);
+    router.events.off('routeChangeComplete', handleDone);
+    router.events.off('routeChangeError', handleDone);
+  };
+}, [router]);
 
   useEffect(() => {
     if (Array.isArray(getParams.query)) {
@@ -103,6 +121,11 @@ const SearchPage = (props: SearchPageProps) => {
               speaker={speaker}
               setSpeaker={setSpeaker}
             />
+            {loading &&
+                <Grid2 xs={12} display="flex" justifyContent="center" sx={{ mt: 2 }}>
+                  <CircularProgress />
+                </Grid2>
+              }
 
             {annotationSpans ?
               <Grid2 xs={6} md={6} lg={5} display="flex"
