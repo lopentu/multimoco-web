@@ -119,12 +119,13 @@ export default function CorpusResult(props: CorpusResultProps) {
         </Button>
       </Stack>
       <CorpusTable
-        annotationSpans={annotationSpans}
-        searchType={searchType}
-        onSelectedSpanChanged={onSelectedSpanChanged}
-        cosp={cosp}
-        setCosp={setCosp}
-      />
+  annotationSpans={annotationSpans}
+  searchType={searchType}
+  onSelectedSpanChanged={onSelectedSpanChanged}
+  cosp={cosp}
+  setCosp={setCosp}
+  queryText={queryText}
+/>            
     </>
 
   )
