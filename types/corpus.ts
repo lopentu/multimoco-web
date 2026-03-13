@@ -60,8 +60,8 @@ export enum CospeechGesture {
     HAND_R_POINTING,
 
     // 身體動作
-    BODY_STILL,
-    BODY_MOVING,
+    // BODY_STILL,
+    // BODY_MOVING,
 }
 
 export interface OcrBlock {

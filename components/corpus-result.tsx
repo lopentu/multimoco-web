@@ -86,7 +86,7 @@ export default function CorpusResult(props: CorpusResultProps) {
 
   return (
     <>
-      <div className="fs-2 text-muted">Search Results <small>({annotationSpans.length})</small></div>
+      <div className="fs-2 text-muted">Search Results <small>({annotationSpans.length} segments / {new Set(annotationSpans.map(x => x.name)).size} videos)</small></div>
       <Stack direction="row"
         spacing={2}
         justifyContent="flex-start"
