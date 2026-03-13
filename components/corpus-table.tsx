@@ -45,6 +45,7 @@ interface TablePaginationActionsProps {
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
+  
   const { count, page, rowsPerPage, onPageChange } = props;
 
   const handleFirstPageButtonClick = (
@@ -165,10 +166,19 @@ interface ICorpusTable {
 export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged, cosp, setCosp, queryText }: ICorpusTable) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [sortByDate, setSortByDate] = React.useState<'asc' | 'desc' | null>(null);
   let groupedAnnotationSpans = Array.from(annotationSpans.reduce(
     (entryMap, e) => entryMap.set(e.name, [...entryMap.get(e.name) || [], e]),
     new Map()
   ).values());
+
+  if (sortByDate) {
+    groupedAnnotationSpans = groupedAnnotationSpans.sort((a, b) => {
+      const dateA = new Date(a[0].datetime).getTime();
+      const dateB = new Date(b[0].datetime).getTime();
+      return sortByDate === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+  }
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -193,8 +203,13 @@ export default function CorpusTable({ annotationSpans, searchType, onSelectedSpa
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table" size="small">
         <TableHead>
           <TableRow>
-            <TableCell align="left">
+           <TableCell align="left">
               Info
+              <IconButton size="small" onClick={() => {
+                setSortByDate(prev => prev === 'asc' ? 'desc' : prev === 'desc' ? null : 'asc');
+              }}>
+                {sortByDate === 'asc' ? '↑' : sortByDate === 'desc' ? '↓' : '↕'}
+              </IconButton>
             </TableCell>
             <TableCell align="left">
               Text
