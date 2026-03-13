@@ -9,6 +9,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { CospeechGesture } from '../types/corpus';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { Stack } from '@mui/material';
+import ListSubheader from '@mui/material/ListSubheader';
 
 const ITEM_HEIGHT = 200;
 const ITEM_PADDING_TOP = 100;
@@ -62,12 +63,21 @@ export default function CospGestureMultipleSelectCheckmarks(props) {
 						name="gestureSelect"
 						autoWidth
 					>
-						{(Object.keys(CospeechGesture).filter(key => isNaN(Number(key)))).map((ges) => (
-							<MenuItem key={ges} value={ges}>
-								<Checkbox checked={props.cosp.indexOf(ges) > -1} />
-								<ListItemText primary={ges} />
-							</MenuItem>
-						))}
+					{[
+							{ header: 'Line of Sight', keys: ['LOS_DOWN','LOS_LEFT','LOS_RIGHT'] },
+							{ header: 'Gaze', keys: ['GAZE_FORWARD','GAZE_LEFT','GAZE_RIGHT','GAZE_UP','GAZE_DOWN'] },
+							{ header: 'Hands', keys: ['HANDS_NONE','HAND_LEFT','HAND_RIGHT','HANDS_BOTH'] },
+							{ header: 'Left Hand', keys: ['HAND_L_OPEN','HAND_L_CLOSED','HAND_L_POINTING','LEFT_PALM_IN','LEFT_PALM_OUT','LEFT_PALM_UP','LEFT_PALM_DOWN','LEFT_PALM_MEDIAL','LEFT_THUMB_UP','LEFT_INDEX_UP'] },
+							{ header: 'Right Hand', keys: ['HAND_R_OPEN','HAND_R_CLOSED','HAND_R_POINTING','RIGHT_PALM_IN','RIGHT_PALM_OUT','RIGHT_PALM_UP','RIGHT_PALM_DOWN','RIGHT_PALM_MEDIAL','RIGHT_THUMB_UP','RIGHT_INDEX_UP'] },
+						].map(({ header, keys }) => [
+							<ListSubheader key={header}>{header}</ListSubheader>,
+							...keys.map((ges) => (
+						<MenuItem key={ges} value={ges}>
+							<Checkbox checked={props.cosp.indexOf(ges) > -1} />
+							<ListItemText primary={ges} />
+						</MenuItem>
+					))
+				])}
 					</Select>
 				</FormControl>
 				{/* </Grid2> */}
