@@ -116,6 +116,16 @@ function formatVideoMeta(meta: AnnotationSpan) {
         </Typography>
       </React.Fragment>
     })}
+    {meta.name.includes('news-') &&
+  <>
+    <Typography variant="overline" display="block">
+      Language
+    </Typography>
+    <Typography variant="button" display="block">
+      <strong>{meta.name.match(/news-([^-]+)-/)?.[1]}</strong>
+    </Typography>
+  </>
+}
     <Typography variant="overline" display="block">
       Name
     </Typography>
