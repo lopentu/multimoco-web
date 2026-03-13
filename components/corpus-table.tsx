@@ -139,9 +139,11 @@ interface ICorpusTable {
   annotationSpans: AnnotationSpans
   searchType: string
   onSelectedSpanChanged(arg0: string, arg1: number): void
+  cosp: string[]
+  setCosp: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged }: ICorpusTable) {
+export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged, cosp, setCosp }: ICorpusTable) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   let groupedAnnotationSpans = Array.from(annotationSpans.reduce(
@@ -211,13 +213,20 @@ export default function CorpusTable({ annotationSpans, searchType, onSelectedSpa
                       {row.cosp && row.cosp.length > 0 &&
                       <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {(row.cosp as string[]).slice(0, 8).map((g) => (
-                          <Chip
-                            key={g}
-                            label={g}
-                            size="small"
-                            variant="outlined"
-                            color={g.startsWith('SP1') ? 'primary' : 'secondary'}
-                          />
+                        <Chip
+                          key={g}
+                          label={g}
+                          size="small"
+                          variant={cosp.includes(g.replace(/^SP[12]_/, '')) ? 'filled' : 'outlined'}
+                          color={g.startsWith('SP1') ? 'primary' : 'secondary'}
+                          onClick={() => {
+                            const label = g.replace(/^SP[12]_/, '');
+                            if (!cosp.includes(label)) {
+                              setCosp([...cosp, label]);
+                            }
+                          }}
+                          sx={{ cursor: 'pointer' }}
+                        />
                         ))}
                         {row.cosp.length > 8 &&
                           <Chip

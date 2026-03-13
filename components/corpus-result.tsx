@@ -122,6 +122,8 @@ export default function CorpusResult(props: CorpusResultProps) {
         annotationSpans={annotationSpans}
         searchType={searchType}
         onSelectedSpanChanged={onSelectedSpanChanged}
+        cosp={cosp}
+        setCosp={setCosp}
       />
     </>
 
