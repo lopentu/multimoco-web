@@ -21,6 +21,18 @@ import { AnnotationSpan, AnnotationSpans } from '../types/corpus';
 import { fancyTimeFormat } from '../utils/utils';
 import Chip from '@mui/material/Chip';
 
+function highlightText(text: string, query: string) {
+  if (!query) return <>{text}</>
+  const parts = text.split(new RegExp(`(${query})`, 'gi'))
+  return <>
+    {parts.map((part, i) =>
+      part.toLowerCase() === query.toLowerCase()
+        ? <mark key={i} style={{ backgroundColor: '#fff176', padding: 0 }}>{part}</mark>
+        : part
+    )}
+  </>
+}
+
 interface TablePaginationActionsProps {
   count: number;
   page: number;
@@ -105,6 +117,12 @@ function formatVideoMeta(meta: AnnotationSpan) {
       // meeting_name: 'Meeting Name',
     }
   }
+  if (!mapping!) {
+    mapping = {
+      channel: 'Channel',
+      datetime: 'Date',
+    }
+  }
   return <>
     {Object.entries(mapping!).map(([k, v]) => {
       return <React.Fragment key={`${(Math.random() + 1).toString(36).substring(8)}`}>
@@ -141,9 +159,10 @@ interface ICorpusTable {
   onSelectedSpanChanged(arg0: string, arg1: number): void
   cosp: string[]
   setCosp: React.Dispatch<React.SetStateAction<string[]>>
+  queryText: string
 }
 
-export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged, cosp, setCosp }: ICorpusTable) {
+export default function CorpusTable({ annotationSpans, searchType, onSelectedSpanChanged, cosp, setCosp, queryText }: ICorpusTable) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   let groupedAnnotationSpans = Array.from(annotationSpans.reduce(
@@ -207,8 +226,8 @@ export default function CorpusTable({ annotationSpans, searchType, onSelectedSpa
                       >[{fancyTimeFormat(row.offset)}]</Link>&nbsp;
                       {
                         row.annotation ?
-                          `<${row.annotation}>${row.text}` :
-                          row.text
+  highlightText(`<${row.annotation}>${row.text}`, queryText) :
+  highlightText(row.text, queryText)
                       }
                       {row.cosp && row.cosp.length > 0 &&
                       <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
