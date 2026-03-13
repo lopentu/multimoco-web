@@ -19,7 +19,7 @@ import TableRow from '@mui/material/TableRow';
 import * as React from 'react';
 import { AnnotationSpan, AnnotationSpans } from '../types/corpus';
 import { fancyTimeFormat } from '../utils/utils';
-
+import Chip from '@mui/material/Chip';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -198,6 +198,26 @@ export default function CorpusTable({ annotationSpans, searchType, onSelectedSpa
                           `<${row.annotation}>${row.text}` :
                           row.text
                       }
+                      {row.cosp && row.cosp.length > 0 &&
+                      <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {(row.cosp as string[]).slice(0, 8).map((g) => (
+                          <Chip
+                            key={g}
+                            label={g}
+                            size="small"
+                            variant="outlined"
+                            color={g.startsWith('SP1') ? 'primary' : 'secondary'}
+                          />
+                        ))}
+                        {row.cosp.length > 8 &&
+                          <Chip
+                            size="small"
+                            variant="outlined"
+                            label={`+${row.cosp.length - 8}`}
+                          />
+                        }
+                      </Box>
+                    }
                     </TableCell>
                   </TableRow>
                 )
