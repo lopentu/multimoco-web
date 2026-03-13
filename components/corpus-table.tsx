@@ -220,11 +220,13 @@ export default function CorpusTable({ annotationSpans, searchType, onSelectedSpa
                           variant={cosp.includes(g.replace(/^SP[12]_/, '')) ? 'filled' : 'outlined'}
                           color={g.startsWith('SP1') ? 'primary' : 'secondary'}
                           onClick={() => {
-                            const label = g.replace(/^SP[12]_/, '');
-                            if (!cosp.includes(label)) {
-                              setCosp([...cosp, label]);
-                            }
-                          }}
+                          const label = g.replace(/^SP[12]_/, '');
+                          if (cosp.includes(label)) {
+                            setCosp(cosp.filter(c => c !== label));
+                          } else {
+                            setCosp([...cosp, label]);
+                          }
+                        }}
                           sx={{ cursor: 'pointer' }}
                         />
                         ))}
