@@ -33,6 +33,10 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: pnpm install --frozen-lockfile
 
+      - name: Run tests
+        working-directory: ${{ github.workspace }}
+        run: pnpm test
+
       - name: Build
         working-directory: ${{ github.workspace }}
         run: pnpm run build
