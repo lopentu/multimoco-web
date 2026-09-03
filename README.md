@@ -62,6 +62,17 @@ pnpm install
 pnpm run dev
 ```
 
+## Health Check
+
+`GET /api/health` performs a lightweight MongoDB `ping` and returns:
+
+- HTTP 200 with `{"status":"healthy","database":"connected"}` when the database is reachable.
+- HTTP 503 with `{"status":"unhealthy","database":"disconnected"}` otherwise.
+
+The response is not cached and does not expose connection details. Run the focused
+tests with `pnpm test`. Production deployment runs them before building or
+restarting the service.
+
 ## Build & Export (Static)
 
 For the GitHub Pages static export:

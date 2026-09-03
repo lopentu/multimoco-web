@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 4000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --import tsx --test tests/**/*.test.ts"
   },
   "dependencies": {
     "@babel/core": ">=7.0.0 <8.0.0",
@@ -34,6 +35,7 @@
     "@types/video.js": "^7.3.48",
     "eslint": "8.23.1",
     "eslint-config-next": "12.3.0",
+    "tsx": "^4.20.5",
     "typescript": "4.8.3"
   }
 }
