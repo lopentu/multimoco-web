@@ -2,12 +2,13 @@
   "name": "multimoco-web",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 4000",
     "lint": "next lint",
-    "test": "node --import tsx --test tests/**/*.test.ts"
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@babel/core": ">=7.0.0 <8.0.0",
