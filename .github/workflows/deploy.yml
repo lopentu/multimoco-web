@@ -21,7 +21,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@10.34.5
 
       - name: Write environment variables
         run: |
